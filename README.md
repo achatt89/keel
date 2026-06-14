@@ -91,12 +91,14 @@ way. In a Claude Code session:
 
 ```
 /plugin marketplace add achatt89/keel
-/plugin install keel@keel
+/plugin install keel@thelogicatelier
 ```
 
 - `marketplace add` registers this repo as a source (`achatt89/keel` resolves to GitHub; you can
-  also pass a full `https://github.com/achatt89/keel.git` URL or a local path).
-- `install keel@keel` installs the `keel` plugin from the `keel` marketplace.
+  also pass a full `https://github.com/achatt89/keel.git` URL or a local path). The catalog
+  registers under its manifest name, **`thelogicatelier`**.
+- `install keel@thelogicatelier` installs the `keel` plugin from the `thelogicatelier` marketplace
+  — the syntax is `<plugin>@<marketplace>`.
 
 Restart Claude Code (or reload the window) so the skill registers. Verify with **Verify the
 install** below.
@@ -104,11 +106,12 @@ install** below.
 **Update later:**
 
 ```
-/plugin marketplace update keel
-/plugin install keel@keel
+/plugin marketplace update thelogicatelier
+/plugin install keel@thelogicatelier
 ```
 
-**Uninstall:** `/plugin uninstall keel@keel` (and optionally `/plugin marketplace remove keel`).
+**Uninstall:** `/plugin uninstall keel@thelogicatelier` (and optionally `/plugin marketplace remove
+thelogicatelier`).
 
 ### Method B — as a personal skill
 
