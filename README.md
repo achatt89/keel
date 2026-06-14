@@ -72,33 +72,96 @@ focused session — the interview is where the value is created.
 
 ---
 
-## Installation
+## Installation & setup
 
-### Recommended: as a Claude Code plugin
+### Prerequisites
 
-This repo is also a Claude Code **plugin marketplace**, so you can install it the first-class way:
+- **[Claude Code](https://claude.com/claude-code)** installed and working (run `claude --version`).
+  Plugin install requires a build with the `/plugin` command (run `/plugin` once to confirm it's
+  available; if it isn't, update Claude Code or use the personal-skill method below).
+- **git** on your `PATH` (`git --version`).
+- For installing from this **private** repo: a GitHub account with access to it, authenticated
+  either via the [`gh` CLI](https://cli.github.com/) (`gh auth login`) or an SSH key / credential
+  helper that can clone `achatt89/keel`. *(Once the repo is made public, no auth is needed.)*
+
+### Method A — as a Claude Code plugin (recommended)
+
+This repo doubles as a Claude Code **plugin marketplace**, so you can install it the first-class
+way. In a Claude Code session:
 
 ```
 /plugin marketplace add achatt89/keel
 /plugin install keel@keel
 ```
 
-Then restart Claude Code (or run `/plugin` to confirm it's enabled). That's it.
+- `marketplace add` registers this repo as a source (`achatt89/keel` resolves to GitHub; you can
+  also pass a full `https://github.com/achatt89/keel.git` URL or a local path).
+- `install keel@keel` installs the `keel` plugin from the `keel` marketplace.
 
-To update later: `/plugin marketplace update keel` then reinstall if prompted.
+Restart Claude Code (or reload the window) so the skill registers. Verify with **Verify the
+install** below.
 
-### Alternative: as a personal skill
+**Update later:**
 
-Prefer a plain skill install? Clone the repo and symlink (or copy) the skill into your personal
-skills directory:
+```
+/plugin marketplace update keel
+/plugin install keel@keel
+```
+
+**Uninstall:** `/plugin uninstall keel@keel` (and optionally `/plugin marketplace remove keel`).
+
+### Method B — as a personal skill
+
+Prefer a plain skill install (no plugin system)? Clone the repo and symlink the skill into your
+personal skills directory:
 
 ```bash
 git clone https://github.com/achatt89/keel.git ~/code/keel
+mkdir -p ~/.claude/skills
 ln -s ~/code/keel/plugins/keel/skills/keel ~/.claude/skills/keel
 ```
 
-Restart Claude Code. The skill activates automatically when you talk about starting a new project,
-or on `/keel`.
+A symlink means `git pull` in `~/code/keel` keeps the installed skill up to date. Prefer a copy
+instead of a symlink? Swap the last line for:
+
+```bash
+cp -R ~/code/keel/plugins/keel/skills/keel ~/.claude/skills/keel
+```
+
+Restart Claude Code so it picks up the new skill.
+
+**Project-scoped install** (only inside one repo, e.g. to share with a team via version control):
+symlink/copy into that repo's `.claude/skills/keel` instead of `~/.claude/skills/keel`.
+
+**Uninstall:** `rm ~/.claude/skills/keel` (removes the symlink/copy; the cloned repo is untouched).
+
+### Verify the install
+
+- Plugin method: run `/plugin` and confirm **keel** is listed and enabled.
+- Either method: type `/keel` — the skill should be offered. Or simply tell Claude Code
+  *"I want to start a new project, let's lay the foundations"* and Keel should activate.
+
+### First run
+
+There's no configuration step — Keel is prompt-driven. When you run it:
+
+1. Open the **target project folder** in Claude Code (Keel writes the generated docs into your
+   working directory; it will confirm where if it's ambiguous).
+2. Start the session and describe your idea. Keel runs: intake → multi-persona interview →
+   proposed doc set → generation → optional threat-model & harden → handoff.
+3. Set aside a focused block of time — the interview is where the value is created.
+
+If you want Keel to also initialize git in the folder and follow the branch-per-feature /
+worktree workflow it documents, just say yes when it asks during the ways-of-working round.
+
+### Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `/plugin marketplace add` fails to fetch | Confirm repo access: `gh repo view achatt89/keel`. Authenticate with `gh auth login`, or use the SSH URL, or use **Method B**. |
+| `/plugin` command not found | Your Claude Code build predates plugins — update it, or use **Method B**. |
+| `/keel` not recognized after install | Restart Claude Code / reload the window so skills re-register. For Method B, check the symlink resolves: `ls -l ~/.claude/skills/keel`. |
+| Skill loads but can't find its references/templates | Don't move files out of the skill folder — keep `references/` next to `SKILL.md`. Reinstall if the tree was altered. |
 
 ---
 
