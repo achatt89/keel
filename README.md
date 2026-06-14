@@ -25,7 +25,13 @@ documents — wired together with traceable IDs and cross-references.
    different sets), and tells you what it's deliberately leaving out and why.
 3. **Generates build-ready docs.** It writes the agreed documents in dependency order, with stable
    requirement IDs, ADRs, cross-references, and a light `CLAUDE.md` index — optimized to hand
-   straight to Claude Code as the source of truth for the build.
+   straight to Claude Code as the source of truth for the build. The `CLAUDE.md` it produces bakes
+   in your **ways of working** — git-from-commit-one, branch-per-feature, parallel agents in
+   isolated `git worktree`s, and documentation kept in lockstep with code after every chunk/phase.
+4. **Threat-models and hardens the docs.** Optionally, Keel runs an adversarial threat-modelling
+   pass over the documents it just wrote and **fixes the weaknesses directly in them** — adding
+   controls, security NFRs, ADRs, and exit gates so the spec itself is hardened, not just annotated
+   with a risk to fix later.
 
 ## The document suite
 

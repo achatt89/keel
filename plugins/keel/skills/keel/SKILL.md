@@ -109,12 +109,20 @@ The persona panel (detail and questions in `references/interview-personas.md`):
 | **Architect / Eng Lead** | Feasibility & shape | Stack, data model, integrations, the hard technical bets |
 | **Security / Compliance** | Risk & data | Data sensitivity, tenancy, auth, regulatory exposure, threats |
 | **Designer** *(if UI)* | Experience & brand | Surfaces, key flows, tone, accessibility, brand feel |
-| **Delivery / Ops** *(if shipped)* | Build & run | Phasing, environments, deployment, observability, on-call |
+| **Delivery / Ops** | Build & run + ways of working | Phasing, deployment, observability, **and the git/working-workflow: branching, worktree parallelism, doc-sync cadence** |
 
 You decide which personas the project warrants and in what depth — that decision *is* the adaptive
 interview. Always run Business Analyst + Product Manager + Architect. Add Security/Compliance for
 anything holding user data; Designer for anything with a UI; Delivery/Ops for anything that will
-actually be deployed and operated.
+actually be built.
+
+**Always cover ways of working** (in the Delivery/Ops round, even for prototypes): whether to
+`git init` the folder, branch-per-feature off `main`, run divisible work as parallel agents in
+separate `git worktree`s, and auto-sync the docs (`CLAUDE.md` status + `IMPLEMENTATION_PLAN` phase
+table + touched docs) after *each chunk/phase*. These answers populate the **Git & working
+workflow** section of the generated `CLAUDE.md` and the standing rules in `IMPLEMENTATION_PLAN`.
+Present the proven defaults (see `references/interview-personas.md` §6) with `AskUserQuestion` and
+let the user confirm or adjust — don't ask each from scratch.
 
 ### Phase 2 — Propose the document set
 
@@ -158,7 +166,58 @@ Do not fabricate specifics the interview didn't establish. Where a real decision
 write it as an open question / `[NEEDS DECISION]` marker with the options surfaced — don't paper
 over a gap with invented detail.
 
-### Phase 4 — Review & handoff
+### Phase 4 — Threat-model & harden (opt-in)
+
+Before handoff, offer to run a threat-modelling pass **against the documents you just generated**
+and proactively harden them. Gate it with `AskUserQuestion` (recommend "yes"):
+
+> *"Want me to threat-model the generated docs and fix the weaknesses directly in them?"* —
+> **Yes (recommended)** / No, hand off as-is.
+
+If yes:
+
+1. **Model adversarially.** Analyze the generated suite the way an attacker and a skeptical
+   security reviewer would. For non-trivial projects, fan this out across subagents, one per
+   dimension, each reading the generated docs and returning concrete findings:
+   - data exposure & authorization gaps (who can read/do what they shouldn't)
+   - tenant/user isolation (cross-account leakage, missing scope keys)
+   - untrusted-input handling (injection incl. prompt injection, SSRF, file/upload abuse, webhooks)
+   - secrets, auth, session, and supply-chain (dependency/actor pinning, token storage)
+   - abuse, cost-bombing, and denial-of-service
+   - privacy & regulatory exposure (retention, erasure, consent, lawful basis)
+   - availability, backup, and recovery gaps
+   Each finding names: the **threat**, the **document/section it affects**, its likelihood/impact,
+   and a **concrete hardening**.
+
+2. **Fix in place — change the design, don't just annotate it.** For every accepted finding, apply
+   the mitigation *directly in the most appropriate document(s)* so the threat is actually
+   addressed, not merely referenced:
+   - add or strengthen a control in `ARCHITECTURE` (controls-by-threat section)
+   - add an `NFR-SEC` requirement **with a verification method**
+   - add or amend an `ADR` if the fix is a real decision/trade-off
+   - add a non-negotiable to `ENGINEERING_DESIGN`, or validation to an `LLD` module
+   - tighten data classification / retention / erasure in `COMPLIANCE`
+   - add a concrete **exit gate** to the relevant phase in `IMPLEMENTATION_PLAN`
+   The rule: **the mitigation must alter the spec the builder follows.** Do *not* "fix" a threat by
+   only appending a line to a risk register that points back at the unmitigated design.
+
+3. **Record for traceability — secondarily.** *After* the design docs are hardened, log each threat
+   in `THREAT_MODEL.md` (`THR-xxx`) and/or the BRD risk register, noting **where it is now
+   mitigated**. If the suite didn't include `THREAT_MODEL.md` but the pass surfaced real threats,
+   propose adding it. Traceability records point *to* the mitigation; they don't replace it.
+
+4. **Residual risk, honestly.** Anything that genuinely can't be fully resolved for v1 becomes an
+   **accepted risk** with a revisit trigger (in `ARCHITECTURE` accepted-risks + BRD `RSK-xxx`), and
+   is called out explicitly to the user — never silently dropped.
+
+5. Re-run the cross-reference/consistency check after editing (new IDs unique, references resolve,
+   CLAUDE.md map still accurate), then summarize what was hardened: threats found, fixes applied
+   (and where), and residual risks accepted.
+
+Scale the depth to the project: a weekend prototype gets a quick single-pass sanity check; a
+platform handling sensitive data gets the full fan-out with adversarial verification of each fix.
+
+### Phase 5 — Review & handoff
 
 1. Run a consistency pass: every cross-reference resolves, every ID is unique, CLAUDE.md's
    document map matches the files on disk, no document contradicts another.

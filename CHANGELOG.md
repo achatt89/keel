@@ -18,5 +18,13 @@ Initial release.
 - 18 reusable document templates (BRD, PRD, ENGINEERING_DESIGN, ARCHITECTURE, HLD, LLD, ADR, NFR,
   DESIGN, COMPLIANCE, THREAT_MODEL, CONNECTOR_SPEC, IMPLEMENTATION_PLAN, COMMANDS, RUNBOOK,
   CLAUDE.md, docs/README, almanac/README).
+- **Ways-of-working interview + generation:** the Delivery/Ops round always covers git-from-commit-
+  one, branch-per-feature, parallel agents in isolated `git worktree`s, and per-chunk/phase doc
+  sync; these answers populate the git/working-workflow in the generated `CLAUDE.md` and the
+  `IMPLEMENTATION_PLAN` standing rules.
+- **Threat-model & harden pass (Phase 4, opt-in):** adversarially threat-models the generated docs
+  and fixes weaknesses *directly in the spec* (controls, `NFR-SEC`, ADRs, exit gates), recording
+  threats in `THREAT_MODEL.md`/risk register only for traceability — never as a substitute for the
+  fix.
 - Claude Code plugin packaging (`plugin.json`) and marketplace manifest (`marketplace.json`) for
   first-class `/plugin install`.

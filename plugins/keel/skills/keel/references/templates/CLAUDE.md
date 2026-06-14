@@ -63,14 +63,16 @@ relevant one *before* touching code.
 
 <!-- Keel guidance: the non-negotiable build loop. Keep it to the cycle below; the
      detailed standing rules live in IMPLEMENTATION_PLAN. Adjust the parallel-work note
-     to the project's reality (solo dev may drop worktrees but keeps branch + tests). -->
+     to the project's reality (a solo dev may drop worktrees but keeps branch + tests +
+     doc-sync). These steps come straight from the founder's ways-of-working answers. -->
 
+0. **Version control from commit one.** If this folder isn't a git repo yet, `git init` it and make an initial commit before any feature work — the docs and scaffolding are the first commit.
 1. **Branch from `main`** before any work (`git checkout -b feat/<task> main`). Never commit to `main` directly.
-2. **Parallelise** independent units of work where it helps {{PARALLEL_NOTE}}.
+2. **Parallelise with worktrees.** Split divisible work into independent units and run them as parallel agents, each in **its own git worktree** (`git worktree add` — one worktree per agent; agents never share a working copy). Merge each worktree back into the feature branch when its unit is done, resolve conflicts there, then remove the worktree. {{PARALLEL_NOTE}}
 3. **Write tests with the code, never after.** Unit tests for logic and edge paths; integration tests for behaviour across modules; smoke tests for wiring. Security/isolation-critical behaviour is *proven by a test*. "No test needed" is a stated judgement, not a default.
 4. **Definition of done per change:** {{DOD_GATES}} (details: {{IMPLEMENTATION_PLAN}} "Standing rules").
 5. **Merge to `main`** only after gates pass.
-6. **Close the loop:** immediately after merge, update **Current status** below, the phase table in `{{IMPLEMENTATION_PLAN}}`, and any doc the work touched (new decisions → `{{ADR}}`; new accepted risks → `{{ARCHITECTURE}}`). The merge isn't done until the docs reflect reality.
+6. **Close the loop after every chunk/phase.** As soon as a unit of work merges, update this file's **Current status**, the phase table in `{{IMPLEMENTATION_PLAN}}`, and any doc the work touched (new decisions → `{{ADR}}`; new accepted risks → `{{ARCHITECTURE}}`; new commands → `{{COMMANDS}}`). The work isn't done until the docs reflect reality — keep documentation and code in lockstep, never batched up for later.
 
 ## Current status
 

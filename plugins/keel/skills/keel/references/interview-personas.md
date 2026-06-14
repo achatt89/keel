@@ -135,15 +135,35 @@ PRD (UX flows), almanac website-copy.
 - **Trust/clarity patterns:** Any moments that need special care — consent, cost-before-spend,
   destructive actions, showing sources/citations, honest loading/error states?
 
-## 6. Delivery / Ops — *build & run* *(include for anything that will be deployed & operated)*
+## 6. Delivery / Ops — *build & run, and how you work* *(include for anything that will be built)*
 
-**Goal:** Establish phasing, environments, deployment, and operability. **Feeds:**
-IMPLEMENTATION_PLAN, COMMANDS, RUNBOOK, NFR (availability/observability).
+**Goal:** Establish phasing, environments, deployment, operability, **and the ways of working**
+that govern how the build is conducted. **Feeds:** IMPLEMENTATION_PLAN, COMMANDS, RUNBOOK, NFR
+(availability/observability), and the git/working-workflow section of CLAUDE.md.
+
+> **Ways of working — always ask these (even for prototypes).** They become the mandatory build
+> loop baked into `CLAUDE.md` and `IMPLEMENTATION_PLAN`'s standing rules. There are strong proven
+> defaults below; present them as the recommendation (use `AskUserQuestion`) and let the user
+> confirm or adjust rather than asking each from scratch.
+>
+> - **Git from commit one:** Should Keel `git init` the project folder (if it isn't already a repo)
+>   and make the generated docs the first commit? *(Default: yes — version control from the start.)*
+> - **Feature branching:** Branch from `main` per feature/task, never commit directly to `main`,
+>   merge back only when the definition of done is green? *(Default: yes.)*
+> - **Parallel agents via worktrees:** When work is divisible, run it as parallel agents each in
+>   **its own `git worktree`** (one per agent, never a shared working copy), merging each back to
+>   the feature branch? *(Default: yes, whenever the work can be split.)*
+> - **Documentation in lockstep:** After *each chunk/phase* of work, auto-update `CLAUDE.md`
+>   (current status), the `IMPLEMENTATION_PLAN` phase table, and any doc the change touched (ADRs,
+>   README index, RUNBOOK) — so docs never lag code? *(Default: yes — a merge isn't done until the
+>   docs reflect reality.)*
+> - **Definition of done:** What gates must be green before any change merges (lint + custom
+>   security lint, unit + integration tests, isolation/critical suite, dependency audit)?
+> - **Solo vs team:** Solo, small team, or with Claude Code agents? (A solo dev may skip worktrees
+>   but still keeps branch-per-feature, tests-with-code, and doc-sync.)
 
 - **Phasing:** What's the natural build order? What must exist before anything else is safe to
   build (foundations, guardrails)? What are the phase boundaries and exit criteria?
-- **Team & cadence:** Who's building (solo, small team, with Claude Code)? Any parallel work
-  streams? How do you want to track progress?
 - **Environments:** Local / staging / production? How does a developer run it locally? What's the
   minimal dev setup?
 - **Deploy:** Where does it run (which host/platform)? How does code get to production — CI/CD,

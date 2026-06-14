@@ -50,7 +50,7 @@ Phases 0–{{N}} deliver {{v1 / the launchable line}}. Phase {{N+1}} is {{the po
 <!-- Keel guidance: git workflow, tests-with-code, post-merge doc sync, definition-of-done.
      These mirror CLAUDE.md — state them once here as the home, reference elsewhere. -->
 
-- **Git workflow:** every feature starts on a fresh branch cut from the trunk; divisible work runs as parallel agents in separate worktrees; worktrees merge back to the feature branch; commit there with gates green; only then merge to trunk. No direct commits to trunk.
+- **Git workflow:** the project is a git repo from commit one (`git init` + an initial commit before Phase 0 work, if it isn't already). Every feature starts on a fresh branch cut from the trunk; divisible work runs as parallel agents in separate `git worktree`s (one per agent, never shared); worktrees merge back to the feature branch; commit there with gates green; only then merge to trunk. No direct commits to trunk.
 - **Tests ship with the code:** every unit of work carries the tests its risk demands — unit for pure logic/edge paths, integration for cross-module behaviour, smoke for wiring. Security- and isolation-critical behaviour is **proven by a test**, never asserted in prose. "No test was necessary" is a stated judgement, not a default.
 - **Post-merge doc sync:** immediately after a merge, update the Phase status table above, the current-status line in CLAUDE.md, and any docs the work touched (ADRs, README index, RUNBOOK). A merge is incomplete until docs reflect reality.
 - **Definition of done per PR:** {{lint green (incl. custom security rules) · unit + integration tests green · isolation/critical suite green · `npm audit` (or equivalent) clean}}.
