@@ -1,0 +1,32 @@
+{
+  "name": "keel",
+  "owner": {
+    "name": "Abhijit Chatterjee",
+    "email": "admin@thelogicatelier.com",
+    "url": "https://github.com/achatt89"
+  },
+  "metadata": {
+    "description": "Keel — lay the foundational documentation suite for a greenfield software project through a guided, multi-persona interview.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "keel",
+      "source": "./plugins/keel",
+      "description": "Interview the founder about a new project idea, then generate the right set of foundational docs (CLAUDE.md, BRD, PRD, ARCHITECTURE, LLD, ADR, NFR, and more) ready to build from with Claude Code.",
+      "version": "0.1.0",
+      "author": { "name": "Abhijit Chatterjee" },
+      "keywords": [
+        "documentation",
+        "greenfield",
+        "scaffolding",
+        "brd",
+        "prd",
+        "architecture",
+        "adr",
+        "interview",
+        "project-kickoff"
+      ]
+    }
+  ]
+}
