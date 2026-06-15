@@ -11,7 +11,7 @@ description: >
   or "generate documentation to build a new project with Claude Code". This is for NEW projects
   defined from an idea — not for documenting an existing codebase.
 metadata:
-  version: 0.1.0
+  version: 0.2.0
 license: MIT
 ---
 
@@ -66,6 +66,14 @@ The output is optimized to be handed to Claude Code as the source of truth for t
 Run these phases in order. Do not skip ahead to generation. Announce each phase briefly so the
 user knows where they are.
 
+> **Load the reference files — do not work from memory.** The detail that makes Keel good lives in
+> `references/` (the persona question banks, the document catalog, the conventions), *next to this
+> SKILL.md*. Read the relevant reference with the **Read tool** at the start of each phase. If a
+> relative path doesn't resolve, locate the skill directory first — e.g. find this file's folder
+> (`Glob`/`Bash` for `interview-personas.md` or `document-catalog.md`) and read it by absolute
+> path. The reference files are the source of truth; never substitute your own recollection of
+> them, and tell the user which reference you're working from.
+
 ### Phase 0 — Intake & framing
 
 1. Ask the user for their idea in their own words, and for any material they already have (a
@@ -73,12 +81,13 @@ user knows where they are.
 2. Reflect the idea back in 2–4 sentences: the problem, who has it, and the shape of the solution
    as you understand it. Confirm or correct before going further.
 3. Establish the **ambition tier** early, because it drives both interview depth and doc scope.
-   Offer the user a quick read and let them confirm:
+   Give your read, then **confirm it with the user via `AskUserQuestion`** — don't just assert it
+   and move on (a misjudged tier mis-scopes the whole suite):
    - **Prototype / weekend** — validate an idea, throwaway-ok, single user or tiny audience.
    - **Product / MVP** — real users, will be maintained, money or reputation on the line.
    - **Platform / regulated** — multi-tenant, personal/financial/health data, compliance, scale,
      a team building it.
-   Use `AskUserQuestion` here when it helps the user choose crisply.
+   Present your recommended tier as the first option so the user can confirm in one tap or correct.
 
 ### Phase 1 — The multi-persona interview
 
@@ -99,6 +108,18 @@ Rules for the interview:
   Platform needs the full panel including Security/Compliance and Operations.
 - **Challenge and synthesize.** Reflect contradictions back. Name assumptions out loud. When a
   round is done, summarize what you heard in a few bullets and get a thumbs-up before moving on.
+- **Recommend inline; don't punt.** When a question has an expert answer (a tool choice, a vendor,
+  a default), give your recommendation *with* the question rather than asking open-endedly and
+  waiting — "I'd use X here because Y; agree?" saves a round-trip and is what the founder wants.
+- **Stress-test against the real world.** Pressure-test the founder's plan against constraints they
+  may not have hit yet: platform ToS / API limits (e.g. you can't intercept LinkedIn Easy Apply),
+  **adoption friction** ("will a busy user actually do this extra step? if not, the MVP fails"),
+  cost, and data-flow feasibility. Surfacing these *now* is the highest-value thing the interview
+  does — catch them here, not mid-build.
+- **Ask where the data/supply comes from — early.** For any product that ingests or matches data
+  (marketplaces, aggregators, RAG, pipelines): "on day 1, where does the input actually come
+  from?" is a Product-Manager-round *opening* question, not an afterthought. It shapes the whole
+  architecture and is cheap to get wrong late.
 
 The persona panel (detail and questions in `references/interview-personas.md`):
 
@@ -115,6 +136,16 @@ You decide which personas the project warrants and in what depth — that decisi
 interview. Always run Business Analyst + Product Manager + Architect. Add Security/Compliance for
 anything holding user data; Designer for anything with a UI; Delivery/Ops for anything that will
 actually be built.
+
+**Run each warranted persona as a named, explicit round — don't let one get inferred from
+context.** In practice the **Designer** and **Delivery/Ops** rounds are the ones most often skipped
+by accident: run them as their own announced rounds (even if brief). For Designer, ask about
+experience and brand direction *early* — founders often have a brand story or visual direction in
+mind, and surfacing it up front (rather than letting it arrive late and organically) shapes DESIGN
+and the product copy. For Security/Compliance on any data-holding product, go deeper than a couple
+of questions: **data residency / cross-border transfer** (where it's hosted vs. where the users and
+their data legally sit), recordings/biometrics, and the *specific* regime (GDPR, UK-GDPR, UAE PDPL,
+CCPA, HIPAA…) all deserve real probing.
 
 **Always cover ways of working** (in the Delivery/Ops round, even for prototypes): whether to
 `git init` the folder, branch-per-feature off `main`, run divisible work as parallel agents in

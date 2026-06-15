@@ -46,6 +46,12 @@ winning looks like. **Feeds:** BRD, parts of PRD, almanac positioning/GTM.
   existing systems to integrate, a cost ceiling?
 - **Risks:** What's most likely to kill this — market, technical, legal, execution? What are you
   knowingly betting on being true (assumptions)?
+- **The riskiest assumption:** What's the single belief that, if false, sinks the whole thing? Don't
+  ask this cold — founders answer "not sure." Instead, *name two or three candidate assumptions
+  yourself* (drawn from what they've told you) and ask which they're least certain of — offer them
+  via `AskUserQuestion`. E.g. for an AI-matching product: *(a)* the AI is accurate enough to be
+  trusted over human judgment, *(b)* enough supply/demand shows up, *(c)* users will change their
+  workflow to adopt it. Then make the chosen one the primary hypothesis to falsify in the beta.
 - **Scope edge:** What is explicitly *not* part of this, at least for v1?
 
 ## 2. Product Manager — *the users & the cut*
@@ -53,6 +59,13 @@ winning looks like. **Feeds:** BRD, parts of PRD, almanac positioning/GTM.
 **Goal:** Turn the problem into concrete users, journeys, and a defensible MVP boundary.
 **Feeds:** PRD, DESIGN (personas/flows), IMPLEMENTATION_PLAN scope.
 
+- **Where the input comes from (ask this FIRST for any data/matching product):** On day 1, where
+  does the actual data/supply enter the system — uploads, an integration, scraping, a form, an
+  existing dataset? For marketplaces, name *each* side's source. This is the question most often
+  probed too late; it shapes the whole architecture and is expensive to discover during the build.
+- **Adoption friction:** What does the user have to *do differently* to get value, and will a busy
+  user actually do it? If a step adds real work, the MVP fails on human laziness regardless of how
+  good the AI is — find the lowest-friction path (a one-minute form beats a workflow change).
 - **Personas:** Who are the 2–3 primary user personas? For each: their goal, their context, their
   sophistication, what success feels like *to them*.
 - **Jobs & journeys:** Walk me through the single most important user journey end to end — from
@@ -106,8 +119,16 @@ ENGINEERING_DESIGN, ARCHITECTURE, HLD, LLD, ADR, parts of NFR.
   must isolation be, and what's the blast radius of a cross-tenant leak?
 - **Auth & access:** How do users authenticate? What roles/permissions exist? Who can see/do what?
   Any admin/superuser powers, and how are they constrained and audited?
-- **Regulatory exposure:** Any regime in play — GDPR, CCPA, HIPAA, PCI, SOC2, age-gating? Which
-  jurisdictions/users? What rights must you honor (access, export, erasure, consent)?
+- **Regulatory exposure:** Any regime in play — GDPR, UK-GDPR, **UAE/KSA PDPL**, CCPA, HIPAA, PCI,
+  SOC2, age-gating? Which jurisdictions/users? What rights must you honor (access, export, erasure,
+  consent)? Don't stop at "GDPR" — name the *specific* regime for the launch geography.
+- **Data residency & cross-border transfer:** Where does the data legally need to live, and where
+  will it actually be hosted? A UAE/EU user base on US-region infra (or a US PaaS like Railway/Fly)
+  can trigger cross-border-transfer obligations under PDPL/GDPR. If on-prem / region-pinned hosting
+  is a real requirement, surface it now — it's an architecture constraint, not a setting.
+- **Recordings & biometrics:** Does the product capture voice, video, or biometric data (e.g. AI
+  voice interviews)? These are special-category data in most regimes — consent, disclosure ("you're
+  speaking to an AI"), and retention need explicit answers.
 - **Trust boundaries:** Where does untrusted input enter (user uploads, URLs, webhooks, LLM
   output)? What validation guards each boundary?
 - **Threats:** What's the attacker's prize? Top threats — data exfiltration, injection (incl.
@@ -122,6 +143,13 @@ ENGINEERING_DESIGN, ARCHITECTURE, HLD, LLD, ADR, parts of NFR.
 **Goal:** Establish surfaces, key flows, brand feel, and accessibility floor. **Feeds:** DESIGN,
 PRD (UX flows), almanac website-copy.
 
+> **Run this round early, not last.** Lead with the brand/experience question below — founders
+> frequently have a brand story, name rationale, or visual direction already in mind, and pulling
+> it out up front lets it shape DESIGN and the product copy instead of arriving late and organically.
+
+- **Brand & experience direction (ask early):** Is there a brand story, name meaning, or visual
+  direction in mind already? Share whatever exists — even a paragraph or a few adjectives and
+  colors. *(If the founder has a brand doc, read it and reflect it back.)*
 - **Surfaces:** What interfaces exist — web app, mobile, browser extension, CLI, API, voice? Which
   is primary for v1?
 - **Design language:** Three adjectives for how it should feel. Any brand that exists (name,
@@ -185,5 +213,13 @@ that govern how the build is conducted. **Feeds:** IMPLEMENTATION_PLAN, COMMANDS
   shaky or a scope is unrealistic, push back — that's the value.
 - **The over-scoper:** dragging a weekend prototype through a four-persona compliance interview.
   Match depth to tier.
+- **The memory-worker:** running the interview from your own recollection instead of reading these
+  question banks. Load the reference file for each round — the detail here is the source of truth.
+- **The silent-tier-setter:** asserting the ambition tier and moving on. Confirm it with the user;
+  it scopes the entire suite.
+- **The skipped round:** letting Designer or Delivery/Ops get "inferred from context." Run every
+  warranted persona as its own announced round.
+- **The late data-origin:** discovering only in round 3 where the data/supply actually comes from.
+  Ask it in the Product Manager opener for anything that ingests or matches data.
 - **Premature generation:** writing docs before you can describe the product, its users, its shape,
   and its risks without guessing. If you're guessing, ask another question.

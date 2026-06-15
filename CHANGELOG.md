@@ -3,6 +3,28 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [0.2.0] — 2026-06-15
+
+Improvements distilled from the first real Keel run (the Ospraye interview). Each change addresses
+a specific observation from that session.
+
+### Changed
+- **Load references, don't work from memory.** SKILL.md now instructs reading the `references/`
+  files (persona banks, catalog, conventions) with the Read tool at each phase, with a fallback to
+  locate the skill directory by filename if a relative path doesn't resolve.
+- **Confirm the ambition tier** with `AskUserQuestion` instead of asserting it (it scopes the suite).
+- **Named rounds, not inferred.** Designer and Delivery/Ops must each run as their own announced
+  round; the Designer brand/experience question moves to the *front* of that round.
+- **Deeper Security/Compliance:** added data-residency / cross-border-transfer probing, recordings
+  & biometrics, and the specific-regime prompt (GDPR / UK-GDPR / UAE-KSA PDPL / CCPA / HIPAA …).
+- **Product Manager opens with "where does the data/supply come from on day 1?"** plus an explicit
+  adoption-friction question (the MVP-fails-on-human-laziness check).
+- **Riskiest-assumption question reframed** to offer 2–3 candidate assumptions via `AskUserQuestion`
+  rather than asking cold (which yields "not sure").
+- New interview rules: **recommend inline** rather than punting, and **stress-test against real-world
+  constraints** (platform ToS/API limits, adoption friction, data-flow feasibility) early.
+- COMPLIANCE template gains a **Data residency & cross-border transfer** section.
+
 ## [0.1.0] — 2026-06-14
 
 Initial release.

@@ -1,7 +1,7 @@
 {
   "name": "keel",
   "description": "Lay the keel of a greenfield project: interview the founder, then generate a tailored, cross-referenced foundational documentation suite to build from with Claude Code.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "Abhijit Chatterjee",
     "email": "admin@thelogicatelier.com",

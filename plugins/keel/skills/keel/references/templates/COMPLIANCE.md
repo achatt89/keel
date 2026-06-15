@@ -158,6 +158,24 @@ Subprocessor changes require a COMPLIANCE.md update and {{customer notice}}.
 
 ---
 
+## 7a. Data residency & cross-border transfer
+
+<!-- Keel guidance: include whenever users' data is legally tied to a jurisdiction (GDPR/UK-GDPR/
+     UAE-KSA PDPL/etc.) but the infra may sit elsewhere. State where each data class is hosted vs.
+     where the data subjects are, name any transfer that crosses a border, and the legal basis /
+     safeguard for it. If region-pinned or on-prem hosting is a hard requirement, say so — it's an
+     architecture constraint (ARCHITECTURE.md), not a config flag. Omit this section if all data,
+     users, and infra sit in one jurisdiction. -->
+
+| Data class | Stored region | Data-subject region | Crosses a border? | Legal basis / safeguard |
+|------------|---------------|---------------------|-------------------|-------------------------|
+| {{C1 content}} | {{region}} | {{region}} | {{yes/no}} | {{SCCs / adequacy / in-region pinning / N-A}} |
+| {{recordings/biometrics}} | {{region}} | {{region}} | {{yes/no}} | {{explicit consent + safeguard}} |
+
+- **Residency requirement:** {{region-pinned / on-prem option / none}} — {{driver: PDPL/GDPR/customer demand; see ARCHITECTURE.md}}.
+
+---
+
 ## 8. Breach response
 
 <!-- Keel guidance: detection inputs, the playbook pointer (RUNBOOK.md), the notification
