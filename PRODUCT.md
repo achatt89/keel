@@ -20,4 +20,4 @@ The documentation website for keel itself. URL: https://achatt89.github.io/keel/
 This is a brand documentation site — register: brand.
 
 ## Design direction
-Clean, minimal, professional documentation. Dark navy sidebar (#0f172a), white content area, sky-blue accent (#0ea5e9). Maritime/nautical metaphor (keel = first structural member). Typography-forward, Inter font. NO gradient text, NO glassmorphism, NO AI slop patterns. The page should feel like a well-engineered tool, not a startup landing page.
+Clean, minimal, professional documentation. Dark navy sidebar (#0f172a), white content area, sky-blue accent (#0ea5e9). Maritime/nautical metaphor (keel = first structural member). Typography-forward. Barlow (headings + logo) paired with Mulish (body). NO gradient text, NO glassmorphism, NO AI slop patterns. The page should feel like a well-engineered tool, not a startup landing page.
