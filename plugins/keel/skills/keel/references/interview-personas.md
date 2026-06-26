@@ -162,6 +162,15 @@ PRD (UX flows), almanac website-copy.
   otherwise)? Which devices/breakpoints matter? Desktop-first or mobile-first?
 - **Trust/clarity patterns:** Any moments that need special care — consent, cost-before-spend,
   destructive actions, showing sources/citations, honest loading/error states?
+- **FE skill integration (ask for UI projects):** Do you want **impeccable** (visual quality gates
+  — a11y, anti-pattern detection, FE audit) and **modern-web-guidance** (modern web platform
+  patterns — avoids obsolete APIs, surfaces current CSS/JS/HTML standards) set up as PostToolUse
+  hooks in this project? They fire automatically when UI files are edited. Impeccable catches
+  design/accessibility issues; modern-web-guidance keeps patterns current. Use `AskUserQuestion`:
+  **Yes, set both up (recommended)** / modern-web-guidance only / Skip.
+  *(Default yes for Product/MVP+ with a UI; optional for prototypes.)*
+  Note in your synthesis: if the user says yes, this opts-in to generating `PRODUCT.md`,
+  `.claude/hooks/modern-web-guidance-hook.mjs`, and `.claude/settings.json` in Phase 3.
 
 ## 6. Delivery / Ops — *build & run, and how you work* *(include for anything that will be built)*
 
