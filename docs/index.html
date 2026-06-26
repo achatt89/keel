@@ -286,6 +286,10 @@
         <h2>Update</h2>
         <pre><code>/plugin marketplace update thelogicatelier
 /plugin install keel@thelogicatelier</code></pre>
+        <p>
+          <code>marketplace update</code> fetches the latest manifest from GitHub and refreshes the local cache.
+          <code>plugin install</code> alone reads from that cache — running it without the update step first will reinstall the version Claude Code already knows about, not the latest one.
+        </p>
 
         <h2>Uninstall</h2>
         <pre><code>/plugin uninstall keel@thelogicatelier</code></pre>
