@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/skills/impeccable/scripts/hook.mjs"
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/modern-web-guidance-hook.mjs"
+          }
+        ]
+      }
+    ]
+  }
+}
