@@ -263,4 +263,103 @@ Verified contrast (fill once hex chosen):
 
 ---
 
+## 12. Skill Integration
+
+<!-- Keel guidance: include when the project has a UI and skills integration was opted-in
+     during the Designer round. These tools provide ongoing quality gates throughout the build.
+     Every impeccable command and every modern-web-guidance function is lifecycle-mapped below.
+     Use the command table to know WHEN to reach for each. Remove this section entirely if no
+     UI or if the user skipped skills integration. -->
+
+### 12.1 impeccable — visual quality gates (all commands, lifecycle-mapped)
+
+**Register:** `{{brand|product}}` — see `PRODUCT.md`. *(brand = landing / marketing / portfolio — design IS the product. product = app UI / dashboard / admin / tool — design SERVES the product.)*
+
+**Hook (automatic):** activate once with `/impeccable hooks on` in Claude Code after skill install. Fires after every UI file edit — surfaces design and a11y findings as system reminders without any manual invocation. Disable: `/impeccable hooks off`. Status: `/impeccable hooks status`.
+
+**Full command map — use these at the specified lifecycle moment:**
+
+| Lifecycle moment | Command | What it does |
+|---|---|---|
+| **Project setup (Phase 0)** | `/impeccable init` | Establish `PRODUCT.md`, `DESIGN.md`, live config, and next-step recommendations. Run once at project start. |
+| **Before building any UI feature** | `/impeccable shape {{feature}}` | Plan UX/UI — document flow, key states, component contracts — before writing code. Non-optional for non-trivial features. |
+| **Building a feature end-to-end** | `/impeccable craft {{feature}}` | Shape then build: full UX-to-implementation cycle with quality baked in. Use for features too large for ad-hoc building. |
+| **Existing UI code, no design system** | `/impeccable document` | Reverse-engineer a `DESIGN.md` from existing code. Use when joining a project or after a rapid prototype phase. |
+| **Patterns repeating across components** | `/impeccable extract {{target}}` | Pull reusable tokens and components into a design system. Run once enough components exist to see the pattern. |
+| **After feature is functionally complete** | `/impeccable critique {{target}}` | UX heuristic review: information architecture, cognitive load, copy, flows, trust patterns. **Phase exit gate — run before merge.** |
+| **Technical quality check (required gate)** | `/impeccable audit {{target}}` | Systematic checks: a11y (WCAG AA), performance, responsive, theming, anti-patterns. **Hard phase exit gate: no P0 or P1 findings before merge.** |
+| **Design reads as bland or safe** | `/impeccable bolder {{target}}` | Amplify — more visual conviction, more identity, more signal. Use when `critique` flags "too neutral" or "too generic". |
+| **Design is too loud or busy** | `/impeccable quieter {{target}}` | Reduce noise — surface hierarchy, add breathing room. Use when `critique` flags "too stimulating". |
+| **UI has accumulated unnecessary complexity** | `/impeccable distill {{target}}` | Strip to essence — remove anything that doesn't earn its place. Use at end of any build sprint. |
+| **Typography lacks hierarchy** | `/impeccable typeset {{target}}` | Fix type scale, line heights, letter spacing, weight contrast, readability. Run whenever heading hierarchy is unclear. |
+| **Palette too flat or neutral** | `/impeccable colorize {{target}}` | Add strategic colour — one deliberate, purposeful addition. Not a palette dump. |
+| **Layout or spacing feels off** | `/impeccable layout {{target}}` | Fix spacing rhythm, visual hierarchy, whitespace, alignment. Run when critique flags "things don't land". |
+| **Time to add personality** | `/impeccable delight {{target}}` | Add memorable micro-interactions, motion, copy moments. Run after functional completeness — never before. |
+| **Feature warrants extraordinary craft** | `/impeccable overdrive {{target}}` | Push past conventional limits — technically extraordinary visual effects. Use selectively for premium or hero moments. |
+| **Adding intentional motion** | `/impeccable animate {{target}}` | Add purposeful animation — reveal, transition, feedback. Always with `prefers-reduced-motion`. Run after core UI is stable. |
+| **UX copy needs work** | `/impeccable clarify {{target}}` | Improve labels, empty state copy, error messages, onboarding text. Run on any user-visible string pass. |
+| **Error states / i18n / edge cases** | `/impeccable harden {{target}}` | Make production-ready: all states covered (empty, loading, error, partial), i18n, edge cases. Pre-launch gate. |
+| **First-run / empty states / activation** | `/impeccable onboard {{target}}` | Design first-run flows, empty states, activation moments. Run when onboarding/activation features are built. |
+| **Responsive or multi-device issues** | `/impeccable adapt {{target}}` | Fix breakpoints, touch targets (≥44px), horizontal overflow, text scaling. Run as mobile QA pass. |
+| **UI performance problems** | `/impeccable optimize {{target}}` | Diagnose and fix layout thrash, expensive animations, bundle bloat, missing lazy loading. |
+| **Final pass before any release** | `/impeccable polish {{target}}` | Comprehensive quality pass — a11y, perf, tokens, anti-patterns, copy, responsiveness. **Pre-launch hard gate.** |
+| **Active visual iteration in browser** | `/impeccable live` | Pick elements in the browser and generate visual alternatives in real time. Use during fast design iteration. |
+| **Suppress an intentional finding** | `/impeccable hooks ignore-value {{rule}} {{value}} --shared --reason "..."  ` | Record a known intentional deviation. Never suppress without the user explicitly confirming. |
+
+**Quality protocol — mandatory sequence per UI feature:**
+
+1. `shape` — plan before coding
+2. Build → tests alongside code (hook fires automatically on each edit)
+3. `critique` — UX review when complete
+4. `audit` — technical pass; no P0/P1 before merge
+5. `polish` — final pass before shipping to users
+
+**Pre-launch hardening sequence (final phase, all required):**
+
+`harden` → `adapt` → `optimize` → `onboard` → `animate` → `polish` → merge.
+
+**Zero-tolerance anti-patterns (auto-detected by hook, PR-blocking):**
+Gradient text (`background-clip: text`) · glassmorphism as default · hero-metric template (big number + small label) · identical card grids (icon + heading + body, repeated) · side-stripe borders (>1px coloured left/right border on cards) · tiny uppercase tracked eyebrows above every section · numbered section scaffolding (01/02/03 on every section) · text overflowing its container.
+
+---
+
+### 12.2 modern-web-guidance — modern web platform patterns (all three functions)
+
+**Trigger (automatic):** `.claude/hooks/modern-web-guidance-hook.mjs` fires after every FE file edit (`.html`, `.css`, `.js`, `.ts`, `.tsx`, `.jsx`, `.vue`, `.svelte`, `.astro`, `.scss`) and reminds to check before implementing new UI patterns.
+
+**Three functions — use all three in sequence:**
+
+| Step | Function | When | Command |
+|---|---|---|---|
+| 1 | `search` | **Before implementing any new UI pattern** — find if a modern native approach exists | `npx -y modern-web-guidance@latest search "<action-oriented query>"` |
+| 2 | `retrieve` | After search returns a relevant ID — get the full implementation guide and code | `npx -y modern-web-guidance@latest retrieve "<id>"` *(comma-separate multiple IDs)* |
+| 3 | `list` | When search returns vague or no results — browse all guides by category | `npx -y modern-web-guidance@latest list` |
+
+**How to query (always action-oriented — describe WHAT you want to achieve, not the technology):**
+
+| Intent | Query |
+|---|---|
+| Add a modal dialog | `"add a modal dialog"` → native `<dialog>` guide |
+| Animate on scroll | `"animate elements when they scroll into view"` → Scroll-driven animations |
+| Popover / tooltip | `"create a tooltip or popover"` → Popover API |
+| Optimise LCP image | `"optimise loading priority of hero image"` → Fetch Priority / preload |
+| Form with autofill | `"build a sign-in or sign-up form with autofill"` → Autofill guides |
+| Page transitions | `"animate between pages or views"` → View Transitions API |
+| Responsive without breakpoints | `"responsive layout without media queries"` → Container Queries |
+| Style based on child | `"style parent based on child state"` → `:has()` selector guide |
+| Lazy load off-screen content | `"defer rendering of off-screen sections"` → `content-visibility` guide |
+| Custom select | `"style a custom select menu"` → Styled select guide |
+| Anchor tooltip | `"position a tooltip relative to its anchor"` → CSS Anchor Positioning |
+
+**Mandatory trigger points — always search before implementing:**
+Modals or dialogs · popovers or tooltips · scroll-triggered animations · parallax · page/view transitions · form autofill · image loading priority · CSS-only responsive grids · custom selects or pickers · backdrop filters or glassmorphism effects · anchor positioning · `content-visibility` deferral · any "I'd normally reach for a library for this" moment.
+
+**Browser support policy for this project:**
+`{{BROWSER_SUPPORT_POLICY}}`
+*(Fill from the Delivery/Ops round. Example: "Baseline Widely Available only; no polyfills; degrade gracefully." State once here — future agents never need to re-ask. This is the standing policy for all UI work.)*
+
+**Key categories relevant to this project:** `{{CSS | forms | performance | scroll-motion | privacy | security — select by surface type}}`
+
+---
+
 *End of DESIGN.md — {{PROJECT_NAME}}*
