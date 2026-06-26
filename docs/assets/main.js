@@ -110,18 +110,20 @@
   ---------------------------------------------------------- */
   function openMobileSidebar() {
     document.body.classList.add('sidebar-open');
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar) sidebar.setAttribute('aria-expanded', 'true');
     const btn = document.getElementById('hamburger-btn');
-    if (btn) btn.setAttribute('aria-label', 'Close navigation menu');
+    if (btn) {
+      btn.setAttribute('aria-expanded', 'true');
+      btn.setAttribute('aria-label', 'Close navigation menu');
+    }
   }
 
   function closeMobileSidebar() {
     document.body.classList.remove('sidebar-open');
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar) sidebar.setAttribute('aria-expanded', 'false');
     const btn = document.getElementById('hamburger-btn');
-    if (btn) btn.setAttribute('aria-label', 'Open navigation menu');
+    if (btn) {
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Open navigation menu');
+    }
   }
 
   function toggleMobileSidebar() {

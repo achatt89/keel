@@ -69,7 +69,7 @@
     <nav class="sidebar" id="sidebar" aria-label="Documentation navigation">
 
       <div class="nav-group">
-        <span class="nav-group-label">Introduction</span>
+        <span class="nav-group-label" role="heading" aria-level="2">Introduction</span>
         <ul class="nav-list" role="list">
           <li>
             <a href="#what-is-keel" class="nav-link nav-link-child">What is Keel?</a>
@@ -84,7 +84,7 @@
       </div>
 
       <div class="nav-group">
-        <span class="nav-group-label">Getting Started</span>
+        <span class="nav-group-label" role="heading" aria-level="2">Getting Started</span>
         <ul class="nav-list" role="list">
           <li>
             <a href="#prerequisites" class="nav-link nav-link-child">Prerequisites</a>
@@ -102,7 +102,7 @@
       </div>
 
       <div class="nav-group">
-        <span class="nav-group-label">How It Works</span>
+        <span class="nav-group-label" role="heading" aria-level="2">How It Works</span>
         <ul class="nav-list" role="list">
           <li>
             <a href="#the-interview" class="nav-link nav-link-child">The Interview</a>
@@ -120,7 +120,7 @@
       </div>
 
       <div class="nav-group">
-        <span class="nav-group-label">Document Reference</span>
+        <span class="nav-group-label" role="heading" aria-level="2">Document Reference</span>
         <ul class="nav-list" role="list">
           <li>
             <a href="#full-catalog" class="nav-link nav-link-child">The Full Catalog</a>
@@ -129,7 +129,7 @@
       </div>
 
       <div class="nav-group">
-        <span class="nav-group-label">Project</span>
+        <span class="nav-group-label" role="heading" aria-level="2">Project</span>
         <ul class="nav-list" role="list">
           <li>
             <a href="#contributing" class="nav-link nav-link-child">Contributing</a>
@@ -145,8 +145,8 @@
       <!-- ====================================================
            Introduction — What is Keel?
       ==================================================== -->
-      <article class="content-section" id="section-what-is-keel">
-        <h1>What is Keel?</h1>
+      <article class="content-section active" id="section-what-is-keel" aria-labelledby="heading-what-is-keel">
+        <h1 id="heading-what-is-keel">What is Keel?</h1>
         <p class="lead">
           In shipbuilding, the keel is the first structural member laid down — every other part of the vessel attaches to it. These documents are that keel for a software project: the load-bearing spec that you (working with Claude Code) construct the actual product from.
         </p>
@@ -169,8 +169,8 @@
       <!-- ====================================================
            Introduction — Why Keel?
       ==================================================== -->
-      <article class="content-section" id="section-why-keel">
-        <h1>Why Keel?</h1>
+      <article class="content-section" id="section-why-keel" aria-labelledby="heading-why-keel">
+        <h1 id="heading-why-keel">Why Keel?</h1>
         <p class="lead">
           Most documentation tools either dump a template on you, or generate docs from a one-line description. Keel does neither.
         </p>
@@ -215,8 +215,8 @@
       <!-- ====================================================
            Introduction — Quick Start
       ==================================================== -->
-      <article class="content-section" id="section-quick-start">
-        <h1>Quick Start</h1>
+      <article class="content-section" id="section-quick-start" aria-labelledby="heading-quick-start">
+        <h1 id="heading-quick-start">Quick Start</h1>
         <p class="lead">Two commands and you're ready to lay the keel of any new project.</p>
 
         <h2>Install via plugin marketplace</h2>
@@ -246,8 +246,8 @@
       <!-- ====================================================
            Getting Started — Prerequisites
       ==================================================== -->
-      <article class="content-section" id="section-prerequisites">
-        <h1>Prerequisites</h1>
+      <article class="content-section" id="section-prerequisites" aria-labelledby="heading-prerequisites">
+        <h1 id="heading-prerequisites">Prerequisites</h1>
         <p class="lead">Before installing Keel, make sure the following are available in your environment.</p>
 
         <ul>
@@ -274,8 +274,8 @@
       <!-- ====================================================
            Getting Started — Plugin Install
       ==================================================== -->
-      <article class="content-section" id="section-plugin-install">
-        <h1>Plugin Install</h1>
+      <article class="content-section" id="section-plugin-install" aria-labelledby="heading-plugin-install">
+        <h1 id="heading-plugin-install">Plugin Install</h1>
         <p class="lead">Method A — recommended for most users. The plugin marketplace handles installation, updates, and uninstallation.</p>
 
         <h2>Install</h2>
@@ -298,8 +298,8 @@
       <!-- ====================================================
            Getting Started — Personal Skill Install
       ==================================================== -->
-      <article class="content-section" id="section-personal-skill">
-        <h1>Personal Skill Install</h1>
+      <article class="content-section" id="section-personal-skill" aria-labelledby="heading-personal-skill">
+        <h1 id="heading-personal-skill">Personal Skill Install</h1>
         <p class="lead">Method B — install directly from the repository. A symlink keeps the skill updated when you pull.</p>
 
         <h2>User-global install (symlink)</h2>
@@ -334,8 +334,8 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
       <!-- ====================================================
            Getting Started — Verify & First Run
       ==================================================== -->
-      <article class="content-section" id="section-verify-first-run">
-        <h1>Verify &amp; First Run</h1>
+      <article class="content-section" id="section-verify-first-run" aria-labelledby="heading-verify-first-run">
+        <h1 id="heading-verify-first-run">Verify &amp; First Run</h1>
 
         <h2>Verify installation</h2>
         <p>
@@ -369,8 +369,8 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
       <!-- ====================================================
            How It Works — The Interview
       ==================================================== -->
-      <article class="content-section" id="section-the-interview">
-        <h1>The Interview</h1>
+      <article class="content-section" id="section-the-interview" aria-labelledby="heading-the-interview">
+        <h1 id="heading-the-interview">The Interview</h1>
         <p class="lead">
           Keel conducts a staged multi-persona interview before writing a single document. Each persona adapts every question to what was just said — it challenges weak assumptions instead of transcribing them.
         </p>
@@ -414,8 +414,8 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
       <!-- ====================================================
            How It Works — Document Tailoring
       ==================================================== -->
-      <article class="content-section" id="section-document-tailoring">
-        <h1>Document Tailoring</h1>
+      <article class="content-section" id="section-document-tailoring" aria-labelledby="heading-document-tailoring">
+        <h1 id="heading-document-tailoring">Document Tailoring</h1>
         <p class="lead">
           Keel does not stamp out the same fifteen files every time. It proposes a doc set matched to your project's real complexity.
         </p>
@@ -449,8 +449,8 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
       <!-- ====================================================
            How It Works — Threat Modeling
       ==================================================== -->
-      <article class="content-section" id="section-threat-modeling">
-        <h1>Threat Modeling</h1>
+      <article class="content-section" id="section-threat-modeling" aria-labelledby="heading-threat-modeling">
+        <h1 id="heading-threat-modeling">Threat Modeling</h1>
         <p class="lead">
           After generating the doc suite, Keel offers an opt-in threat-modeling pass that hardens the spec before any code is written.
         </p>
@@ -480,8 +480,8 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
       <!-- ====================================================
            How It Works — Handoff
       ==================================================== -->
-      <article class="content-section" id="section-handoff">
-        <h1>Handoff</h1>
+      <article class="content-section" id="section-handoff" aria-labelledby="heading-handoff">
+        <h1 id="heading-handoff">Handoff</h1>
         <p class="lead">
           After generation (and optional threat-model), Keel delivers a structured handoff so you know exactly where to start building.
         </p>
@@ -506,8 +506,8 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
       <!-- ====================================================
            Document Reference — Full Catalog
       ==================================================== -->
-      <article class="content-section" id="section-full-catalog">
-        <h1>The Full Catalog</h1>
+      <article class="content-section" id="section-full-catalog" aria-labelledby="heading-full-catalog">
+        <h1 id="heading-full-catalog">The Full Catalog</h1>
         <p class="lead">
           Every document Keel can generate, and the question it answers.
         </p>
@@ -593,8 +593,8 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
       <!-- ====================================================
            Contributing
       ==================================================== -->
-      <article class="content-section" id="section-contributing">
-        <h1>Contributing</h1>
+      <article class="content-section" id="section-contributing" aria-labelledby="heading-contributing">
+        <h1 id="heading-contributing">Contributing</h1>
         <p class="lead">
           Keel is open source. Contributions — whether new templates, interview persona improvements, or bug fixes — are welcome.
         </p>

@@ -3,9 +3,6 @@
    Design tokens and layout for the GitHub Pages docs site
    ============================================================ */
 
-/* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 /* ============================================================
    Design Tokens
    ============================================================ */
@@ -13,6 +10,7 @@
   /* Sidebar */
   --sidebar-bg: #0f172a;
   --sidebar-text: #94a3b8;
+  --sidebar-label: #7a8fa3;
   --sidebar-active: #38bdf8;
   --sidebar-width: 280px;
   --sidebar-hover: #cbd5e1;
@@ -28,7 +26,7 @@
 
   /* Typography */
   --body-text: #1e293b;
-  --body-muted: #64748b;
+  --body-muted: #5c6a7d;
   --body-line-length: 65ch;
 
   /* Accent */
@@ -41,6 +39,12 @@
   /* Code */
   --code-bg: #1e293b;
   --code-text: #e2e8f0;
+  --code-comment: #94a3b8;
+
+  /* Surface */
+  --surface-light: #f8fafc;
+  --ink-bright: #f1f5f9;
+  --success: #4ade80;
 
   /* Spacing */
   --spacing-xs: 4px;
@@ -52,6 +56,17 @@
   /* Transitions */
   --transition-speed: 200ms;
   --transition-ease: ease-in-out;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --content-bg: #0d1117;
+    --body-text: #cdd6e4;
+    --body-muted: #8897aa;
+    --border: #2d3748;
+    --surface-light: #161b22;
+    --ink-bright: #e2e8f0;
+  }
 }
 
 /* ============================================================
@@ -134,7 +149,7 @@ body {
   gap: var(--spacing-sm);
   font-size: 1.125rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: var(--ink-bright);
   text-decoration: none;
   letter-spacing: -0.02em;
 }
@@ -191,7 +206,7 @@ body {
 }
 
 .github-link:hover {
-  color: #f1f5f9;
+  color: var(--ink-bright);
   border-color: rgba(148, 163, 184, 0.5);
 }
 
@@ -310,7 +325,7 @@ body.sidebar-open .hamburger-bar:nth-child(3) {
   display: block;
   font-size: 0.6875rem;
   font-weight: 600;
-  color: #475569;
+  color: var(--sidebar-label);
   letter-spacing: 0.06em;
   padding: 0 var(--spacing-lg) var(--spacing-xs);
   text-transform: uppercase;
@@ -327,7 +342,7 @@ body.sidebar-open .hamburger-bar:nth-child(3) {
   color: var(--sidebar-text);
   text-decoration: none;
   padding: 7px var(--spacing-lg);
-  border-left: 2px solid transparent;
+  border-left: 1px solid transparent;
   transition: color var(--transition-speed) var(--transition-ease),
               border-color var(--transition-speed) var(--transition-ease),
               background var(--transition-speed) var(--transition-ease);
@@ -356,7 +371,7 @@ body.sidebar-open .hamburger-bar:nth-child(3) {
   color: var(--sidebar-active);
   border-left-color: var(--sidebar-active);
   background: rgba(56, 189, 248, 0.08);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .nav-link-child {
@@ -617,7 +632,7 @@ pre code {
 }
 
 .copy-btn:hover {
-  color: #f1f5f9;
+  color: var(--ink-bright);
   background: rgba(148, 163, 184, 0.2);
 }
 
@@ -627,7 +642,7 @@ pre code {
 }
 
 .copy-btn.copied {
-  color: #4ade80;
+  color: var(--success);
   border-color: rgba(74, 222, 128, 0.3);
 }
 
@@ -650,7 +665,7 @@ table {
 }
 
 thead {
-  background: #f8fafc;
+  background: var(--surface-light);
 }
 
 th {
@@ -684,7 +699,7 @@ tr:last-child td {
 }
 
 tbody tr:hover {
-  background: #f8fafc;
+  background: var(--surface-light);
 }
 
 /* ============================================================
@@ -692,9 +707,9 @@ tbody tr:hover {
    ============================================================ */
 .callout {
   padding: var(--spacing-md) var(--spacing-lg);
-  border-left: 3px solid var(--accent);
+  border: 1px solid rgba(14, 165, 233, 0.3);
   background: rgba(14, 165, 233, 0.06);
-  border-radius: 0 6px 6px 0;
+  border-radius: 6px;
   margin-bottom: var(--spacing-md);
 }
 
@@ -705,7 +720,7 @@ tbody tr:hover {
 }
 
 .callout-note {
-  border-left-color: #64748b;
+  border-color: rgba(100, 116, 139, 0.3);
   background: rgba(100, 116, 139, 0.06);
 }
 
@@ -773,7 +788,7 @@ hr {
 }
 
 .dir-tree .comment {
-  color: #64748b;
+  color: var(--code-comment);
 }
 
 /* ============================================================
