@@ -171,6 +171,11 @@ shape, and its risks without guessing), stop and propose the doc suite.
 3. Present the proposed set as a table: **doc · include? · why (or why not)**. Show what you are
    *deliberately omitting* and the trigger that would bring it back later. Get explicit sign-off
    and adjust to the user's wishes before generating anything.
+4. For **UI projects** where skills integration was opted-in during the Designer round: include
+   `PRODUCT.md`, `.claude/hooks/modern-web-guidance-hook.mjs`, and `.claude/settings.json` in
+   the proposed set alongside `DESIGN.md`. Group them in the proposal table as a block labelled
+   **"FE skill integration"** with the rationale: *impeccable for visual quality gates,
+   modern-web-guidance for modern web platform patterns — both fire as PostToolUse hooks*.
 
 ### Phase 3 — Generate
 
@@ -189,6 +194,47 @@ default to the current working directory). For each document:
   ENGINEERING_DESIGN), then technical (ARCHITECTURE → HLD → LLD → ADR → NFR), then operational
   (IMPLEMENTATION_PLAN → COMMANDS → RUNBOOK), then CLAUDE.md and `docs/README.md` *last* so they
   index what actually exists.
+
+### FE skill integration (if project has UI and opted-in)
+
+Generate these files when the Designer round was run, the project has a user-facing UI surface,
+and the user opted-in during that round (or it is Product/MVP tier with a UI, where the default
+is yes).
+
+1. **Check existing setup first** — before generating, inspect the target project directory:
+   ```bash
+   ls .claude/settings.json .claude/skills/impeccable/SKILL.md \
+      .agents/skills/modern-web-guidance/SKILL.md skills-lock.json 2>/dev/null
+   ```
+   If both skills are already present and `.claude/settings.json` already has hooks, skip
+   generation and note "skills integration already in place" in the handoff.
+
+2. **Ask permission if not set up** — use `AskUserQuestion` once:
+   *"May I set up impeccable (visual quality gates) and modern-web-guidance (modern web patterns)
+   as PostToolUse hooks in this project? They fire automatically whenever UI files are edited."*
+   Options: **Yes, set both up (recommended)** / modern-web-guidance only / Skip
+
+3. **Generate from templates** (if yes):
+   - `PRODUCT.md` ← `references/templates/PRODUCT.md` — fill from the Designer round data
+     (project name, description, target users, design direction, register: **brand** for
+     landing/marketing/portfolio, **product** for app UI/dashboard/admin/tool).
+   - `.claude/hooks/modern-web-guidance-hook.mjs` ← `references/templates/modern-web-guidance-hook.mjs` (verbatim, no edits needed).
+   - `.claude/settings.json` ← `references/templates/hooks-settings.json`. If `.claude/settings.json`
+     already exists in the target project, **merge** the PostToolUse hook entries; never overwrite
+     the whole file. Remove the `_comment` key before writing.
+   - `skills-lock.json` — if one exists, add the two entries; if not, create it with both entries.
+     modern-web-guidance: `{ "source": "GoogleChrome/modern-web-guidance", "sourceType": "github", "skillPath": "skills/modern-web-guidance/SKILL.md" }`
+     impeccable: `{ "source": "impeccable", "sourceType": "npm", "version": "latest" }`
+
+4. **Wire into the other generated docs:**
+   - `CLAUDE.md` must include the "Active skills" conditional section (from the CLAUDE.md template).
+   - `DESIGN.md` must include §12 Skill Integration (from the DESIGN.md template).
+
+5. **Impeccable hook activation note** — include in the CLAUDE.md "Active skills" section and in
+   the Phase 3 handoff summary:
+   > "Activate impeccable hook: run `/impeccable hooks on` once in Claude Code after the skill
+   > is installed. The modern-web-guidance hook is active immediately."
+
 - For large suites, you may generate documents in parallel with subagents — but only after the
   shared spine (IDs, glossary, the BRD/PRD) is fixed, so the parallel docs reference a stable
   base. Keep one coherent ID namespace across all of them.
