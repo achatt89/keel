@@ -45,15 +45,13 @@ Phases 0–{{N}} deliver {{v1 / the launchable line}}. Phase {{N+1}} is {{the po
 | {{N}} — {{Hardening & Launch}} | ⬜ | {{every NFR target met; pen-test criticals = 0}} | — |
 | {{N+1}} — {{v2 line}} | ⬜ | — | — |
 
-### Standing rules (apply to every phase)
+### Standing rules (apply to every phase, every commit)
 
-<!-- Keel guidance: git workflow, tests-with-code, post-merge doc sync, definition-of-done.
-     These mirror CLAUDE.md — state them once here as the home, reference elsewhere. -->
-
-- **Git workflow:** the project is a git repo from commit one (`git init` + an initial commit before Phase 0 work, if it isn't already). Every feature starts on a fresh branch cut from the trunk; divisible work runs as parallel agents in separate `git worktree`s (one per agent, never shared); worktrees merge back to the feature branch; commit there with gates green; only then merge to trunk. No direct commits to trunk.
-- **Tests ship with the code:** every unit of work carries the tests its risk demands — unit for pure logic/edge paths, integration for cross-module behaviour, smoke for wiring. Security- and isolation-critical behaviour is **proven by a test**, never asserted in prose. "No test was necessary" is a stated judgement, not a default.
-- **Post-merge doc sync:** immediately after a merge, update the Phase status table above, the current-status line in CLAUDE.md, and any docs the work touched (ADRs, README index, RUNBOOK). A merge is incomplete until docs reflect reality.
-- **Definition of done per PR:** {{lint green (incl. custom security rules) · unit + integration tests green · isolation/critical suite green · `npm audit` (or equivalent) clean}}.
+- **Workflow-first.** Every phase is executed by running its workflow script: `claude --workflow .claude/workflows/phase-N-{{slug}}.js` (or invoke via the Workflow tool). Divisible tasks fan out as parallel agents in separate `git worktree`s — one per task, never shared. Worktrees merge back to the feature branch after gates pass; only then to trunk. No direct commits to trunk. For undivisible work (single-file refactors, hotfixes), branch-per-feature off trunk is still required; the worktree is still the working copy.
+- **Tests ship with the code.** Every unit of work carries the tests its risk demands — unit for pure logic/edge paths, integration for cross-module behaviour, smoke for wiring. Security- and isolation-critical behaviour is **proven by a test**, never asserted in prose. "No test was necessary" is a stated judgement, not a default.
+- **Doc sync is mandatory before merge.** After every unit of work, run `.claude/workflows/doc-sync.js` before merging to trunk. It updates: CLAUDE.md current status · IMPLEMENTATION_PLAN phase table · ADR.md for any new decisions · deferred-items table for anything punted. A merge without the doc-sync commit is incomplete. Docs never lag code.
+- **Decisions captured without fail.** Any architectural decision made during the work — even a "we chose X over Y because Z" in a PR comment — becomes an ADR entry before the merge commit. `[NEEDS DECISION]` markers resolved during the phase are removed from docs and converted to ADR entries. Deferred items state WHY and WHEN they will be revisited, not just WHAT.
+- **Definition of done per PR:** {{lint green (incl. custom security rules) · unit + integration tests green · isolation/critical suite green · `npm audit` (or equivalent) clean · doc-sync commit present}}.
 
 ---
 
@@ -78,6 +76,9 @@ Phases 0–{{N}} deliver {{v1 / the launchable line}}. Phase {{N+1}} is {{the po
 - {{Telemetry/sanitiser unit tests prove disallowed keys are dropped}}.
 - {{Config startup-failure and error-serialisation tests green}}.
 
+**Workflow:** `.claude/workflows/phase-0-guardrails.js`
+**Doc-sync gate:** `.claude/workflows/doc-sync.js` completes and the doc-sync commit is present before any merge to trunk.
+
 ---
 
 <!-- ============================================================ -->
@@ -101,7 +102,12 @@ Phases 0–{{N}} deliver {{v1 / the launchable line}}. Phase {{N+1}} is {{the po
 **Exit gates:** <!-- concrete and runnable — name the test suite or the measurable target, never "review" -->
 - {{Specific suite green, e.g. "isolation suite: two tenants, zero cross-visibility across every tenant-scoped table"}}.
 - {{Specific measurable target met, e.g. "P95 ≤ Ns at normal load"}}.
+- *If this phase includes UI work:* `/impeccable audit {{UI_PATH}}` passes with zero P0 or P1 findings. `/impeccable critique {{UI_PATH}}` complete and findings addressed.
+- *If this phase includes new UI patterns:* `modern-web-guidance search` was consulted for each new pattern before implementation (record in PR description which queries were run).
+- **Doc-sync gate:** `.claude/workflows/doc-sync.js` completes — CLAUDE.md updated, IMPLEMENTATION_PLAN phase status updated, decisions → ADR, deferred items recorded.
 - Traceability: {{BRD/PRD IDs this phase satisfies}}.
+
+**Workflow:** `.claude/workflows/phase-{{N}}-{{slug}}.js`
 
 <!-- ============================================================ -->
 
@@ -137,6 +143,35 @@ Phases 0–{{N}} deliver {{v1 / the launchable line}}. Phase {{N+1}} is {{the po
 | {{<GROUP>-xxx}} | {{3}} |
 | {{Deferred / Should-Have}} | {{Deferred to v1.5 (ADR-xxx)}} |
 | {{SEC-xxx, BO-xx (proof + launch)}} | 0–{{N}} (gates) + {{N}} |
+
+---
+
+## Deferred items
+
+<!-- Keel guidance: every item punted during any phase lands here before the phase closes.
+     "Deferred" is not "forgotten" — each item has a reason and a revisit trigger.
+     Items resolved in a later phase are marked ✅ with a note.
+     This table is updated by the doc-sync workflow (.claude/workflows/doc-sync.js). -->
+
+| Item | Deferred from | Reason | Target phase | Status |
+|---|---|---|---|---|
+| *(none yet — items added by doc-sync workflow as work progresses)* | — | — | — | ⬜ |
+
+---
+
+## Workflow scripts
+
+<!-- Keel guidance: these scripts are generated by Keel into .claude/workflows/ alongside
+     the docs. Each phase script fans out divisible work as parallel worktree agents, runs
+     a mandatory doc-sync step, then merges. Run them via the Workflow tool or:
+       claude --workflow .claude/workflows/<script>.js -->
+
+| Script | Purpose |
+|---|---|
+| `.claude/workflows/doc-sync.js` | Mandatory pre-merge: update CLAUDE.md status, IMPLEMENTATION_PLAN phase table, ADR, deferred items. Run after every unit of work. |
+| `.claude/workflows/phase-0-guardrails.js` | Phase 0 — Guardrails: scaffold repo, lint rules, CI, auth/role framework. |
+| `.claude/workflows/phase-{{N}}-{{slug}}.js` | Phase N — {{PHASE_NAME}}: parallel worktree agents + doc-sync + merge. |
+| *(one script per phase — generated by Keel from the phase template)* | |
 
 ---
 
