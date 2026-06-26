@@ -3,6 +3,25 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.0.0] — 2026-06-26
+
+First stable release. Docs site accessibility and quality audit pass.
+
+### Fixed
+- Contrast failures: nav-group-label (#475569 → #7a8fa3, 2.45:1 → 5.23:1) and dir-tree code comments (#64748b → #94a3b8, 2.70:1 → 6.7:1 on dark bg)
+- Hamburger `aria-expanded` now toggled on the controlling button, not the sidebar nav element
+- All 13 content sections get `aria-labelledby` + matching h1 `id` attributes
+- Nav group labels get `role="heading" aria-level="2"` for screen reader structure
+- First section has `active` class in HTML — content no longer blank without JavaScript
+- Callout side-stripe (`border-left: 3px`) replaced with full `border: 1px solid` (absolute ban)
+- Removed duplicate Google Fonts `@import` (font already loaded via `<link>` in HTML)
+- Active nav border-left reduced from 2px to 1px; font-weight bumped to 600
+
+### Added
+- `prefers-color-scheme: dark` support for the content area
+- Design tokens: `--sidebar-label`, `--code-comment`, `--surface-light`, `--ink-bright`, `--success`
+- Remaining hard-coded hex values (#f8fafc, #f1f5f9, #4ade80) replaced with tokens
+
 ## [0.2.0] — 2026-06-15
 
 Improvements distilled from the first real Keel run (the Ospraye interview). Each change addresses

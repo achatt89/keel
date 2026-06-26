@@ -36,4 +36,4 @@ Trigger: any HTML/CSS/JS/TS edit in docs/
 keel documents projects using the templates in references/templates/. The document it generates for this REPO (what you're reading) is itself a usage of the keel convention.
 
 ## Current status
-v0.2.0 — stable. GitHub Pages docs site added. Impeccable + modern-web-guidance hooks active.
+v1.0.0 — stable. GitHub Pages docs site added. Impeccable + modern-web-guidance hooks active.
