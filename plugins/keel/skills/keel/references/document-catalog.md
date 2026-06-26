@@ -109,6 +109,32 @@ a one-line justification per inclusion and per omission, and adjust.
 - **Depends on:** PRD; Designer round.
 - **Owns:** Design tokens, component names. Referenced by PRD flows and front-end work.
 
+### `PRODUCT.md` — impeccable product context *(if UI + skills integration opted-in)*
+- **Purpose:** The context file impeccable reads to understand the product register (brand vs
+  product), target users, and design direction. Required for `/impeccable` to work without
+  prompting the user on first use.
+- **Include:** Whenever `DESIGN.md` is generated and skills integration is opted-in (Designer
+  round). Register is **brand** for marketing/landing/portfolio sites (design IS the product);
+  **product** for app UI, dashboards, admin, tools (design SERVES the product).
+- **Depends on:** Designer interview round; PRD (personas); brand/experience direction.
+- **Owns:** Nothing. Consumed by impeccable's context.mjs. Referenced in DESIGN.md §12 and
+  CLAUDE.md "Active skills".
+
+### `.claude/hooks/modern-web-guidance-hook.mjs` — modern-web-guidance PostToolUse hook *(if UI + skills integration)*
+- **Purpose:** A PostToolUse hook that fires after any FE file edit (.html, .css, .js, .ts, .tsx,
+  .jsx, .vue, .svelte, .astro, .scss) and reminds to check modern-web-guidance for current web
+  platform patterns before implementing new UI features.
+- **Include:** Whenever the project has a UI and skills integration is opted-in.
+- **Depends on:** Skills integration decision (Designer round).
+- **Owns:** Nothing. Generated verbatim from `references/templates/modern-web-guidance-hook.mjs`.
+
+### `.claude/settings.json` — Claude Code hook configuration *(if UI + skills integration)*
+- **Purpose:** Configures PostToolUse hooks for impeccable and modern-web-guidance. Generated from
+  `references/templates/hooks-settings.json`. If a `.claude/settings.json` already exists in
+  the target project, **merge** the hook entries; never overwrite the entire file.
+- **Include:** Whenever skills integration is active. Pair with entries in `skills-lock.json`.
+- **Owns:** Nothing.
+
 ### `COMPLIANCE.md` — data protection & compliance *(regulated / PII)*
 - **Purpose:** Data inventory (keyed to the data classification), data-minimization stance, data-
   subject rights implementation, consent, retention schedule, subprocessors, breach response,
@@ -176,6 +202,7 @@ a one-line justification per inclusion and per omission, and adjust.
 2. **Technical:** `ARCHITECTURE` → `HLD` → `LLD` → `ADR` → `NFR` (+ `THREAT_MODEL`, `COMPLIANCE`,
    plug-in specs)
 3. **Experience:** `DESIGN` (alongside PRD)
+   3a. **FE skill infrastructure** (if skills integration): `PRODUCT.md` + `.claude/hooks/modern-web-guidance-hook.mjs` + `.claude/settings.json` — generated immediately after `DESIGN.md`, before operational docs.
 4. **Operational:** `IMPLEMENTATION_PLAN` → `COMMANDS` → `RUNBOOK`
 5. **Knowledge base:** `almanac/*` (if included)
 6. **Indexes last:** `docs/README.md`, then `CLAUDE.md` — so they map what actually exists.
