@@ -263,4 +263,35 @@ Verified contrast (fill once hex chosen):
 
 ---
 
+## 12. Skill Integration
+
+<!-- Keel guidance: include when the project has a UI and skills integration was opted-in
+     during the Designer round. These tools provide ongoing quality gates during the build.
+     Remove this section if no UI or if the user skipped skills integration. -->
+
+### 12.1 impeccable — visual quality gates
+
+- **Register:** `{{brand|product}}` — see `PRODUCT.md` for the rationale. *(brand = landing/marketing/portfolio; product = app/dashboard/admin/tool)*
+- **Activate hook:** run `/impeccable hooks on` in Claude Code once after the skill is installed. Fires automatically on every UI file edit thereafter.
+- **Invoke manually:** `/impeccable audit {{UI_PATH}}` *(full technical quality check — a11y, perf, responsive, tokens, anti-patterns)*
+- **Other key commands for this project:**
+  - `/impeccable critique {{UI_PATH}}` — UX/design heuristic review
+  - `/impeccable polish {{UI_PATH}}` — final pass before shipping
+  - `/impeccable adapt {{UI_PATH}}` — responsive/multi-device issues
+  - `/impeccable harden {{UI_PATH}}` — error states, i18n, edge cases
+  - `/impeccable typeset {{UI_PATH}}` — typography hierarchy
+  - `/impeccable colorize {{UI_PATH}}` — add strategic colour to flat UIs
+- **Anti-patterns to guard against:** gradient text, glassmorphism, identical card grids, hero-metric template, tiny uppercase tracked eyebrows, numbered section scaffolding. *(Full list in DESIGN.md §1 + impeccable SKILL.md § "Absolute bans".)*
+- **PRODUCT.md:** at repo root — update it if register, target users, or design direction changes.
+
+### 12.2 modern-web-guidance — modern web platform patterns
+
+- **Hook:** `.claude/hooks/modern-web-guidance-hook.mjs` fires automatically via PostToolUse on every `.html/.css/.js/.ts/.tsx/.jsx/.vue/.svelte/.astro` edit.
+- **Invoke manually:** `npx -y modern-web-guidance@latest search "<what you want to do>"`
+- **Browser support policy:** {{BROWSER_SUPPORT_POLICY — e.g. "Baseline Widely Available only; no polyfills; fallback gracefully" — document here so future agents don't need to ask}}
+- **Prefer native platform:** `<dialog>` for modals, popover API for popovers, CSS scroll-driven animations over JS, View Transitions API, Container Queries, `:has()`.
+- **Key areas to check for this project:** {{e.g. forms, dialogs, scroll animations, image optimisation, offline support}}
+
+---
+
 *End of DESIGN.md — {{PROJECT_NAME}}*

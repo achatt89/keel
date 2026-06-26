@@ -93,3 +93,13 @@ relevant one *before* touching code.
 - Definition of done per change: {{DOD_SUMMARY}} (details: {{IMPLEMENTATION_PLAN}}).
 - New {{SCOPED_RESOURCE}} gets its scope key + {{ISOLATION_CONTROL}} before its first migration merges; new decisions become {{ADR}} entries; new accepted risks go to {{ARCHITECTURE}}.
 - When this file and a referenced doc disagree, **the referenced doc wins** — fix the pointer, not the doc.
+
+## Active skills *(UI projects — remove section if no UI or skills integration was skipped)*
+
+<!-- Keel guidance: include only when the project has a UI and skills integration was
+     opted-in (DESIGN.md generated, PRODUCT.md generated, hooks installed).
+     These hooks fire automatically; the developer never needs to remember to invoke them. -->
+
+**impeccable** — visual quality gates. PostToolUse hook fires after editing UI files and surfaces design/a11y issues. **Activate once:** `/impeccable hooks on` in Claude Code after skill install. Invoke: `/impeccable audit|critique|polish|adapt|harden|typeset|colorize <target>`. See DESIGN.md §12.1.
+
+**modern-web-guidance** — modern web platform patterns. PostToolUse reminder fires after FE file edits, prompting to check for current platform patterns before implementing UI features. Invoke: `npx -y modern-web-guidance@latest search "<query>"`. See DESIGN.md §12.2.
