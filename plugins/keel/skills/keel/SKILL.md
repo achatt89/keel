@@ -171,6 +171,11 @@ shape, and its risks without guessing), stop and propose the doc suite.
 3. Present the proposed set as a table: **doc · include? · why (or why not)**. Show what you are
    *deliberately omitting* and the trigger that would bring it back later. Get explicit sign-off
    and adjust to the user's wishes before generating anything.
+4. For **UI projects** where skills integration was opted-in during the Designer round: include
+   `PRODUCT.md`, `.claude/hooks/modern-web-guidance-hook.mjs`, and `.claude/settings.json` in
+   the proposed set alongside `DESIGN.md`. Group them in the proposal table as a block labelled
+   **"FE skill integration"** with the rationale: *impeccable for visual quality gates,
+   modern-web-guidance for modern web platform patterns — both fire as PostToolUse hooks*.
 
 ### Phase 3 — Generate
 
@@ -189,6 +194,65 @@ default to the current working directory). For each document:
   ENGINEERING_DESIGN), then technical (ARCHITECTURE → HLD → LLD → ADR → NFR), then operational
   (IMPLEMENTATION_PLAN → COMMANDS → RUNBOOK), then CLAUDE.md and `docs/README.md` *last* so they
   index what actually exists.
+
+### FE skill integration (if project has UI and opted-in)
+
+Generate these files when the Designer round was run, the project has a user-facing UI surface,
+and the user opted-in during that round (or it is Product/MVP tier with a UI, where the default
+is yes).
+
+1. **Check existing setup first** — before generating, inspect the target project directory:
+   ```bash
+   ls .claude/settings.json .claude/skills/impeccable/SKILL.md \
+      .agents/skills/modern-web-guidance/SKILL.md skills-lock.json 2>/dev/null
+   ```
+   If both skills are already present and `.claude/settings.json` already has hooks, skip
+   generation and note "skills integration already in place" in the handoff.
+
+2. **Ask permission if not set up** — use `AskUserQuestion` once:
+   *"May I set up impeccable (visual quality gates) and modern-web-guidance (modern web patterns)
+   as PostToolUse hooks in this project? They fire automatically whenever UI files are edited."*
+   Options: **Yes, set both up (recommended)** / modern-web-guidance only / Skip
+
+3. **Generate from templates** (if yes):
+   - `PRODUCT.md` ← `references/templates/PRODUCT.md` — fill from the Designer round data
+     (project name, description, target users, design direction, register: **brand** for
+     landing/marketing/portfolio, **product** for app UI/dashboard/admin/tool).
+   - `.claude/hooks/modern-web-guidance-hook.mjs` ← `references/templates/modern-web-guidance-hook.mjs` (verbatim, no edits needed).
+   - `.claude/settings.json` ← `references/templates/hooks-settings.json`. If `.claude/settings.json`
+     already exists in the target project, **merge** the PostToolUse hook entries; never overwrite
+     the whole file. Remove the `_comment` key before writing.
+   - `skills-lock.json` — if one exists, add the two entries; if not, create it with both entries.
+     modern-web-guidance: `{ "source": "GoogleChrome/modern-web-guidance", "sourceType": "github", "skillPath": "skills/modern-web-guidance/SKILL.md" }`
+     impeccable: `{ "source": "impeccable", "sourceType": "npm", "version": "latest" }`
+
+4. **Wire into the other generated docs:**
+   - `CLAUDE.md` must include the "Active skills" conditional section (from the CLAUDE.md template).
+   - `DESIGN.md` must include §12 Skill Integration (from the DESIGN.md template).
+
+5. **Impeccable hook activation note** — include in the CLAUDE.md "Active skills" section and in
+   the Phase 3 handoff summary:
+   > "Activate impeccable hook: run `/impeccable hooks on` once in Claude Code after the skill
+   > is installed. The modern-web-guidance hook is active immediately."
+
+### Phase workflow generation (always)
+
+Generate workflow scripts for every project, regardless of whether it has a UI. These encode the
+mandatory build loop — worktrees, doc-sync, merge — so the builder never has to wire it by hand.
+
+1. **Create `.claude/workflows/`** directory in the target project.
+2. **Copy `references/templates/workflows/doc-sync.js`** verbatim into `.claude/workflows/doc-sync.js`.
+3. **For each phase in the generated `IMPLEMENTATION_PLAN.md`**, generate a phase workflow script:
+   - Copy `references/templates/workflows/phase-template.js` as the base.
+   - Rename to `.claude/workflows/phase-N-{{slug}}.js` (N = phase number, slug = phase name in kebab-case).
+   - Fill in `meta.name`, `meta.description`, and `meta.phases[0].detail` from the phase scope.
+   - Fill in the `TASKS` array with the scope items from that phase (each scope item = one task).
+   - For phases with UI work: the task prompt already includes the impeccable + modern-web-guidance
+     instructions — leave them; they apply automatically when the task touches UI files.
+4. **Copy `references/templates/workflows/README.md`** verbatim into `.claude/workflows/README.md`.
+5. **Reference each generated script** in `IMPLEMENTATION_PLAN.md`'s "Workflow scripts" table.
+6. **Note in the Phase 3 handoff:** "Run `.claude/workflows/phase-0-guardrails.js` to start Phase 0."
+
 - For large suites, you may generate documents in parallel with subagents — but only after the
   shared spine (IDs, glossary, the BRD/PRD) is fixed, so the parallel docs reference a stable
   base. Keep one coherent ID namespace across all of them.
