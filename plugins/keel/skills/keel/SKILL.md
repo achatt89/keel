@@ -235,6 +235,25 @@ is yes).
    > "Activate impeccable hook: run `/impeccable hooks on` once in Claude Code after the skill
    > is installed. The modern-web-guidance hook is active immediately."
 
+### Phase workflow generation (always)
+
+Generate workflow scripts for every project, regardless of whether it has a UI. These encode the
+mandatory build loop — worktrees, doc-sync, merge — so the builder never has to wire it by hand.
+
+1. **Create `.claude/workflows/`** directory in the target project.
+2. **Copy `references/templates/workflows/doc-sync.js`** verbatim into `.claude/workflows/doc-sync.js`.
+3. **For each phase in the generated `IMPLEMENTATION_PLAN.md`**, generate a phase workflow script:
+   - Copy `references/templates/workflows/phase-template.js` as the base.
+   - Rename to `.claude/workflows/phase-N-{{slug}}.js` (N = phase number, slug = phase name in kebab-case).
+   - Fill in `meta.name`, `meta.description`, and `meta.phases[0].detail` from the phase scope.
+   - Fill in the `TASKS` array with the scope items from that phase (each scope item = one task).
+   - For phases with UI work: the task prompt already includes the impeccable + modern-web-guidance
+     instructions — leave them; they apply automatically when the task touches UI files.
+4. **Copy `references/templates/workflows/README.md`** verbatim into `.claude/workflows/README.md`.
+5. **Reference each generated script** in `IMPLEMENTATION_PLAN.md`'s "Workflow scripts" table.
+6. **Note in the Phase 3 handoff:** "Run `.claude/workflows/phase-0-guardrails.js` to start Phase 0."
+
+
 - For large suites, you may generate documents in parallel with subagents — but only after the
   shared spine (IDs, glossary, the BRD/PRD) is fixed, so the parallel docs reference a stable
   base. Keep one coherent ID namespace across all of them.
