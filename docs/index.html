@@ -116,6 +116,9 @@
           <li>
             <a href="#handoff" class="nav-link nav-link-child">Handoff</a>
           </li>
+          <li>
+            <a href="#upgrade" class="nav-link nav-link-child">Upgrading Existing Projects</a>
+          </li>
         </ul>
       </div>
 
@@ -501,6 +504,81 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         <div class="callout">
           <p>The recommended first action after a Keel session: open your project folder in Claude Code, point it at <code>CLAUDE.md</code>, and say "let's start building."</p>
         </div>
+
+        <footer class="content-footer">
+          <a href="#full-catalog">Document Catalog &rarr;</a>
+        </footer>
+      </article>
+
+      <!-- ====================================================
+           How It Works — Upgrading Existing Projects
+      ==================================================== -->
+      <article class="content-section" id="section-upgrade" aria-labelledby="heading-upgrade">
+        <h1 id="heading-upgrade">Upgrading Existing Projects</h1>
+        <p class="lead">
+          If a project already has keel-generated docs, <code>/keel upgrade</code> audits them against the current keel standard, reports what has drifted or gone missing, and applies only the fixes you approve.
+        </p>
+
+        <h2>When to run it</h2>
+        <p>
+          Run <code>/keel upgrade</code> on any project that was documented with an earlier version of keel, or that has accumulated manual edits that may have diverged from the conventions keel expects. Keel detects an upgradeable project automatically when it finds three or more of the standard documents present.
+        </p>
+
+        <div class="callout">
+          <p><code>/keel upgrade</code> never rewrites whole documents. Every edit is surgical — existing content you wrote is preserved; only gaps and outdated sections are touched.</p>
+        </div>
+
+        <h2>How it runs</h2>
+        <ul class="phase-list" role="list">
+          <li>
+            <span class="phase-label">Phase U1</span>
+            <span class="phase-desc"><strong>Discover</strong> — inventory the existing doc set, identify which keel documents are present, and determine project type and whether the project has a UI.</span>
+          </li>
+          <li>
+            <span class="phase-label">Phase U2</span>
+            <span class="phase-desc"><strong>Audit</strong> — run each present document through the upgrade checklist: required sections, stable IDs, standing rules, skill integration hooks, workflow script references, and placeholder fill status.</span>
+          </li>
+          <li>
+            <span class="phase-label">Phase U3</span>
+            <span class="phase-desc"><strong>Report and permission</strong> — present a gap report grouped by severity. You choose which gaps to fix; Keel does nothing until you approve.</span>
+          </li>
+          <li>
+            <span class="phase-label">Phase U4</span>
+            <span class="phase-desc"><strong>Update</strong> — apply the approved fixes surgically: add missing sections, fill placeholders, append new standing rules, install missing skills, update <code>.keel/meta.json</code>.</span>
+          </li>
+          <li>
+            <span class="phase-label">Phase U5</span>
+            <span class="phase-desc"><strong>Codebase audit</strong> — generate a checklist of implementation gaps derived from the now-current docs, or save it as <code>CODEBASE_AUDIT.md</code> for later.</span>
+          </li>
+        </ul>
+
+        <h2>Gap categories</h2>
+        <ul class="feature-list" role="list">
+          <li>
+            <span class="feature-key">MISSING_DOC</span>
+            <span class="feature-desc">A document that should exist for this project type is absent entirely.</span>
+          </li>
+          <li>
+            <span class="feature-key">MISSING_SECTION</span>
+            <span class="feature-desc">A required section within an existing document is absent.</span>
+          </li>
+          <li>
+            <span class="feature-key">OUTDATED_CONVENTION</span>
+            <span class="feature-desc">A section exists but uses an older format — for example, a phase block missing an exit gate or a workflow script reference.</span>
+          </li>
+          <li>
+            <span class="feature-key">MISSING_FEATURE</span>
+            <span class="feature-desc">A capability added in a later version of keel (such as the impeccable lifecycle table in DESIGN.md) is not present.</span>
+          </li>
+          <li>
+            <span class="feature-key">UNFILLED_PLACEHOLDER</span>
+            <span class="feature-desc">A generated placeholder — marked <code>[TBD]</code> or <code>[NEEDS DECISION]</code> — was never filled in.</span>
+          </li>
+          <li>
+            <span class="feature-key">MISSING_SKILL</span>
+            <span class="feature-desc">A skill referenced in the docs (impeccable, modern-web-guidance) is not installed in the project.</span>
+          </li>
+        </ul>
 
         <footer class="content-footer">
           <a href="#full-catalog">Document Catalog &rarr;</a>

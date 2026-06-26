@@ -27,6 +27,7 @@
     '#document-tailoring':  'section-document-tailoring',
     '#threat-modeling':     'section-threat-modeling',
     '#handoff':             'section-handoff',
+    '#upgrade':             'section-upgrade',
     '#document-reference':  'section-document-reference',
     '#full-catalog':        'section-full-catalog',
     '#contributing':        'section-contributing',
