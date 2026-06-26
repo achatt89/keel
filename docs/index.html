@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Keel — a Claude Code skill that interviews you about a greenfield idea and generates a tailored, cross-referenced suite of foundational documents to build from." />
+  <meta name="description" content="Keel: a Claude Code skill that interviews you about a greenfield idea and generates a tailored, cross-referenced suite of foundational documents to build from." />
   <meta name="author" content="The Logic Atelier" />
-  <meta property="og:title" content="Keel — Foundational Docs for Greenfield Projects" />
-  <meta property="og:description" content="Multi-persona interview → tailored doc suite → build-ready documentation. A Claude Code plugin by The Logic Atelier." />
+  <meta property="og:title" content="Keel: Foundational Docs for Greenfield Projects" />
+  <meta property="og:description" content="Multi-persona interview, tailored doc suite, build-ready documentation. A Claude Code plugin by The Logic Atelier." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://achatt89.github.io/keel/" />
-  <title>Keel — Documentation</title>
+  <title>Keel: Documentation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -23,9 +23,7 @@
   <!-- Sidebar overlay (mobile) -->
   <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
 
-  <!-- ======================================================
-       Header
-  ====================================================== -->
+  <!-- Header -->
   <header class="site-header" role="banner">
     <a href="#what-is-keel" class="site-logo" aria-label="Keel home">
       <span aria-hidden="true">⚓</span>
@@ -60,9 +58,7 @@
     </div>
   </header>
 
-  <!-- ======================================================
-       Layout
-  ====================================================== -->
+  <!-- Layout -->
   <div class="layout">
 
     <!-- Sidebar Navigation -->
@@ -145,19 +141,17 @@
     <!-- Main content -->
     <main class="main-content" id="main-content" role="main">
 
-      <!-- ====================================================
-           Introduction — What is Keel?
-      ==================================================== -->
+      <!-- What is Keel? -->
       <article class="content-section active" id="section-what-is-keel" aria-labelledby="heading-what-is-keel">
         <h1 id="heading-what-is-keel">What is Keel?</h1>
         <p class="lead">
-          In shipbuilding, the keel is the first structural member laid down — every other part of the vessel attaches to it. These documents are that keel for a software project: the load-bearing spec that you (working with Claude Code) construct the actual product from.
+          In shipbuilding, the keel is the first structural member laid down; every other part of the vessel attaches to it. These documents are that keel for a software project: the load-bearing spec that you (working with Claude Code) construct the actual product from.
         </p>
         <p>
           Keel is a Claude Code skill that interviews you about a greenfield idea through a rotating panel of expert personas, then generates a tailored, cross-referenced suite of foundational documents you can build from.
         </p>
         <p>
-          Instead of asking you to fill in a template or write a brief before you code, Keel shows up as a conversation partner — one that challenges weak assumptions and synthesises your answers into a coherent spec before a single line of code is written.
+          Instead of asking you to fill in a template or write a brief before you code, Keel shows up as a conversation partner, one that challenges weak assumptions and synthesises your answers into a coherent spec before a single line of code is written.
         </p>
         <div class="callout">
           <p>Keel is optimised for use with Claude Code as the primary build agent. The documentation it generates is structured to serve as a durable source of truth for AI-assisted development.</p>
@@ -169,9 +163,7 @@
         </footer>
       </article>
 
-      <!-- ====================================================
-           Introduction — Why Keel?
-      ==================================================== -->
+      <!-- Why Keel? -->
       <article class="content-section" id="section-why-keel" aria-labelledby="heading-why-keel">
         <h1 id="heading-why-keel">Why Keel?</h1>
         <p class="lead">
@@ -181,7 +173,7 @@
         <ul class="feature-list" role="list">
           <li>
             <span class="feature-key">Interview-first</span>
-            <span class="feature-desc">Never generates a document from a one-line idea. The interview is where the value is created — by surfacing what you haven't thought through yet.</span>
+            <span class="feature-desc">Never generates a document from a one-line idea. The interview is where the value is created by surfacing what you haven't thought through yet.</span>
           </li>
           <li>
             <span class="feature-key">Adaptive scope</span>
@@ -197,16 +189,16 @@
           </li>
           <li>
             <span class="feature-key">Optimised for Claude Code</span>
-            <span class="feature-desc">The output is the source of truth for the AI builder. CLAUDE.md is the keystone — every other document hangs off it by stable reference.</span>
+            <span class="feature-desc">The output is the source of truth for the AI builder. CLAUDE.md is the keystone; every other document hangs off it by stable reference.</span>
           </li>
         </ul>
 
         <h2>When to use Keel</h2>
         <p>
-          Keel is designed for the very start of a greenfield project — before you've written code, chosen a stack, or committed to a structure. It's also useful when a project has grown organically and you need to reconstruct the foundational spec retroactively.
+          Keel is designed for the very start of a greenfield project, before you've written code, chosen a stack, or committed to a structure. It's also useful when a project has grown organically and you need to reconstruct the foundational spec retroactively.
         </p>
         <p>
-          It is not a substitute for ongoing documentation practices, sprint planning, or production runbooks — though it generates the initial versions of those artefacts too.
+          It is not a substitute for ongoing documentation practices, sprint planning, or production runbooks, though it generates the initial versions of those artefacts too.
         </p>
 
         <footer class="content-footer">
@@ -215,9 +207,7 @@
         </footer>
       </article>
 
-      <!-- ====================================================
-           Introduction — Quick Start
-      ==================================================== -->
+      <!-- Quick Start -->
       <article class="content-section" id="section-quick-start" aria-labelledby="heading-quick-start">
         <h1 id="heading-quick-start">Quick Start</h1>
         <p class="lead">Two commands and you're ready to lay the keel of any new project.</p>
@@ -229,15 +219,15 @@
         <p>Restart Claude Code after installation. Then, in any project folder, tell Claude Code:</p>
 
         <div class="callout">
-          <p>"I want to start a new project, let's lay the foundations" — or just type <code>/keel</code></p>
+          <p>"I want to start a new project, let's lay the foundations," or just type <code>/keel</code></p>
         </div>
 
         <h2>What happens next</h2>
         <p>
-          Keel will run an intake to understand your idea and set an ambition tier (Prototype, MVP, or Platform), then move through a staged panel of expert personas — each one building on what was said before. At the end, it proposes a doc set, generates everything with cross-references wired in, and optionally runs a threat-modeling pass.
+          Keel will run an intake to understand your idea and set an ambition tier (Prototype, MVP, or Platform), then move through a staged panel of expert personas, each one building on what was said before. At the end, it proposes a doc set, generates everything with cross-references wired in, and optionally runs a threat-modeling pass.
         </p>
         <p>
-          Set aside a focused session — the interview is where the value is created.
+          Set aside a focused session: the interview is where the value is created.
         </p>
 
         <footer class="content-footer">
@@ -246,27 +236,25 @@
         </footer>
       </article>
 
-      <!-- ====================================================
-           Getting Started — Prerequisites
-      ==================================================== -->
+      <!-- Prerequisites -->
       <article class="content-section" id="section-prerequisites" aria-labelledby="heading-prerequisites">
         <h1 id="heading-prerequisites">Prerequisites</h1>
         <p class="lead">Before installing Keel, make sure the following are available in your environment.</p>
 
         <ul>
           <li>
-            <strong>Claude Code</strong> — installed and working. Verify with <code>claude --version</code> in your terminal.
+            <strong>Claude Code:</strong> installed and working. Verify with <code>claude --version</code> in your terminal.
           </li>
           <li>
-            <strong>git</strong> — on your PATH. Verify with <code>git --version</code>.
+            <strong>git:</strong> on your PATH. Verify with <code>git --version</code>.
           </li>
           <li>
-            <strong>GitHub access</strong> — for plugin marketplace install, you'll need either <code>gh auth login</code> or an SSH key configured for GitHub. This requirement goes away once the repository is public.
+            <strong>GitHub access:</strong> for plugin marketplace install, you'll need either <code>gh auth login</code> or an SSH key configured for GitHub. This requirement goes away once the repository is public.
           </li>
         </ul>
 
         <div class="callout callout-note">
-          <p>Keel has no npm, pip, or runtime dependencies. It is a plain Claude Code skill — a set of Markdown instructions the agent reads and acts on.</p>
+          <p>Keel has no npm, pip, or runtime dependencies. It is a plain Claude Code skill: a set of Markdown instructions the agent reads and acts on.</p>
         </div>
 
         <footer class="content-footer">
@@ -274,12 +262,10 @@
         </footer>
       </article>
 
-      <!-- ====================================================
-           Getting Started — Plugin Install
-      ==================================================== -->
+      <!-- Plugin Install -->
       <article class="content-section" id="section-plugin-install" aria-labelledby="heading-plugin-install">
         <h1 id="heading-plugin-install">Plugin Install</h1>
-        <p class="lead">Method A — recommended for most users. The plugin marketplace handles installation, updates, and uninstallation.</p>
+        <p class="lead">Method A, recommended for most users. The plugin marketplace handles installation, updates, and uninstallation.</p>
 
         <h2>Install</h2>
         <pre><code>/plugin marketplace add achatt89/keel
@@ -291,7 +277,7 @@
 /plugin install keel@thelogicatelier</code></pre>
         <p>
           <code>marketplace update</code> fetches the latest manifest from GitHub and refreshes the local cache.
-          <code>plugin install</code> alone reads from that cache — running it without the update step first will reinstall the version Claude Code already knows about, not the latest one.
+          <code>plugin install</code> alone reads from that cache; running it without the update step first will reinstall the version Claude Code already knows about, not the latest one.
         </p>
 
         <h2>Uninstall</h2>
@@ -302,19 +288,17 @@
         </footer>
       </article>
 
-      <!-- ====================================================
-           Getting Started — Personal Skill Install
-      ==================================================== -->
+      <!-- Personal Skill Install -->
       <article class="content-section" id="section-personal-skill" aria-labelledby="heading-personal-skill">
         <h1 id="heading-personal-skill">Personal Skill Install</h1>
-        <p class="lead">Method B — install directly from the repository. A symlink keeps the skill updated when you pull.</p>
+        <p class="lead">Method B: install directly from the repository. A symlink keeps the skill updated when you pull.</p>
 
         <h2>User-global install (symlink)</h2>
         <pre><code class="language-bash">git clone https://github.com/achatt89/keel.git ~/code/keel
 mkdir -p ~/.claude/skills
 ln -s ~/code/keel/plugins/keel/skills/keel ~/.claude/skills/keel</code></pre>
         <p>
-          The symlink approach means a <code>git pull</code> inside <code>~/code/keel</code> automatically updates the skill — no reinstall needed. Restart Claude Code after cloning.
+          The symlink approach means a <code>git pull</code> inside <code>~/code/keel</code> automatically updates the skill, no reinstall needed. Restart Claude Code after cloning.
         </p>
 
         <h2>Update</h2>
@@ -327,7 +311,7 @@ ln -s ~/code/keel/plugins/keel/skills/keel ~/.claude/skills/keel</code></pre>
 
         <h2>Project-scoped install (team use)</h2>
         <p>
-          To make Keel available only within a specific project — useful for teams where not everyone has it installed globally — symlink or copy into the project's own skills directory:
+          To make Keel available only within a specific project (useful for teams where not everyone has it installed globally): symlink or copy into the project's own skills directory:
         </p>
         <pre><code class="language-bash">mkdir -p .claude/skills
 ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
@@ -338,9 +322,7 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         </footer>
       </article>
 
-      <!-- ====================================================
-           Getting Started — Verify & First Run
-      ==================================================== -->
+      <!-- Verify & First Run -->
       <article class="content-section" id="section-verify-first-run" aria-labelledby="heading-verify-first-run">
         <h1 id="heading-verify-first-run">Verify &amp; First Run</h1>
 
@@ -356,16 +338,16 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         <h2>First run</h2>
         <p>Open your target project folder (or an empty folder for a new project) in Claude Code, then describe your idea. Keel will run through its full flow:</p>
         <ol>
-          <li><strong>Intake</strong> — reflect the idea back, establish ambition tier</li>
-          <li><strong>Interview</strong> — six staged persona interviews (see <a href="#the-interview">The Interview</a>)</li>
-          <li><strong>Proposed doc set</strong> — tailored to your project's complexity</li>
-          <li><strong>Generation</strong> — documents written with cross-references wired in</li>
+          <li><strong>Intake:</strong> reflect the idea back, establish ambition tier</li>
+          <li><strong>Interview:</strong> six staged persona interviews (see <a href="#the-interview">The Interview</a>)</li>
+          <li><strong>Proposed doc set:</strong> tailored to your project's complexity</li>
+          <li><strong>Generation:</strong> documents written with cross-references wired in</li>
           <li><strong>Threat-model pass</strong> (optional)</li>
-          <li><strong>Handoff</strong> — reading order, open decisions, first build step</li>
+          <li><strong>Handoff:</strong> reading order, open decisions, first build step</li>
         </ol>
 
         <div class="callout callout-note">
-          <p>The interview is where the value is created. A focused 30–60 minute session will produce a far stronger spec than rushing through the questions.</p>
+          <p>The interview is where the value is created. A focused 30 to 60 minute session will produce a far stronger spec than rushing through the questions.</p>
         </div>
 
         <footer class="content-footer">
@@ -373,43 +355,41 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         </footer>
       </article>
 
-      <!-- ====================================================
-           How It Works — The Interview
-      ==================================================== -->
+      <!-- The Interview -->
       <article class="content-section" id="section-the-interview" aria-labelledby="heading-the-interview">
         <h1 id="heading-the-interview">The Interview</h1>
         <p class="lead">
-          Keel conducts a staged multi-persona interview before writing a single document. Each persona adapts every question to what was just said — it challenges weak assumptions instead of transcribing them.
+          Keel conducts a staged multi-persona interview before writing a single document. Each persona adapts every question to what was just said; it challenges weak assumptions instead of transcribing them.
         </p>
 
         <ul class="phase-list" role="list">
           <li>
             <span class="phase-label">Phase 0</span>
-            <span class="phase-desc"><strong>Intake</strong> — reflect the idea back, establish ambition tier (Prototype / MVP / Platform), and set expectations for the session ahead.</span>
+            <span class="phase-desc"><strong>Intake:</strong> reflect the idea back, establish ambition tier (Prototype / MVP / Platform), and set expectations for the session ahead.</span>
           </li>
           <li>
             <span class="phase-label">Phase 1</span>
-            <span class="phase-desc"><strong>Business Analyst</strong> — the real problem, who pays, why now, and what success looks like in concrete metrics.</span>
+            <span class="phase-desc"><strong>Business Analyst:</strong> the real problem, who pays, why now, and what success looks like in concrete metrics.</span>
           </li>
           <li>
             <span class="phase-label">Phase 2</span>
-            <span class="phase-desc"><strong>Product Manager</strong> — user personas, key journeys, the MVP cut, and what is explicitly out of scope.</span>
+            <span class="phase-desc"><strong>Product Manager:</strong> user personas, key journeys, the MVP cut, and what is explicitly out of scope.</span>
           </li>
           <li>
             <span class="phase-label">Phase 3</span>
-            <span class="phase-desc"><strong>Architect</strong> — stack choice, data model, integrations, and the hard technical bets that will be difficult to reverse later.</span>
+            <span class="phase-desc"><strong>Architect:</strong> stack choice, data model, integrations, and the hard technical bets that will be difficult to reverse later.</span>
           </li>
           <li>
             <span class="phase-label">Phase 4</span>
-            <span class="phase-desc"><strong>Security / Compliance</strong> — data sensitivity, tenancy model, authentication approach, and regulatory exposure.</span>
+            <span class="phase-desc"><strong>Security / Compliance:</strong> data sensitivity, tenancy model, authentication approach, and regulatory exposure.</span>
           </li>
           <li>
             <span class="phase-label">Phase 5</span>
-            <span class="phase-desc"><strong>Designer</strong> — surfaces, key user flows, tone, accessibility needs, and brand feel (only if the project has a UI).</span>
+            <span class="phase-desc"><strong>Designer:</strong> surfaces, key user flows, tone, accessibility needs, and brand feel (only if the project has a UI).</span>
           </li>
           <li>
             <span class="phase-label">Phase 6</span>
-            <span class="phase-desc"><strong>Delivery / Ops</strong> — phasing, deployment environment, git workflow, worktree parallelism, and doc-sync strategy.</span>
+            <span class="phase-desc"><strong>Delivery / Ops:</strong> phasing, deployment environment, git workflow, worktree parallelism, and doc-sync strategy.</span>
           </li>
         </ul>
 
@@ -418,9 +398,7 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         </footer>
       </article>
 
-      <!-- ====================================================
-           How It Works — Document Tailoring
-      ==================================================== -->
+      <!-- Document Tailoring -->
       <article class="content-section" id="section-document-tailoring" aria-labelledby="heading-document-tailoring">
         <h1 id="heading-document-tailoring">Document Tailoring</h1>
         <p class="lead">
@@ -430,19 +408,19 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         <h2>By ambition tier</h2>
         <ul>
           <li>
-            <strong>Weekend prototype</strong> — <code>CLAUDE.md</code> + <code>README</code>, possibly a lightweight PRD if the idea needs clarifying before building.
+            <strong>Weekend prototype:</strong> <code>CLAUDE.md</code> + <code>README</code>, possibly a lightweight PRD if the idea needs clarifying before building.
           </li>
           <li>
-            <strong>Product / MVP</strong> — full requirements suite (<code>BRD</code>, <code>PRD</code>), architecture, engineering design, and an implementation plan with concrete exit gates.
+            <strong>Product / MVP:</strong> full requirements suite (<code>BRD</code>, <code>PRD</code>), architecture, engineering design, and an implementation plan with concrete exit gates.
           </li>
           <li>
-            <strong>Platform / regulated</strong> — everything above plus <code>NFR</code>, <code>COMPLIANCE</code>, <code>THREAT_MODEL</code>, <code>RUNBOOK</code>, and optionally an <code>almanac/</code> knowledge base.
+            <strong>Platform / regulated:</strong> everything above plus <code>NFR</code>, <code>COMPLIANCE</code>, <code>THREAT_MODEL</code>, <code>RUNBOOK</code>, and optionally an <code>almanac/</code> knowledge base.
           </li>
         </ul>
 
         <h2>Cross-references and stable IDs</h2>
         <p>
-          Every document is generated with stable requirement IDs (e.g., <code>REQ-001</code>, <code>ADR-003</code>). When a requirement from the BRD drives a design decision in the architecture, the architecture document references the requirement ID — not a paraphrase of its content. This means the doc set stays coherent as individual documents evolve.
+          Every document is generated with stable requirement IDs (e.g., <code>REQ-001</code>, <code>ADR-003</code>). When a requirement from the BRD drives a design decision in the architecture, the architecture document references the requirement ID, not a paraphrase of its content. This means the doc set stays coherent as individual documents evolve.
         </p>
         <div class="callout">
           <p>One fact, one home. If you update a requirement in the BRD, you know exactly which other documents reference it and need to be reviewed.</p>
@@ -453,9 +431,7 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         </footer>
       </article>
 
-      <!-- ====================================================
-           How It Works — Threat Modeling
-      ==================================================== -->
+      <!-- Threat Modeling -->
       <article class="content-section" id="section-threat-modeling" aria-labelledby="heading-threat-modeling">
         <h1 id="heading-threat-modeling">Threat Modeling</h1>
         <p class="lead">
@@ -465,18 +441,18 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         <h2>What it models</h2>
         <p>The threat-modeling pass works adversarially across seven dimensions:</p>
         <ul>
-          <li><strong>Data exposure</strong> — what data could leak and to whom</li>
-          <li><strong>Tenant isolation</strong> — whether multi-tenant boundaries are enforced at every layer</li>
-          <li><strong>Untrusted input</strong> — all attack surfaces that accept external data</li>
-          <li><strong>Secrets and auth</strong> — key management, token lifetimes, privilege escalation paths</li>
-          <li><strong>Abuse and DoS</strong> — rate limiting, resource exhaustion, quota enforcement</li>
-          <li><strong>Privacy and regulatory</strong> — PII handling, consent flows, retention limits</li>
-          <li><strong>Availability</strong> — single points of failure, disaster recovery, RTO/RPO</li>
+          <li><strong>Data exposure:</strong> what data could leak and to whom</li>
+          <li><strong>Tenant isolation:</strong> whether multi-tenant boundaries are enforced at every layer</li>
+          <li><strong>Untrusted input:</strong> all attack surfaces that accept external data</li>
+          <li><strong>Secrets and auth:</strong> key management, token lifetimes, privilege escalation paths</li>
+          <li><strong>Abuse and DoS:</strong> rate limiting, resource exhaustion, quota enforcement</li>
+          <li><strong>Privacy and regulatory:</strong> PII handling, consent flows, retention limits</li>
+          <li><strong>Availability:</strong> single points of failure, disaster recovery, RTO/RPO</li>
         </ul>
 
         <h2>How it mitigates</h2>
         <p>
-          Weaknesses identified during the threat-modeling pass are fixed directly in the design documents — not just annotated in a separate risk register. The architecture document and engineering design are updated in place, and each threat is recorded in <code>THREAT_MODEL.md</code> with a pointer to where it was mitigated.
+          Weaknesses identified during the threat-modeling pass are fixed directly in the design documents, not just annotated in a separate risk register. The architecture document and engineering design are updated in place, and each threat is recorded in <code>THREAT_MODEL.md</code> with a pointer to where it was mitigated.
         </p>
 
         <footer class="content-footer">
@@ -484,9 +460,7 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         </footer>
       </article>
 
-      <!-- ====================================================
-           How It Works — Handoff
-      ==================================================== -->
+      <!-- Handoff -->
       <article class="content-section" id="section-handoff" aria-labelledby="heading-handoff">
         <h1 id="heading-handoff">Handoff</h1>
         <p class="lead">
@@ -495,10 +469,10 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
 
         <h2>What the handoff covers</h2>
         <ul>
-          <li><strong>What was generated</strong> — a list of every document created, with a one-line summary of each</li>
-          <li><strong>Recommended reading order</strong> — the sequence in which a new collaborator (human or AI) should read the docs to build context efficiently</li>
-          <li><strong>Open decisions</strong> — all <code>[NEEDS DECISION]</code> markers surfaced from across the doc set, so nothing is forgotten</li>
-          <li><strong>First build step</strong> — a concrete starting point, typically: "open this folder in Claude Code and start at <code>IMPLEMENTATION_PLAN.md</code> Phase 0"</li>
+          <li><strong>What was generated:</strong> a list of every document created, with a one-line summary of each</li>
+          <li><strong>Recommended reading order:</strong> the sequence in which a new collaborator (human or AI) should read the docs to build context efficiently</li>
+          <li><strong>Open decisions:</strong> all <code>[NEEDS DECISION]</code> markers surfaced from across the doc set, so nothing is forgotten</li>
+          <li><strong>First build step:</strong> a concrete starting point, typically "open this folder in Claude Code and start at <code>IMPLEMENTATION_PLAN.md</code> Phase 0"</li>
         </ul>
 
         <div class="callout">
@@ -506,13 +480,11 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         </div>
 
         <footer class="content-footer">
-          <a href="#full-catalog">Document Catalog &rarr;</a>
+          <a href="#upgrade">Upgrading Existing Projects &rarr;</a>
         </footer>
       </article>
 
-      <!-- ====================================================
-           How It Works — Upgrading Existing Projects
-      ==================================================== -->
+      <!-- Upgrading Existing Projects -->
       <article class="content-section" id="section-upgrade" aria-labelledby="heading-upgrade">
         <h1 id="heading-upgrade">Upgrading Existing Projects</h1>
         <p class="lead">
@@ -525,30 +497,30 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         </p>
 
         <div class="callout">
-          <p><code>/keel upgrade</code> never rewrites whole documents. Every edit is surgical — existing content you wrote is preserved; only gaps and outdated sections are touched.</p>
+          <p><code>/keel upgrade</code> never rewrites whole documents. Every edit is surgical: existing content you wrote is preserved; only gaps and outdated sections are touched.</p>
         </div>
 
         <h2>How it runs</h2>
         <ul class="phase-list" role="list">
           <li>
             <span class="phase-label">Phase U1</span>
-            <span class="phase-desc"><strong>Discover</strong> — inventory the existing doc set, identify which keel documents are present, and determine project type and whether the project has a UI.</span>
+            <span class="phase-desc"><strong>Discover:</strong> inventory the existing doc set, identify which keel documents are present, and determine project type and whether the project has a UI.</span>
           </li>
           <li>
             <span class="phase-label">Phase U2</span>
-            <span class="phase-desc"><strong>Audit</strong> — run each present document through the upgrade checklist: required sections, stable IDs, standing rules, skill integration hooks, workflow script references, and placeholder fill status.</span>
+            <span class="phase-desc"><strong>Audit:</strong> run each present document through the upgrade checklist: required sections, stable IDs, standing rules, skill integration hooks, workflow script references, and placeholder fill status.</span>
           </li>
           <li>
             <span class="phase-label">Phase U3</span>
-            <span class="phase-desc"><strong>Report and permission</strong> — present a gap report grouped by severity. You choose which gaps to fix; Keel does nothing until you approve.</span>
+            <span class="phase-desc"><strong>Report and permission:</strong> present a gap report grouped by severity. You choose which gaps to fix; Keel does nothing until you approve.</span>
           </li>
           <li>
             <span class="phase-label">Phase U4</span>
-            <span class="phase-desc"><strong>Update</strong> — apply the approved fixes surgically: add missing sections, fill placeholders, append new standing rules, install missing skills, update <code>.keel/meta.json</code>.</span>
+            <span class="phase-desc"><strong>Update:</strong> apply the approved fixes surgically: add missing sections, fill placeholders, append new standing rules, install missing skills, update <code>.keel/meta.json</code>.</span>
           </li>
           <li>
             <span class="phase-label">Phase U5</span>
-            <span class="phase-desc"><strong>Codebase audit</strong> — generate a checklist of implementation gaps derived from the now-current docs, or save it as <code>CODEBASE_AUDIT.md</code> for later.</span>
+            <span class="phase-desc"><strong>Codebase audit:</strong> generate a checklist of implementation gaps derived from the now-current docs, or save it as <code>CODEBASE_AUDIT.md</code> for later.</span>
           </li>
         </ul>
 
@@ -564,7 +536,7 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
           </li>
           <li>
             <span class="feature-key">OUTDATED_CONVENTION</span>
-            <span class="feature-desc">A section exists but uses an older format — for example, a phase block missing an exit gate or a workflow script reference.</span>
+            <span class="feature-desc">A section exists but uses an older format; for example, a phase block missing an exit gate or a workflow script reference.</span>
           </li>
           <li>
             <span class="feature-key">MISSING_FEATURE</span>
@@ -572,7 +544,7 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
           </li>
           <li>
             <span class="feature-key">UNFILLED_PLACEHOLDER</span>
-            <span class="feature-desc">A generated placeholder — marked <code>[TBD]</code> or <code>[NEEDS DECISION]</code> — was never filled in.</span>
+            <span class="feature-desc">A generated placeholder marked <code>[TBD]</code> or <code>[NEEDS DECISION]</code> that was never filled in.</span>
           </li>
           <li>
             <span class="feature-key">MISSING_SKILL</span>
@@ -585,9 +557,7 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         </footer>
       </article>
 
-      <!-- ====================================================
-           Document Reference — Full Catalog
-      ==================================================== -->
+      <!-- The Full Catalog -->
       <article class="content-section" id="section-full-catalog" aria-labelledby="heading-full-catalog">
         <h1 id="heading-full-catalog">The Full Catalog</h1>
         <p class="lead">
@@ -605,15 +575,15 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
             <tbody>
               <tr>
                 <td>CLAUDE.md</td>
-                <td>Keystone index — invariants, document map, working agreements, and current project status. Every other document is referenced from here.</td>
+                <td>Keystone index: invariants, document map, working agreements, and current project status. Every other document is referenced from here.</td>
               </tr>
               <tr>
                 <td>BRD.md</td>
-                <td>Business requirements — the problem being solved, objectives, success metrics, constraints, and risks.</td>
+                <td>Business requirements: the problem being solved, objectives, success metrics, constraints, and risks.</td>
               </tr>
               <tr>
                 <td>PRD.md</td>
-                <td>Product requirements — user personas, key journeys, feature list, scope cuts, and roadmap.</td>
+                <td>Product requirements: user personas, key journeys, feature list, scope cuts, and roadmap.</td>
               </tr>
               <tr>
                 <td>ENGINEERING_DESIGN.md</td>
@@ -625,19 +595,19 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
               </tr>
               <tr>
                 <td>HLD.md / LLD.md</td>
-                <td>High- and low-level design — sequence flows, module map, API interfaces, and key types.</td>
+                <td>High- and low-level design: sequence flows, module map, API interfaces, and key types.</td>
               </tr>
               <tr>
                 <td>ADR.md</td>
-                <td>Architecture Decision Records — every significant technical bet, with context, consequences, and revisit triggers.</td>
+                <td>Architecture Decision Records: every significant technical bet, with context, consequences, and revisit triggers.</td>
               </tr>
               <tr>
                 <td>NFR.md</td>
-                <td>Non-functional requirements — performance, security, cost, and scalability targets, each with a concrete verification method.</td>
+                <td>Non-functional requirements: performance, security, cost, and scalability targets, each with a concrete verification method.</td>
               </tr>
               <tr>
                 <td>DESIGN.md</td>
-                <td>UX and UI design system — tokens, component patterns, accessibility requirements, and brand feel. Generated only if the project has a UI.</td>
+                <td>UX and UI design system: tokens, component patterns, accessibility requirements, and brand feel. Generated only if the project has a UI.</td>
               </tr>
               <tr>
                 <td>COMPLIANCE.md</td>
@@ -649,19 +619,19 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
               </tr>
               <tr>
                 <td>IMPLEMENTATION_PLAN.md</td>
-                <td>Phased build plan with concrete exit gates — the sequence in which Claude Code (or a human team) should build the system.</td>
+                <td>Phased build plan with concrete exit gates: the sequence in which Claude Code (or a human team) should build the system.</td>
               </tr>
               <tr>
                 <td>COMMANDS.md</td>
-                <td>How to run the project — dev server, build, test, migrate, seed, and any environment-specific variations.</td>
+                <td>How to run the project: dev server, build, test, migrate, seed, and any environment-specific variations.</td>
               </tr>
               <tr>
                 <td>RUNBOOK.md</td>
-                <td>How to operate and recover the system — deployment steps, monitoring, alerting, and incident response.</td>
+                <td>How to operate and recover the system: deployment steps, monitoring, alerting, and incident response.</td>
               </tr>
               <tr>
                 <td>almanac/</td>
-                <td>Optional topology-stable knowledge base — positioning, methodology, go-to-market strategy, AI training data. Useful for products with strong editorial or brand dimensions.</td>
+                <td>Optional topology-stable knowledge base: positioning, methodology, go-to-market strategy, AI training data. Useful for products with strong editorial or brand dimensions.</td>
               </tr>
             </tbody>
           </table>
@@ -672,31 +642,29 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         </footer>
       </article>
 
-      <!-- ====================================================
-           Contributing
-      ==================================================== -->
+      <!-- Contributing -->
       <article class="content-section" id="section-contributing" aria-labelledby="heading-contributing">
         <h1 id="heading-contributing">Contributing</h1>
         <p class="lead">
-          Keel is open source. Contributions — whether new templates, interview persona improvements, or bug fixes — are welcome.
+          Keel is open source. Contributions (whether new templates, interview persona improvements, or bug fixes) are welcome.
         </p>
 
         <h2>Plugin structure</h2>
         <div class="dir-tree" role="img" aria-label="Repository directory tree"><span class="dir-name">plugins/keel/</span>
 ├── <span class="dir-name">.claude-plugin/</span>
-│   └── <span class="file-name">plugin.json</span>          <span class="comment">— plugin manifest (name, version, author)</span>
+│   └── <span class="file-name">plugin.json</span>          <span class="comment"># plugin manifest (name, version, author)</span>
 └── <span class="dir-name">skills/keel/</span>
-    ├── <span class="file-name">SKILL.md</span>              <span class="comment">— the skill definition (the agent's brain)</span>
+    ├── <span class="file-name">SKILL.md</span>              <span class="comment"># the skill definition (the agent's brain)</span>
     └── <span class="dir-name">references/</span>
-        ├── <span class="file-name">personas.md</span>        <span class="comment">— interview persona definitions</span>
-        ├── <span class="file-name">catalog.md</span>         <span class="comment">— document catalog and selection rules</span>
-        ├── <span class="file-name">conventions.md</span>     <span class="comment">— ID schemes, cross-reference syntax</span>
-        └── <span class="dir-name">templates/</span>          <span class="comment">— one Markdown template per document type</span></div>
+        ├── <span class="file-name">personas.md</span>        <span class="comment"># interview persona definitions</span>
+        ├── <span class="file-name">catalog.md</span>         <span class="comment"># document catalog and selection rules</span>
+        ├── <span class="file-name">conventions.md</span>     <span class="comment"># ID schemes, cross-reference syntax</span>
+        └── <span class="dir-name">templates/</span>          <span class="comment"># one Markdown template per document type</span></div>
 
         <h2>Adding a document template</h2>
         <ol>
           <li>Create a Markdown file in <code>skills/keel/references/templates/</code>.</li>
-          <li>Follow the conventions in <code>conventions.md</code> — stable IDs, status markers, and cross-reference syntax.</li>
+          <li>Follow the conventions in <code>conventions.md</code>: stable IDs, status markers, and cross-reference syntax.</li>
           <li>Register the document in <code>catalog.md</code> with a clear description of when it should be generated.</li>
           <li>If the document introduces a new persona question, add it to the relevant phase in <code>personas.md</code>.</li>
         </ol>
@@ -704,7 +672,7 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         <h2>Pull requests</h2>
         <ul>
           <li>Branch off <code>main</code>.</li>
-          <li>Keep changes focused — one concern per PR.</li>
+          <li>Keep changes focused: one concern per PR.</li>
           <li>Update <code>CHANGELOG.md</code> with a brief entry under the appropriate version.</li>
         </ul>
 
