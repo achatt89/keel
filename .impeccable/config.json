@@ -1,0 +1,13 @@
+{
+  "hook": {
+    "enabled": true,
+    "quiet": false
+  },
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": ["docs/assets/vendor/**"],
+    "designSystem": {
+      "enabled": true
+    }
+  }
+}
