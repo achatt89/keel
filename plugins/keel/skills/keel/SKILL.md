@@ -346,3 +346,172 @@ Load these as needed; you do not need all of them in context at once.
 - Not a code generator. Keel produces the spec; the build happens afterward in Claude Code.
 - Not a one-size template stamper. If you find yourself generating the same 15 files regardless of
   the project, you are doing it wrong — re-read principle 2.
+
+---
+
+## Upgrade Mode — `/keel upgrade` · `/keel refresh` · `/keel sync`
+
+**Trigger:** user says "keel upgrade", "keel refresh", "keel sync", "update my keel docs",
+"refresh my documentation", "sync my docs with latest keel features", or any equivalent phrasing
+in a project with existing keel-generated docs.
+
+**Prerequisite — detect existing keel project:**
+Look for ≥3 of: BRD.md · PRD.md · ARCHITECTURE.md · ADR.md · IMPLEMENTATION_PLAN.md · CLAUDE.md
+with keel-standard headings. If not detected, respond:
+> "I don't see keel-generated docs here. Run `/keel` in this project first to generate your
+> foundational documents, then come back to upgrade them."
+
+**References:**
+- `references/keel-upgrade-guide.md` — per-doc audit checklist and gap taxonomy
+- `references/templates/UPGRADE_REPORT.md` — gap report format
+
+---
+
+### Phase U1 — Discover
+
+1. **Inventory existing docs.** Check for presence of each item (note present/absent):
+
+   *Core docs:* BRD.md · PRD.md · ARCHITECTURE.md · ADR.md · NFR.md · ENGINEERING_DESIGN.md
+
+   *Execution docs:* IMPLEMENTATION_PLAN.md · COMMANDS.md · RUNBOOK.md
+
+   *Design & meta:* DESIGN.md · PRODUCT.md · CLAUDE.md
+
+   *Skill files:* .claude/skills/impeccable/ · .agents/skills/modern-web-guidance/ · skills-lock.json
+
+   *Workflow scripts:* .claude/workflows/doc-sync.js · .claude/workflows/phase-*.js
+
+   *Hook config:* .claude/settings.json · .claude/hooks/modern-web-guidance-hook.mjs
+
+   *Keel metadata:* .keel/meta.json (present in projects generated after v0.3)
+
+2. **Read key docs.** Read CLAUDE.md, IMPLEMENTATION_PLAN.md, and DESIGN.md (if present) in full.
+   Understand the project domain, current phase, and whether it has a UI.
+
+3. **Determine project type.** From context: has UI? · production system? · multi-surface?
+   These determine which optional docs are required and whether skill integration applies.
+
+---
+
+### Phase U2 — Audit
+
+Using the per-doc checklist in `references/keel-upgrade-guide.md`, audit every present doc and
+check for every absent doc. Produce a structured gap list.
+
+**Gap categories (classify each gap into exactly one):**
+- `MISSING_DOC` — a doc in the current keel catalog that doesn't exist
+- `MISSING_SECTION` — a required section (by heading) in the current template but absent in existing doc
+- `OUTDATED_CONVENTION` — section exists but uses old structure (e.g. old 4-bullet standing rules without workflow-first)
+- `MISSING_FEATURE` — a new keel feature not yet in the doc (DESIGN.md §12 lifecycle table, workflow scripts in IMPLEMENTATION_PLAN, active skills in CLAUDE.md)
+- `UNFILLED_PLACEHOLDER` — a `{{PLACEHOLDER}}` or `[NEEDS DECISION]` that should have been filled
+- `MISSING_SKILL` — impeccable or modern-web-guidance not installed in a UI project
+
+**Severity:**
+- `Critical` — doc missing entirely, or a core security/governance section absent, or PRODUCT.md missing in a UI project with impeccable
+- `Important` — significant feature or convention missing (DESIGN.md §12, workflow scripts, doc-sync gate, workflow-first standing rules, unfilled placeholders)
+- `Optional` — nice-to-have (additional cross-references, optional sections absent for valid reasons, deferred items table)
+
+---
+
+### Phase U3 — Report + Permission
+
+1. **Present the gap report** using the format from `references/templates/UPGRADE_REPORT.md`:
+   - One-line project summary
+   - Summary counts: N Critical · N Important · N Optional
+   - Per-doc status table (✅ current / ⚠️ gaps / ❌ missing)
+   - Detailed gap list with severity, category, and recommended action
+   - "New features available" table (what keel can now add that wasn't present at generation time)
+
+2. **Ask permission to update** (use AskUserQuestion):
+   - "Update all gaps (Critical + Important)" ← recommended
+   - "Update Critical gaps only"
+   - "Let me select which gaps to fix"
+   - "Skip updates — I only wanted the report"
+
+3. **If UI project and new skills are available but not installed** (separate AskUserQuestion):
+   - "Install impeccable (FE quality, 23 lifecycle commands) + modern-web-guidance (search/retrieve/list)?"
+   - Yes (recommended) / impeccable only / modern-web-guidance only / Skip
+
+---
+
+### Phase U4 — Update
+
+Apply only what the user approved. These rules are non-negotiable:
+
+**Surgical-only edits.** Never rewrite an entire doc. Add missing sections, update outdated blocks,
+append new features — preserve every word the user has written elsewhere in the doc.
+
+**Per-doc update instructions:**
+
+*CLAUDE.md* — if "Git & working workflow" section lacks workflow script references: replace that
+section's steps with the workflow-first version from the current template. If Active skills section
+is absent (UI project): append it from the current template. Never touch other sections.
+
+*IMPLEMENTATION_PLAN.md* — if standing rules are old 4-bullet version: replace the entire standing
+rules block with the current 5-bullet workflow-first version. If phase blocks lack doc-sync exit gate
+or Workflow: line: add them per phase. If deferred items table is absent: append it before
+*End of IMPLEMENTATION_PLAN.md*. If workflow scripts index is absent: append it.
+
+*DESIGN.md* — if §12 is absent: append §12 before *End of DESIGN.md* using the current full
+lifecycle template. If §12 exists but has fewer than 15 command rows (old minimal version):
+replace §12 entirely with the current comprehensive version. Never touch §1–§11.
+
+*PRODUCT.md* — if absent in a UI project where skills integration was approved: generate it from
+`references/templates/PRODUCT.md` using project context already known from DESIGN.md + PRD.md.
+
+*Workflow scripts* — if .claude/workflows/ directory is absent or missing doc-sync.js:
+copy `references/templates/workflows/doc-sync.js` verbatim. Generate per-phase workflow scripts
+from `references/templates/workflows/phase-template.js` (one per IMPLEMENTATION_PLAN phase).
+
+*Skill installation* (if approved in Phase U3) — follow the "FE skill integration" steps from
+the main keel Phase 3 generation. Check existing setup first; merge hooks into existing settings.json
+rather than overwriting; update skills-lock.json.
+
+**After all edits:** grep for any `{{PLACEHOLDER}}` introduced by the new content and fill them
+from project context already established during this session. Report any that couldn't be filled.
+
+**Update .keel/meta.json** — create or update this file to record the upgrade:
+```json
+{
+  "keelVersion": "current",
+  "lastUpgraded": "{{ISO_DATE}}",
+  "documentsGenerated": ["list of all docs present after upgrade"],
+  "skillsInstalled": ["impeccable", "modern-web-guidance"],
+  "upgradedGaps": ["list of gap IDs fixed"]
+}
+```
+
+---
+
+### Phase U5 — Codebase Audit
+
+After docs are updated (or even if the user skipped updates), generate a codebase audit.
+
+1. **Build the audit checklist** from the updated docs:
+
+   *From IMPLEMENTATION_PLAN.md phases:*
+   For each phase marked ✅ (complete), generate: "Phase N — {{name}}: is every scope item implemented?
+   Read [relevant source dirs]. Check each item: [scope list]."
+
+   *From ENGINEERING_DESIGN.md non-negotiables:*
+   "For each non-negotiable rule, find where it is enforced in the codebase. Flag any that have
+   no enforcement."
+
+   *From ADR.md:*
+   "ADR-NNN: {{decision}}. Does the codebase reflect this? Where?"
+
+   *From NFR.md:*
+   "NFR target: {{requirement}} at {{target}}. Is this met? What evidence?"
+
+   *For UI projects:*
+   "/impeccable audit {{UI_PATH}} — are there any P0 or P1 findings?"
+   "npx -y modern-web-guidance@latest list — are any patterns in the codebase that have native
+   alternatives now available?"
+
+2. **Ask the user** (AskUserQuestion):
+   - "Run the codebase audit now" — execute inline, reading source files and checking each requirement
+   - "Save as CODEBASE_AUDIT.md for later" — write checklist file; user works through it manually
+   - "Skip codebase audit for now"
+
+3. If running now: execute the audit systematically, reporting findings per category.
+   If saving: write CODEBASE_AUDIT.md with all checklist items, current date, and instructions.
