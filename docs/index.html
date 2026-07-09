@@ -254,7 +254,7 @@
         </ul>
 
         <div class="callout callout-note">
-          <p>Keel has no npm, pip, or runtime dependencies. It is a plain Claude Code skill: a set of Markdown instructions the agent reads and acts on.</p>
+          <p>Keel itself has no npm, pip, or runtime dependencies &mdash; it's a plain Claude Code skill, a set of Markdown instructions the agent reads and acts on. The one exception: if you opt into FE skill integration (impeccable, modern-web-guidance) for a UI project, Keel installs those via their own <code>npx</code> CLIs at generation time.</p>
         </div>
 
         <footer class="content-footer">
@@ -389,7 +389,7 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
           </li>
           <li>
             <span class="phase-label">Phase 6</span>
-            <span class="phase-desc"><strong>Delivery / Ops:</strong> phasing, deployment environment, git workflow, worktree parallelism, and doc-sync strategy.</span>
+            <span class="phase-desc"><strong>Delivery / Ops:</strong> phasing, deployment environment, git workflow, worktree parallelism, doc-sync strategy, and how a stuck build task should be handled.</span>
           </li>
         </ul>
 
@@ -474,6 +474,14 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
           <li><strong>Open decisions:</strong> all <code>[NEEDS DECISION]</code> markers surfaced from across the doc set, so nothing is forgotten</li>
           <li><strong>First build step:</strong> a concrete starting point, typically "open this folder in Claude Code and start at <code>IMPLEMENTATION_PLAN.md</code> Phase 0"</li>
         </ul>
+
+        <h2>How building proceeds</h2>
+        <p>
+          Alongside the docs, Keel generates one workflow script per <code>IMPLEMENTATION_PLAN</code> phase. Running a phase script checks out a dedicated phase branch off <code>main</code>, then fans out its divisible tasks as parallel agents, each in its own <code>git worktree</code> branched off that phase branch. Every task agent opens with <code>/goal</code> &mdash; a completion condition covering the implementation, its tests, lint, and an end-to-end <code>verify</code> pass (plus a manual in-browser check via <code>claude-in-chrome</code> for UI work) &mdash; so it won't end its turn early. Task branches merge back into the phase branch; only the phase branch, carrying the mandatory doc-sync commit, ever merges to <code>main</code>.
+        </p>
+        <p>
+          What happens if a task's goal isn't being met is a choice you make during the Delivery / Ops interview round: bounded retries then escalate to you (the default), persistent until met, or escalate on the first failure.
+        </p>
 
         <div class="callout">
           <p>The recommended first action after a Keel session: open your project folder in Claude Code, point it at <code>CLAUDE.md</code>, and say "let's start building."</p>

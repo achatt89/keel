@@ -3,6 +3,40 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.1.0] — 2026-07-09
+
+Existing projects pick these up via `/keel upgrade` — Phase U2's audit detects each gap below
+(missing `/goal`, pre-phase-branch scripts, uninstalled skill files) and Phase U3 asks permission
+before applying.
+
+### Added
+- Goal-directed task execution: every worktree agent in a generated `phase-N-<slug>.js` script now
+  opens its task with `/goal`, a completion condition (implementation, tests, lint, `verify`
+  end-to-end check, and a manual `claude-in-chrome` pass for UI work) that blocks it from ending
+  its turn early. The Delivery/Ops interview round now asks how to handle a goal that isn't being
+  met — bounded retries then escalate (default), persistent until met, or escalate on first
+  failure — and bakes the choice into IMPLEMENTATION_PLAN's Standing rules and every phase script.
+- Phase workflow scripts now branch per phase, not per task: a `Setup` step creates/checks out a
+  `phase-N-<slug>` integration branch off `main`, task worktrees branch off that (not `main`), an
+  `Integrate` step merges each task branch back into it, doc-sync commits land on it, and only
+  then does the final `Merge` step put the phase branch — code plus doc-sync, as one unit — into
+  `main`. Previously task branches merged straight to `main`, which is what IMPLEMENTATION_PLAN's
+  Standing rules already described but the generated script never actually did.
+
+### Fixed
+- FE skill integration (Phase 3 / Upgrade U4) previously wrote impeccable and modern-web-guidance
+  hook/lockfile config without ever installing the underlying skill files, leaving hooks wired to
+  scripts that didn't exist. Now runs the real installers (`npx impeccable skills install`, `npx
+  skills add GoogleChrome/modern-web-guidance`) and verifies the files landed before writing any
+  downstream config.
+- impeccable's hook is no longer hand-written into the shared `.claude/settings.json`; it's
+  activated via `/impeccable hooks on`, which owns the gitignored `.claude/settings.local.json`
+  per impeccable's own convention. Keel's `settings.json` template now carries only the
+  modern-web-guidance hook.
+- `skills-lock.json` records the actually-installed version instead of a hardcoded `"latest"`.
+- keel-upgrade-guide.md's MISSING_SKILL checks now look for `scripts/hook.mjs` (not just a stub
+  `SKILL.md`) and no longer flag impeccable's absence from `settings.json` as a gap.
+
 ## [1.0.0] — 2026-06-26
 
 First stable release. Docs site accessibility and quality audit pass.

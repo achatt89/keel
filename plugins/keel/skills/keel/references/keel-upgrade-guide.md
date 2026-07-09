@@ -59,8 +59,10 @@ Outdated indicators → gap category:
 
 Required sections:
 - [ ] Non-negotiables block (must appear before Phase 0)
-- [ ] Standing rules (check it has 5 bullets, not the old 4):
+- [ ] Standing rules (check it has 6 bullets, not the old 5 or 4):
   - [ ] Workflow-first bullet (references phase scripts + worktrees) ← new in v0.3+
+  - [ ] Goal-directed, self-contained tasks bullet (references `/goal`, `verify`,
+    `claude-in-chrome`, and states the project's exit strategy) ← new in v1.1+
   - [ ] Tests-with-code bullet
   - [ ] Doc sync mandatory before merge bullet ← new in v0.3+
   - [ ] Decisions captured without fail bullet (ADR before merge) ← new in v0.3+
@@ -78,12 +80,28 @@ Required sections:
 - [ ] Workflow scripts index table ← new in v0.3+
 
 Outdated indicators:
-- Old 4-bullet standing rules (no workflow-first) → OUTDATED_CONVENTION (Critical)
+- Old 4- or 5-bullet standing rules (no workflow-first, or no goal-directed-tasks bullet) →
+  OUTDATED_CONVENTION (Critical if no workflow-first; Important if workflow-first present but
+  goal-directed-tasks bullet absent)
 - Standing rules present but no doc-sync bullet → MISSING_FEATURE (Important)
 - Phase blocks with no exit gate for impeccable audit (UI project) → MISSING_FEATURE (Important)
 - No deferred items table → MISSING_FEATURE (Important)
 - No workflow scripts index → MISSING_FEATURE (Important)
 - Phase blocks with no "Workflow:" line → MISSING_FEATURE (Important)
+
+Also check `.claude/workflows/phase-*.js` scripts directly (not just IMPLEMENTATION_PLAN's prose):
+- [ ] Each task agent prompt opens with `/goal <condition>` → MISSING_FEATURE (Important) if a
+  script has task agents but none set a goal condition.
+- [ ] Task prompts reference the `verify` skill, not just `npm test`/lint → MISSING_FEATURE
+  (Important).
+- [ ] A stuck-task handling block is present matching IMPLEMENTATION_PLAN's stated exit strategy
+  (not silently absent) → MISSING_FEATURE (Important).
+- [ ] Script has a `Setup` phase that creates/checks out a `phase-N-<slug>` branch, and task
+  worktrees branch off it (not off `main`) → OUTDATED_CONVENTION (Critical) if absent — this is
+  the pre-phase-branch script shape where task branches merged straight to `main`.
+- [ ] An `Integrate` step merges task branches into the phase branch, and the final `Merge` step
+  merges the phase branch — not individual task branches — into `main` → OUTDATED_CONVENTION
+  (Critical) if the script's Merge step instead iterates task branches directly onto `main`.
 
 ---
 
@@ -170,11 +188,19 @@ Check:
 ### Skill files
 
 If UI project:
-- [ ] `.claude/skills/impeccable/` directory exists → gap: MISSING_SKILL (Important) if absent
-- [ ] `.agents/skills/modern-web-guidance/` or equivalent exists → MISSING_SKILL (Important) if absent
-- [ ] `.claude/settings.json` has PostToolUse hook entries for both skills → MISSING_SKILL (Important)
+- [ ] `*/skills/impeccable/scripts/hook.mjs` resolves on disk (not just a stub `SKILL.md`) →
+  gap: MISSING_SKILL (Important) if absent. Fix by running `npx impeccable skills install -y
+  --providers=claude --scope=project`, not by re-writing config around the gap.
+- [ ] `*/skills/modern-web-guidance/SKILL.md` resolves on disk → MISSING_SKILL (Important) if
+  absent. Fix by running `npx skills add GoogleChrome/modern-web-guidance --skill
+  modern-web-guidance -a claude-code -y`.
+- [ ] `.claude/settings.json` has the modern-web-guidance PostToolUse hook entry → MISSING_SKILL
+  (Important). Note: impeccable's hook is *not* expected here — it lives in the gitignored
+  `.claude/settings.local.json`, activated via `/impeccable hooks on`. Do not flag its absence
+  from `settings.json` as a gap.
 - [ ] `.claude/hooks/modern-web-guidance-hook.mjs` exists → MISSING_SKILL (Important)
-- [ ] `skills-lock.json` has both entries → MISSING_SKILL (Optional)
+- [ ] `skills-lock.json` has both entries with real (non-`"latest"`) installed versions →
+  MISSING_SKILL (Optional)
 - [ ] `.impeccable/config.json` exists → MISSING_SKILL (Optional)
 
 ---
@@ -187,6 +213,9 @@ If UI project:
 | ENGINEERING_DESIGN non-negotiables section missing | Critical |
 | PRODUCT.md missing in UI project with skills opted-in | Critical |
 | Old 4-bullet standing rules (no workflow-first, no doc-sync) | Critical |
+| Phase workflow scripts merge task branches straight to main (no phase branch / Setup / Integrate) | Critical |
+| Standing rules present but no goal-directed-tasks bullet (no `/goal`, no exit strategy) | Important |
+| Phase workflow scripts have task agents with no `/goal` completion condition | Important |
 | DESIGN.md §12 missing or outdated (< 15 rows) | Important |
 | IMPLEMENTATION_PLAN missing doc-sync exit gate per phase | Important |
 | IMPLEMENTATION_PLAN missing deferred items table | Important |

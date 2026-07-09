@@ -66,15 +66,15 @@ relevant one *before* touching code.
      in IMPLEMENTATION_PLAN "Standing rules". -->
 
 0. **Version control from commit one.** If this folder isn't a git repo yet, `git init` and make an initial commit (the generated docs are the first commit) before any feature work.
-1. **Branch from `main`** before any work (`git checkout -b feat/<task> main`). Never commit directly to `main`.
+1. **Branch per phase, not per task.** A phase's workflow script creates/checks out `phase-N-<slug>` from `main` — the single integration branch for everything in that phase. Never commit directly to `main`. For work outside a phase script (hotfixes, small config tweaks), branch per feature off `main` instead (`git checkout -b feat/<task> main`).
 2. **Run the phase workflow script** for any planned phase of work:
    `claude --workflow .claude/workflows/phase-N-<slug>.js`
-   Or invoke via the Workflow tool inside a Claude Code session. The script fans out divisible tasks as parallel agents in separate `git worktree`s — one worktree per task, agents never share a working copy. Merge each worktree back to the feature branch when its task is done.
+   Or invoke via the Workflow tool inside a Claude Code session. The script checks out the phase branch, then fans out divisible tasks as parallel agents in separate `git worktree`s branched off it — one worktree per task, agents never share a working copy. Each task agent opens with `/goal` (code, tests, lint, `verify`, and a manual `claude-in-chrome` pass for UI work — it won't stop early); exit-strategy-when-stuck policy is in IMPLEMENTATION_PLAN "Standing rules". Task branches merge back into the phase branch, never straight to `main` — only the phase branch, carrying every task plus the doc-sync commit, ever merges to `main`.
    For undivisible work (small hotfixes, config tweaks): branch-per-feature still required; worktree still preferred for isolation.
 3. **Write tests with the code, never after.** Unit tests for logic/edge paths; integration tests for cross-module behaviour; smoke tests for wiring. Security- and isolation-critical behaviour is *proven by a test*. "No test needed" is a stated judgement, not a default.
 4. **Definition of done per change:** {{DOD_GATES}} (details: IMPLEMENTATION_PLAN "Standing rules").
-5. **Doc sync before every merge** — run `.claude/workflows/doc-sync.js` and wait for its commit before merging to `main`. It updates: this file's Current status · IMPLEMENTATION_PLAN phase table · ADR.md for new decisions · deferred-items table. A merge without the doc-sync commit is incomplete.
-6. **Merge to `main`** only after gates pass and the doc-sync commit is present.
+5. **Doc sync before every merge to `main`** — run `.claude/workflows/doc-sync.js` on the phase branch (the phase script does this automatically, after tasks are integrated) and wait for its commit before that branch merges to `main`. It updates: this file's Current status · IMPLEMENTATION_PLAN phase table · ADR.md for new decisions · deferred-items table. A phase branch without the doc-sync commit is not done, whatever its tests say.
+6. **Merge to `main`** only after gates pass and the doc-sync commit is present on the phase branch.
 7. **Decisions captured without fail.** Any decision made during work — including "we chose X over Y because Z" — becomes an ADR entry before merge. `[NEEDS DECISION]` markers resolved during work are removed and converted to ADR entries, never just deleted.
 
 ## Current status

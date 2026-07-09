@@ -8,7 +8,7 @@
 # Keel Upgrade Report — {{PROJECT_NAME}}
 
 **Audit date:** {{DATE}}
-**Keel feature set compared:** v0.3+ (impeccable lifecycle integration, workflow-first phases, modern-web-guidance in toto)
+**Keel feature set compared:** v1.1+ (goal-directed task execution via `/goal`, impeccable lifecycle integration, workflow-first phases, modern-web-guidance in toto)
 **Project type:** {{Web app / API / CLI / Fullstack / other}}
 **Has UI:** {{Yes / No}}
 **Skills opted-in:** {{impeccable / modern-web-guidance / none / both}}
@@ -78,6 +78,7 @@ These can be integrated into the project without re-running the full interview.
 |---|---|---|
 | DESIGN.md §12 — full 23-command impeccable lifecycle table | {{Present (current) / Present (outdated — N commands) / Absent}} | Maps every impeccable command to the right build moment; prevents under-use |
 | IMPLEMENTATION_PLAN — workflow-first standing rules | {{Current / Outdated / Absent}} | Encodes the build loop (worktrees, doc-sync, ADR capture) as non-negotiables |
+| IMPLEMENTATION_PLAN — goal-directed-tasks bullet | {{Current / Outdated / Absent}} | Each task agent opens with `/goal`; encodes this project's exit strategy when a goal isn't met |
 | IMPLEMENTATION_PLAN — doc-sync exit gate per phase | {{Present / Absent}} | Ensures docs never lag code; every phase exit includes a doc-sync commit |
 | IMPLEMENTATION_PLAN — deferred items table | {{Present / Absent}} | Prevents punted scope from disappearing; every deferral has a reason + target |
 | .claude/workflows/ phase scripts | {{Present (N scripts) / Absent}} | One command to run a full phase with parallel worktrees + doc-sync + merge |
