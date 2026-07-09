@@ -203,35 +203,60 @@ is yes).
 
 1. **Check existing setup first** — before generating, inspect the target project directory:
    ```bash
-   ls .claude/settings.json .claude/skills/impeccable/SKILL.md \
-      .agents/skills/modern-web-guidance/SKILL.md skills-lock.json 2>/dev/null
+   find . -maxdepth 4 -ipath "*skills/impeccable/scripts/hook.mjs" \
+           -o -ipath "*skills/modern-web-guidance/SKILL.md" 2>/dev/null
+   ls .claude/settings.json skills-lock.json 2>/dev/null
    ```
-   If both skills are already present and `.claude/settings.json` already has hooks, skip
-   generation and note "skills integration already in place" in the handoff.
+   If both skill files are found (not just a stub SKILL.md — the impeccable check specifically
+   requires `scripts/hook.mjs` to exist, since that's the file the hook actually calls) and
+   `.claude/settings.json` already has the modern-web-guidance hook, skip generation and note
+   "skills integration already in place" in the handoff.
 
 2. **Ask permission if not set up** — use `AskUserQuestion` once:
    *"May I set up impeccable (visual quality gates) and modern-web-guidance (modern web patterns)
    as PostToolUse hooks in this project? They fire automatically whenever UI files are edited."*
    Options: **Yes, set both up (recommended)** / modern-web-guidance only / Skip
 
-3. **Generate from templates** (if yes):
+3. **Install the real skill files first, then generate config** (if yes). Both skills are
+   real, published npm packages with their own installer CLIs — do not skip straight to writing
+   hook/lockfile config, since that config is meaningless if the files it points at don't exist:
+   ```bash
+   npx impeccable skills install -y --providers=claude --scope=project
+   npx skills add GoogleChrome/modern-web-guidance --skill modern-web-guidance -a claude-code -y
+   ```
+   - **Verify before continuing** — locate what the installers actually wrote (don't assume a
+     fixed path; confirm it):
+     ```bash
+     find . -maxdepth 4 -ipath "*skills/impeccable/scripts/hook.mjs" 2>/dev/null
+     find . -maxdepth 4 -ipath "*skills/modern-web-guidance/SKILL.md" 2>/dev/null
+     ```
+     If either command comes back empty (offline, registry error, `npx` unavailable), **stop and
+     say so plainly** in the Phase 3 handoff instead of writing config for a skill that isn't
+     actually installed — that silent gap is exactly what caused impeccable's hook to be wired to
+     a non-existent script in past-generated projects.
    - `PRODUCT.md` ← `references/templates/PRODUCT.md` — fill from the Designer round data
      (project name, description, target users, design direction, register: **brand** for
      landing/marketing/portfolio, **product** for app UI/dashboard/admin/tool).
    - `.claude/hooks/modern-web-guidance-hook.mjs` ← `references/templates/modern-web-guidance-hook.mjs` (verbatim, no edits needed).
-   - `.claude/settings.json` ← `references/templates/hooks-settings.json`. If `.claude/settings.json`
-     already exists in the target project, **merge** the PostToolUse hook entries; never overwrite
+   - `.claude/settings.json` ← `references/templates/hooks-settings.json` (modern-web-guidance's
+     hook only — impeccable is deliberately excluded here, see step 5). If `.claude/settings.json`
+     already exists in the target project, **merge** the PostToolUse hook entry; never overwrite
      the whole file. Remove the `_comment` key before writing.
    - `skills-lock.json` — if one exists, add the two entries; if not, create it with both entries.
-     modern-web-guidance: `{ "source": "GoogleChrome/modern-web-guidance", "sourceType": "github", "skillPath": "skills/modern-web-guidance/SKILL.md" }`
-     impeccable: `{ "source": "impeccable", "sourceType": "npm", "version": "latest" }`
+     Use the version actually installed (e.g. `npx impeccable --version`; modern-web-guidance's
+     installed `skill-version.txt`), not a hardcoded `"latest"`:
+     modern-web-guidance: `{ "source": "GoogleChrome/modern-web-guidance", "sourceType": "github", "skillPath": "skills/modern-web-guidance/SKILL.md", "version": "<installed version>" }`
+     impeccable: `{ "source": "impeccable", "sourceType": "npm", "version": "<installed version>" }`
 
 4. **Wire into the other generated docs:**
    - `CLAUDE.md` must include the "Active skills" conditional section (from the CLAUDE.md template).
    - `DESIGN.md` must include §12 Skill Integration (from the DESIGN.md template).
 
-5. **Impeccable hook activation note** — include in the CLAUDE.md "Active skills" section and in
-   the Phase 3 handoff summary:
+5. **Impeccable hook activation note** — impeccable's `skills install` places the skill files and
+   its hook scripts, but does **not** enable the hook. Activation is a separate, deliberate step
+   that writes `.claude/settings.local.json` (impeccable's own gitignored, machine-local convention
+   — distinct from the shared `.claude/settings.json` modern-web-guidance's hook lives in). Include
+   in the CLAUDE.md "Active skills" section and in the Phase 3 handoff summary:
    > "Activate impeccable hook: run `/impeccable hooks on` once in Claude Code after the skill
    > is installed. The modern-web-guidance hook is active immediately."
 
@@ -245,10 +270,26 @@ mandatory build loop — worktrees, doc-sync, merge — so the builder never has
 3. **For each phase in the generated `IMPLEMENTATION_PLAN.md`**, generate a phase workflow script:
    - Copy `references/templates/workflows/phase-template.js` as the base.
    - Rename to `.claude/workflows/phase-N-{{slug}}.js` (N = phase number, slug = phase name in kebab-case).
-   - Fill in `meta.name`, `meta.description`, and `meta.phases[0].detail` from the phase scope.
+   - Fill in `meta.name`, `meta.description`, and the `Build` phase entry's `detail` (tasks
+     summary) from the phase scope. `Setup`, `Integrate`, `Doc Sync`, and `Merge` entries are
+     fixed — leave their `detail` text as-is.
    - Fill in the `TASKS` array with the scope items from that phase (each scope item = one task).
    - For phases with UI work: the task prompt already includes the impeccable + modern-web-guidance
      instructions — leave them; they apply automatically when the task touches UI files.
+   - Fill `{{GOAL_EXIT_STRATEGY_BLOCK}}` with the block matching the "Goal-directed task execution
+     & exit strategy" answer from the Delivery/Ops interview round (also recorded in
+     IMPLEMENTATION_PLAN's Standing rules):
+     - **Bounded retries, then escalate (default):** "Retry budget: up to 3 fix-and-retest cycles.
+       If the goal still isn't met after 3 attempts, stop — run `/goal clear`, commit whatever is
+       working, and add a row to IMPLEMENTATION_PLAN's deferred-items table stating exactly what's
+       blocking and why, for human review."
+     - **Persistent until met:** "No retry cap — keep fixing and re-testing until the goal
+       condition genuinely holds. Only run `/goal clear` if the task is provably impossible as
+       specified (contradicts a non-negotiable, depends on a system that doesn't exist yet) — never
+       as a way to give up on something merely difficult. State the contradiction plainly if you do."
+     - **Escalate on first failure:** "Do not self-retry. The first time any check fails (test,
+       lint, verify, manual pass), stop immediately: run `/goal clear`, commit nothing broken, and
+       report the exact failure for human review before attempting a fix."
 4. **Copy `references/templates/workflows/README.md`** verbatim into `.claude/workflows/README.md`.
 5. **Reference each generated script** in `IMPLEMENTATION_PLAN.md`'s "Workflow scripts" table.
 6. **Note in the Phase 3 handoff:** "Run `.claude/workflows/phase-0-guardrails.js` to start Phase 0."
@@ -377,7 +418,9 @@ with keel-standard headings. If not detected, respond:
 
    *Design & meta:* DESIGN.md · PRODUCT.md · CLAUDE.md
 
-   *Skill files:* .claude/skills/impeccable/ · .agents/skills/modern-web-guidance/ · skills-lock.json
+   *Skill files:* `*/skills/impeccable/scripts/hook.mjs` (not just a stub SKILL.md) ·
+   `*/skills/modern-web-guidance/SKILL.md` · skills-lock.json (find, don't assume — see
+   keel-upgrade-guide.md "Skill files")
 
    *Workflow scripts:* .claude/workflows/doc-sync.js · .claude/workflows/phase-*.js
 
@@ -432,6 +475,12 @@ check for every absent doc. Produce a structured gap list.
    - "Install impeccable (FE quality, 23 lifecycle commands) + modern-web-guidance (search/retrieve/list)?"
    - Yes (recommended) / impeccable only / modern-web-guidance only / Skip
 
+4. **If Standing rules predate the goal-directed-tasks bullet** (separate AskUserQuestion — same
+   options and defaults as the "Goal-directed task execution & exit strategy" question in the
+   Delivery/Ops interview round):
+   - "Bounded retries, then escalate" (recommended) / "Persistent until met" / "Escalate on first
+     failure"
+
 ---
 
 ### Phase U4 — Update
@@ -447,8 +496,9 @@ append new features — preserve every word the user has written elsewhere in th
 section's steps with the workflow-first version from the current template. If Active skills section
 is absent (UI project): append it from the current template. Never touch other sections.
 
-*IMPLEMENTATION_PLAN.md* — if standing rules are old 4-bullet version: replace the entire standing
-rules block with the current 5-bullet workflow-first version. If phase blocks lack doc-sync exit gate
+*IMPLEMENTATION_PLAN.md* — if standing rules are the old 4- or 5-bullet version: replace the
+entire standing rules block with the current 6-bullet version, filling the goal-directed-tasks
+bullet's exit strategy from the Phase U3 answer. If phase blocks lack doc-sync exit gate
 or Workflow: line: add them per phase. If deferred items table is absent: append it before
 *End of IMPLEMENTATION_PLAN.md*. If workflow scripts index is absent: append it.
 
@@ -461,7 +511,21 @@ replace §12 entirely with the current comprehensive version. Never touch §1–
 
 *Workflow scripts* — if .claude/workflows/ directory is absent or missing doc-sync.js:
 copy `references/templates/workflows/doc-sync.js` verbatim. Generate per-phase workflow scripts
-from `references/templates/workflows/phase-template.js` (one per IMPLEMENTATION_PLAN phase).
+from `references/templates/workflows/phase-template.js` (one per IMPLEMENTATION_PLAN phase),
+filling `{{GOAL_EXIT_STRATEGY_BLOCK}}` per the Phase U3 answer.
+
+If phase scripts already exist:
+- **Missing `/goal` only** (Setup/Integrate phases already present, task branches already merge
+  into a phase branch): patch each task prompt in place — insert the `/goal` block and the
+  matching exit-strategy block from `phase-template.js`; never rewrite the rest of the script's
+  task-specific content.
+- **Missing the phase-branch structure** (no `Setup` phase creating `phase-N-<slug>`, task
+  branches merge straight to `main`, no `Integrate` step): this is a Critical, block-level gap —
+  regenerate the whole script from the current `phase-template.js` (this single regeneration also
+  covers the `/goal` gap above — fill `{{GOAL_EXIT_STRATEGY_BLOCK}}` per the Phase U3 answer same
+  as fresh generation, do not additionally patch), re-inserting the existing `TASKS` array and any
+  task-specific edits the old script had. Do not attempt a line-level patch;
+  the branch topology changed (task worktree → phase branch → main, not task worktree → main).
 
 *Skill installation* (if approved in Phase U3) — follow the "FE skill integration" steps from
 the main keel Phase 3 generation. Check existing setup first; merge hooks into existing settings.json

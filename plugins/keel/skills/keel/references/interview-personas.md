@@ -190,6 +190,22 @@ that govern how the build is conducted. **Feeds:** IMPLEMENTATION_PLAN, COMMANDS
 > - **Parallel agents via worktrees:** When work is divisible, run it as parallel agents each in
 >   **its own `git worktree`** (one per agent, never a shared working copy), merging each back to
 >   the feature branch? *(Default: yes, whenever the work can be split.)*
+> - **Goal-directed task execution & exit strategy:** Each worktree agent opens its task with
+>   `/goal` — a built-in Claude Code primitive that blocks the agent from ending its turn until a
+>   stated completion condition holds (code implemented, tests pass, lint clean, the `verify` skill
+>   confirms the behavior end-to-end, and a manual `claude-in-chrome` pass for UI work). What should
+>   happen when the goal *isn't* being met? Use `AskUserQuestion` with these options:
+>   - **Bounded retries, then escalate (recommended):** retry a small number of fix-and-retest
+>     cycles; if still failing, stop, run `/goal clear`, commit what works, and record the blocker
+>     in the deferred-items table for human review. Best default — bounds token/time cost.
+>   - **Persistent until met:** no retry cap; keep fixing and re-testing until the condition
+>     genuinely holds. Only bail via `/goal clear` if the task is provably impossible as specified.
+>     Best for well-specified, deterministic, or security-critical work where "give up" isn't
+>     acceptable.
+>   - **Escalate on first failure:** no self-retry — the moment any check fails, stop and report
+>     immediately. Best for regulated/high-stakes codebases where autonomous retries need sign-off.
+>   *(Default: Bounded retries, then escalate.)* Record the choice — it's baked into
+>   `IMPLEMENTATION_PLAN`'s standing rules and every generated phase workflow script.
 > - **Documentation in lockstep:** After *each chunk/phase* of work, auto-update `CLAUDE.md`
 >   (current status), the `IMPLEMENTATION_PLAN` phase table, and any doc the change touched (ADRs,
 >   README index, RUNBOOK) — so docs never lag code? *(Default: yes — a merge isn't done until the
