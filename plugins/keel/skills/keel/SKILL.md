@@ -11,7 +11,7 @@ description: >
   or "generate documentation to build a new project with Claude Code". This is for NEW projects
   defined from an idea — not for documenting an existing codebase.
 metadata:
-  version: 0.2.0
+  version: 1.1.0
 license: MIT
 ---
 
