@@ -10,6 +10,9 @@
   KEEP IT LIGHT: This is the #1 rule. Detail lives in the docs this file points to.
         Target ~70–120 lines. If a section grows past a few lines, it belongs in a
         referenced doc with a pointer here. Resist the urge to explain — link instead.
+        As the project ages this file can drift past its target (old status lines left
+        instead of overwritten, invariants for since-removed components) — run
+        `/keel archive` to relocate that drift into PHASE_ARCHIVE.md and trim back.
   Delete all <!-- Keel guidance --> comments (and this block) when filling this in.
 -->
 
@@ -43,6 +46,7 @@ relevant one *before* touching code.
 | `docs/{{BRD}}` / `docs/{{PRD}}` | Questioning scope or product behaviour |
 | `{{COMMANDS}}` | Running anything — dev/test/deploy commands and the env-var reference |
 | `{{RUNBOOK}}` | Operating or responding to an incident |
+| `docs/PHASE_ARCHIVE.md` *(only once `/keel archive` has run)* | Revisiting finished or superseded work — relocated detail, nothing deleted |
 
 ## Hard invariants (full list + rationale: {{ENGINEERING_DESIGN}} §{{NONNEG_SECTION}})
 

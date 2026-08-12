@@ -31,7 +31,7 @@
     </a>
 
     <div class="header-actions">
-      <span class="version-badge" aria-label="Version 1.0.0">v1.0.0</span>
+      <span class="version-badge" aria-label="Version 1.2.0">v1.2.0</span>
       <a
         href="https://github.com/achatt89/keel"
         class="github-link"
@@ -114,6 +114,9 @@
           </li>
           <li>
             <a href="#upgrade" class="nav-link nav-link-child">Upgrading Existing Projects</a>
+          </li>
+          <li>
+            <a href="#archive" class="nav-link nav-link-child">Archiving &amp; Trimming</a>
           </li>
         </ul>
       </div>
@@ -561,6 +564,71 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         </ul>
 
         <footer class="content-footer">
+          <a href="#archive">Archiving &amp; Trimming &rarr;</a>
+        </footer>
+      </article>
+
+      <!-- Archiving & Trimming -->
+      <article class="content-section" id="section-archive" aria-labelledby="heading-archive">
+        <h1 id="heading-archive">Archiving &amp; Trimming</h1>
+        <p class="lead">
+          <code>/keel archive</code> relocates finished or superseded detail out of <code>CLAUDE.md</code>, <code>IMPLEMENTATION_PLAN.md</code>, and <code>ADR.md</code> into a new <code>PHASE_ARCHIVE.md</code> &mdash; keeping the docs a fresh session reads light on tokens, without deleting anything.
+        </p>
+
+        <h2>When to run it</h2>
+        <p>
+          Long-running projects accumulate real detail in the living docs: completed phase write-ups, resolved deferred items, superseded decisions. That detail is worth keeping &mdash; it gets revisited &mdash; but it costs context on every session start. Run <code>/keel archive</code> at natural checkpoints: the end of a phase, when <code>CLAUDE.md</code> has drifted past its ~70&ndash;120 line target, or whenever a session start feels heavier than it should.
+        </p>
+
+        <div class="callout">
+          <p><code>/keel archive</code> never deletes. Every relocated block lands in <code>PHASE_ARCHIVE.md</code> verbatim, with a one-line summary and a link left behind in its place.</p>
+        </div>
+
+        <h2>How it runs</h2>
+        <ul class="phase-list" role="list">
+          <li>
+            <span class="phase-label">Phase X1</span>
+            <span class="phase-desc"><strong>Discover:</strong> inventory the living docs and measure how far each has drifted past its target size.</span>
+          </li>
+          <li>
+            <span class="phase-label">Phase X2</span>
+            <span class="phase-desc"><strong>Identify:</strong> scan for archive candidates &mdash; completed phases, resolved deferred items, superseded decisions, stale sections &mdash; against a strict never-archive list (nothing open, active, or unresolved is ever eligible).</span>
+          </li>
+          <li>
+            <span class="phase-label">Phase X3</span>
+            <span class="phase-desc"><strong>Report and permission:</strong> present the archive plan with a before/after size projection per doc. You choose to archive everything, a subset, or nothing; Keel does nothing until you approve.</span>
+          </li>
+          <li>
+            <span class="phase-label">Phase X4</span>
+            <span class="phase-desc"><strong>Archive:</strong> relocate the approved content to <code>PHASE_ARCHIVE.md</code> verbatim, leave a one-line summary + link behind, and never renumber or move an ID in the process.</span>
+          </li>
+          <li>
+            <span class="phase-label">Phase X5</span>
+            <span class="phase-desc"><strong>Verify:</strong> confirm every new link resolves, every ID is still unique, and report the size reclaimed.</span>
+          </li>
+        </ul>
+
+        <h2>What's eligible</h2>
+        <ul class="feature-list" role="list">
+          <li>
+            <span class="feature-key">Completed phases</span>
+            <span class="feature-desc">A ✅ phase's full Goal/Scope/Deliverables/Exit-gates block in IMPLEMENTATION_PLAN.md &mdash; the phase-status table row always stays.</span>
+          </li>
+          <li>
+            <span class="feature-key">Resolved deferred items</span>
+            <span class="feature-desc">Deferred-items table rows already marked ✅ resolved.</span>
+          </li>
+          <li>
+            <span class="feature-key">Superseded decisions</span>
+            <span class="feature-desc">An ADR marked superseded keeps its ID and a one-line stub in ADR.md; its full Context/Options/Consequences prose moves.</span>
+          </li>
+          <li>
+            <span class="feature-key">CLAUDE.md drift</span>
+            <span class="feature-desc">Content that's grown past the keystone-index job &mdash; stale invariants, old status lines left instead of overwritten.</span>
+          </li>
+        </ul>
+
+        <footer class="content-footer">
           <a href="#full-catalog">Document Catalog &rarr;</a>
         </footer>
       </article>
@@ -640,6 +708,10 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
               <tr>
                 <td>almanac/</td>
                 <td>Optional topology-stable knowledge base: positioning, methodology, go-to-market strategy, AI training data. Useful for products with strong editorial or brand dimensions.</td>
+              </tr>
+              <tr>
+                <td>PHASE_ARCHIVE.md</td>
+                <td>Relocated detail for finished or superseded work &mdash; completed phases, resolved deferred items, superseded decisions. Created on-demand by <code>/keel archive</code>, never at initial generation.</td>
               </tr>
             </tbody>
           </table>

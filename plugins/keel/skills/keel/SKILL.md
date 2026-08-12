@@ -9,9 +9,14 @@ description: >
   greenfield project", "scaffold project docs", "create a BRD/PRD/architecture doc", "spec out an
   idea", "plan a new app before building", "interview me about my idea", "lay the foundations",
   or "generate documentation to build a new project with Claude Code". This is for NEW projects
-  defined from an idea — not for documenting an existing codebase.
+  defined from an idea — not for documenting an existing codebase. Also handles two ongoing modes
+  for a project Keel already documented: "keel upgrade" (audit docs against the current keel
+  standard and apply approved fixes) and "keel archive" (relocate finished/superseded detail out
+  of CLAUDE.md/IMPLEMENTATION_PLAN.md/ADR.md into PHASE_ARCHIVE.md to keep the living docs light —
+  triggers: "archive completed phases", "trim my docs", "shrink CLAUDE.md", "my docs are getting
+  too big", "keep my keel docs light for context").
 metadata:
-  version: 1.1.0
+  version: 1.2.0
 license: MIT
 ---
 
@@ -378,6 +383,8 @@ Load these as needed; you do not need all of them in context at once.
 | `references/conventions.md` | Running Phase 3 — house style, ID schemes, cross-ref syntax, status markers |
 | `references/almanac-guide.md` | Deciding on / building an almanac knowledge base |
 | `references/templates/*.md` | Generating a specific document — its structural skeleton |
+| `references/keel-upgrade-guide.md` | Running Phase U2 — the upgrade audit checklist |
+| `references/keel-archive-guide.md` | Running Phase X2/X4 — what's archivable and how to move it |
 
 ## What Keel is NOT
 
@@ -579,3 +586,103 @@ After docs are updated (or even if the user skipped updates), generate a codebas
 
 3. If running now: execute the audit systematically, reporting findings per category.
    If saving: write CODEBASE_AUDIT.md with all checklist items, current date, and instructions.
+
+---
+
+## Archive Mode — `/keel archive`
+
+**Trigger:** user says "keel archive", "archive completed phases", "trim my docs", "shrink
+CLAUDE.md", "archive finished work", "clean up my keel docs for context", "my docs are getting
+too big", or any equivalent phrasing in a project with existing keel-generated docs.
+
+**Why this exists:** Keel's living docs (`CLAUDE.md`, `IMPLEMENTATION_PLAN.md`, `ADR.md`)
+accumulate real detail as a project ages — completed phase write-ups, resolved deferred items,
+superseded decisions. That detail matters and is often revisited, but it costs context on every
+new session. `/keel archive` relocates it to `PHASE_ARCHIVE.md` — **never deletes it** — and
+leaves a one-line summary + link in its place. It is on-demand, not automatic: doc-sync
+(`.claude/workflows/doc-sync.js`) keeps the living docs accurate after every merge, but does not
+archive; run `/keel archive` yourself at natural checkpoints (end of a phase, docs feel bloated,
+before a long session).
+
+**Prerequisite — detect existing keel project:** same detection as Upgrade Mode (≥3 of BRD.md ·
+PRD.md · ARCHITECTURE.md · ADR.md · IMPLEMENTATION_PLAN.md · CLAUDE.md with keel-standard
+headings). If not detected, respond:
+> "I don't see keel-generated docs here. Run `/keel` in this project first to generate your
+> foundational documents, then come back to archive finished work."
+
+**References:**
+- `references/keel-archive-guide.md` — candidate categories, the "never archive" list, and the
+  exact before/after edit for each
+- `references/templates/PHASE_ARCHIVE.md` — the archive document skeleton
+- `references/templates/ARCHIVE_REPORT.md` — the pre-archive report format
+
+---
+
+### Phase X1 — Discover & measure
+
+1. Inventory the living docs: `CLAUDE.md`, `IMPLEMENTATION_PLAN.md`, `ADR.md`, `DESIGN.md` (if
+   present), and any doc the user names directly. Read each in full.
+2. Note each doc's rough line count. `CLAUDE.md` has an explicit target (~70–120 lines per its
+   own template guidance) — flag it if well past that. Others have no hard cap, but flag any
+   doc that's grown noticeably beyond what a cold read at session start actually needs.
+3. Check whether `PHASE_ARCHIVE.md` already exists. If yes, read it — new entries append; the
+   file is never recreated from scratch.
+
+### Phase X2 — Identify archive candidates
+
+Using `references/keel-archive-guide.md`, scan for each category (consult its "never archive"
+list before proposing anything — an item with an open dependency, an active ADR, or an
+in-progress phase is never eligible):
+
+- `PHASE_COMPLETE` — IMPLEMENTATION_PLAN phases marked ✅ whose full Goal/Scope/Deliverables/
+  Exit-gates block is still inline.
+- `DEFERRED_RESOLVED` — deferred-items table rows marked ✅ resolved.
+- `ADR_SUPERSEDED` — ADR entries marked ⚠️ Superseded by ADR-xxx, still carrying full
+  Context/Options/Consequences prose.
+- `CLAUDE_DRIFT` — CLAUDE.md content beyond its keystone-index job: stale invariants no longer
+  enforced, old status lines appended instead of overwritten, anything past the light-file budget.
+- `STALE_SECTION` — anything else the user points at directly.
+
+### Phase X3 — Report + Permission
+
+1. Present the archive plan using `references/templates/ARCHIVE_REPORT.md`: candidates grouped
+   by category, current vs. projected line count per doc, and the total volume moving to
+   `PHASE_ARCHIVE.md`.
+2. **Ask permission to archive** (use `AskUserQuestion`):
+   - "Archive everything eligible (recommended)"
+   - "Let me select which candidates to archive"
+   - "Skip — I only wanted the report"
+
+### Phase X4 — Archive
+
+Apply only what the user approved. These rules are non-negotiable:
+
+1. **Move, never delete.** Every archived block's full original content lands in
+   `PHASE_ARCHIVE.md` verbatim, under a heading naming its source (doc + section/phase/ADR-id)
+   and the date archived.
+2. **Leave a live pointer.** The source doc keeps a one-line summary (the outcome, not the
+   process) plus a link, e.g. `→ full detail: PHASE_ARCHIVE.md#phase-2-ingestion`.
+3. **Never touch an ID.** Phase numbers, ADR numbers, requirement IDs stay exactly where they
+   are and mean exactly what they meant — archiving relocates prose, not the record. A superseded
+   ADR keeps its `ADR-xxx` stub (id, title, status, superseded-by, one-line why) in `ADR.md`;
+   only the Context/Options/Consequences prose body moves.
+4. **Surgical edits only** (same discipline as Upgrade Mode) — never rewrite a whole doc; replace
+   exactly the archived block, nothing else.
+5. **Per-category mechanics:** follow `references/keel-archive-guide.md` "How to archive"
+   exactly — it defines the precise before/after shape for each candidate category.
+6. If `PHASE_ARCHIVE.md` didn't exist before this run, create it from
+   `references/templates/PHASE_ARCHIVE.md` and add its row to `CLAUDE.md`'s document map:
+   `| docs/PHASE_ARCHIVE.md | Revisiting finished or superseded work |`. Regenerate its table of
+   contents to include every entry, old and new.
+7. **Update `.keel/meta.json`:** `"lastArchived": "{{ISO_DATE}}"`, `"archivedEntries": {{N moved
+   this run}}`.
+
+### Phase X5 — Verify & report
+
+1. Run the same consistency pass as generation Phase 5: every cross-reference resolves
+   (including every new `PHASE_ARCHIVE.md#` link), every ID still unique, `CLAUDE.md`'s document
+   map still matches disk.
+2. Report before/after line counts per doc and the total relocated to `PHASE_ARCHIVE.md`.
+3. Remind the user this is on-demand: doc-sync keeps the docs accurate per merge but does not
+   archive; the natural cadence is end-of-phase or whenever a session start feels heavier than
+   it should.

@@ -65,6 +65,10 @@ Use a consistent set across all docs:
   they're marked resolved/retired with a date.
 - **Living docs** (`CLAUDE.md` current-status, `IMPLEMENTATION_PLAN` phase status, `COMMANDS`,
   `RUNBOOK`) are updated freely as the build progresses — that's their job.
+- **Archiving relocates, never deletes.** `/keel archive` moves finished/superseded detail
+  (completed phase write-ups, resolved deferred items, superseded ADR bodies) out of the living
+  docs into `PHASE_ARCHIVE.md`, leaving a one-line summary + link behind. IDs never move; only
+  the prose body of a *closed* record relocates. See `references/keel-archive-guide.md`.
 
 ## Traceability checklist (run before handoff)
 

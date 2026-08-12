@@ -3,6 +3,20 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.2.0] — 2026-08-12
+
+### Added
+- `/keel archive`: a new on-demand mode that trims `CLAUDE.md`, `IMPLEMENTATION_PLAN.md`, and
+  `ADR.md` for long-running projects by relocating finished or superseded detail — completed phase
+  write-ups, resolved deferred items, superseded ADR bodies — into a new `PHASE_ARCHIVE.md`.
+  Nothing is deleted: every archived block keeps its full original content plus a link back from a
+  one-line summary left in place, since archived work has a real chance of being revisited. Scoped
+  to the `CLAUDE.md` keystone-index target (~70–120 lines) and the living-doc conventions already
+  in place; IDs (`Phase N`, `ADR-xxx`) never move. Gated behind a report + `AskUserQuestion`
+  permission step, same as `/keel upgrade`. New references: `keel-archive-guide.md` (candidate
+  categories, the never-archive list, per-category before/after mechanics),
+  `templates/PHASE_ARCHIVE.md`, `templates/ARCHIVE_REPORT.md`.
+
 ## [1.1.0] — 2026-07-09
 
 Existing projects pick these up via `/keel upgrade` — Phase U2's audit detects each gap below

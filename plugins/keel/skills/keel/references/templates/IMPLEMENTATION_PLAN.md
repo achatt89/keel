@@ -84,6 +84,9 @@ Phases 0–{{N}} deliver {{v1 / the launchable line}}. Phase {{N+1}} is {{the po
 
 <!-- ============================================================ -->
 <!-- Copy this block per phase. Keep the same four headings.       -->
+<!-- Once a phase ships (✅), `/keel archive` can relocate this     -->
+<!-- whole block to PHASE_ARCHIVE.md, leaving a one-line outcome   -->
+<!-- + link here — the phase-status table row stays either way.    -->
 <!-- ============================================================ -->
 
 ## Phase {{N}} — {{Phase name}}
@@ -152,7 +155,9 @@ Phases 0–{{N}} deliver {{v1 / the launchable line}}. Phase {{N+1}} is {{the po
 <!-- Keel guidance: every item punted during any phase lands here before the phase closes.
      "Deferred" is not "forgotten" — each item has a reason and a revisit trigger.
      Items resolved in a later phase are marked ✅ with a note.
-     This table is updated by the doc-sync workflow (.claude/workflows/doc-sync.js). -->
+     This table is updated by the doc-sync workflow (.claude/workflows/doc-sync.js).
+     `/keel archive` relocates ✅-resolved rows to PHASE_ARCHIVE.md, keeping this table
+     down to open items only. -->
 
 | Item | Deferred from | Reason | Target phase | Status |
 |---|---|---|---|---|

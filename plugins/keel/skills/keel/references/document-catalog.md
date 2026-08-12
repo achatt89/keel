@@ -167,6 +167,17 @@ a one-line justification per inclusion and per omission, and adjust.
 - **Owns:** `Phase 0..N`. References BRD/PRD/ADR/NFR per phase. Phase status is updated as the
   build progresses (this is the doc the builder touches most).
 
+### `PHASE_ARCHIVE.md` — relocated detail for finished/superseded work *(created on-demand)*
+- **Purpose:** The overflow tank for the living docs. Holds full detail moved out of `CLAUDE.md`,
+  `IMPLEMENTATION_PLAN.md`, and `ADR.md` by `/keel archive` — completed phase write-ups, resolved
+  deferred items, superseded ADR bodies — so those stay light for a new session while the detail
+  stays one link away for whoever revisits it.
+- **Include:** Never part of initial generation (Phase 3) — there's nothing to archive yet.
+  Created the first time `/keel archive` runs; see SKILL.md "Archive Mode".
+- **Depends on:** Whichever doc each entry was moved from.
+- **Owns:** No new IDs. Every entry keeps the ID it had in its source (`Phase N`, `ADR-xxx`) —
+  archiving relocates prose, not the record.
+
 ### `COMMANDS.md` — command & env reference *(if it runs)*
 - **Purpose:** Dev/test/deploy commands and the environment-variable reference. Copy-paste ready.
 - **Include:** Anything that's actually run/built/deployed.
@@ -206,6 +217,8 @@ a one-line justification per inclusion and per omission, and adjust.
 4. **Operational:** `IMPLEMENTATION_PLAN` → `COMMANDS` → `RUNBOOK`
 5. **Knowledge base:** `almanac/*` (if included)
 6. **Indexes last:** `docs/README.md`, then `CLAUDE.md` — so they map what actually exists.
+7. **On-demand:** `PHASE_ARCHIVE.md` — created and appended to only by `/keel archive`, never
+   during initial generation or `/keel upgrade`.
 
 Fix the ID namespace and the BRD/PRD spine *before* parallelizing any later docs, so every parallel
 document references a stable base.
