@@ -22,7 +22,7 @@ Use it to diff existing docs against current keel standards and classify each ga
 | CLAUDE.md | All projects | ✓ |
 | DESIGN.md | UI projects | ✓ for UI |
 | PRODUCT.md | UI + impeccable | Critical for UI with skills |
-| .keel/meta.json | All projects | Optional |
+| .keel/meta.json | All projects (written at generation, from v1.3+) | Optional — but its absence means `/keel version` can't report this project's doc version |
 | .claude/workflows/doc-sync.js | All projects | Important |
 | .claude/workflows/phase-*.js | All projects | Important |
 | .claude/hooks/modern-web-guidance-hook.mjs | UI projects | Important |

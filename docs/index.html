@@ -31,7 +31,7 @@
     </a>
 
     <div class="header-actions">
-      <span class="version-badge" aria-label="Version 1.2.0">v1.2.0</span>
+      <span class="version-badge" aria-label="Version 1.3.0">v1.3.0</span>
       <a
         href="https://github.com/achatt89/keel"
         class="github-link"
@@ -111,6 +111,9 @@
           </li>
           <li>
             <a href="#handoff" class="nav-link nav-link-child">Handoff</a>
+          </li>
+          <li>
+            <a href="#version" class="nav-link nav-link-child">Checking Your Version</a>
           </li>
           <li>
             <a href="#upgrade" class="nav-link nav-link-child">Upgrading Existing Projects</a>
@@ -488,6 +491,51 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
 
         <div class="callout">
           <p>The recommended first action after a Keel session: open your project folder in Claude Code, point it at <code>CLAUDE.md</code>, and say "let's start building."</p>
+        </div>
+
+        <footer class="content-footer">
+          <a href="#version">Checking Your Version &rarr;</a>
+        </footer>
+      </article>
+
+      <!-- Checking Your Version -->
+      <article class="content-section" id="section-version" aria-labelledby="heading-version">
+        <h1 id="heading-version">Checking Your Version</h1>
+        <p class="lead">
+          <code>/keel version</code> answers three questions in one line each: what version of the keel skill is installed, what version last touched this project's docs, and whether a newer keel is published.
+        </p>
+
+        <p>
+          It's read-only &mdash; no permission prompt, no edits, nothing written. Run it any time you're unsure whether your docs are current, or before deciding whether to run <code>/keel upgrade</code>.
+        </p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Line</th>
+                <th scope="col">Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Installed keel skill</td>
+                <td>Read straight from the running <code>SKILL.md</code>'s own frontmatter &mdash; always accurate, no I/O.</td>
+              </tr>
+              <tr>
+                <td>This project's docs</td>
+                <td><code>.keel/meta.json</code>'s <code>keelVersion</code>, written at generation and updated by every <code>/keel upgrade</code> or <code>/keel archive</code>. Flagged as behind if older than the installed skill.</td>
+              </tr>
+              <tr>
+                <td>Latest published</td>
+                <td>Best-effort fetch of the plugin manifest from GitHub, when a fetch tool is available this session. Never blocks &mdash; skipped silently if it can't reach it.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout">
+          <p>If your project's docs are behind the installed skill, <code>/keel version</code> tells you and points you straight at <code>/keel upgrade</code>.</p>
         </div>
 
         <footer class="content-footer">

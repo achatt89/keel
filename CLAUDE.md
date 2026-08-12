@@ -36,8 +36,10 @@ Trigger: any HTML/CSS/JS/TS edit in docs/
 keel documents projects using the templates in references/templates/. The document it generates for this REPO (what you're reading) is itself a usage of the keel convention.
 
 ## Current status
-v1.2.0 — stable. GitHub Pages docs site added. Impeccable + modern-web-guidance hooks active.
+v1.3.0 — stable. GitHub Pages docs site added. Impeccable + modern-web-guidance hooks active.
 Generated workflow scripts are goal-directed (`/goal` per task) and branch per phase (task
-worktrees → phase branch → main, doc-sync gates the final merge). `/keel archive` added — relocates
+worktrees → phase branch → main, doc-sync gates the final merge). `/keel archive` relocates
 finished/superseded doc detail into PHASE_ARCHIVE.md to keep CLAUDE.md/IMPLEMENTATION_PLAN.md/ADR.md
-light for new sessions.
+light for new sessions. `/keel version` reports the installed skill version, the version that last
+touched a project's docs (`.keel/meta.json`, now written at generation too), and best-effort checks
+for a newer published keel.

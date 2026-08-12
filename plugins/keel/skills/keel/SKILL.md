@@ -9,14 +9,17 @@ description: >
   greenfield project", "scaffold project docs", "create a BRD/PRD/architecture doc", "spec out an
   idea", "plan a new app before building", "interview me about my idea", "lay the foundations",
   or "generate documentation to build a new project with Claude Code". This is for NEW projects
-  defined from an idea — not for documenting an existing codebase. Also handles two ongoing modes
-  for a project Keel already documented: "keel upgrade" (audit docs against the current keel
-  standard and apply approved fixes) and "keel archive" (relocate finished/superseded detail out
+  defined from an idea — not for documenting an existing codebase. Also handles three ongoing
+  modes for a project Keel already documented: "keel upgrade" (audit docs against the current
+  keel standard and apply approved fixes), "keel archive" (relocate finished/superseded detail out
   of CLAUDE.md/IMPLEMENTATION_PLAN.md/ADR.md into PHASE_ARCHIVE.md to keep the living docs light —
   triggers: "archive completed phases", "trim my docs", "shrink CLAUDE.md", "my docs are getting
-  too big", "keep my keel docs light for context").
+  too big", "keep my keel docs light for context"), and "keel version" (report the installed
+  skill version, the version that last touched this project's docs, and whether a newer keel is
+  published — triggers: "what version of keel is this", "check keel version", "is my keel up to
+  date", "which keel version generated these docs", "check for keel updates").
 metadata:
-  version: 1.2.0
+  version: 1.3.0
 license: MIT
 ---
 
@@ -365,10 +368,21 @@ platform handling sensitive data gets the full fan-out with adversarial verifica
    document map matches the files on disk, no document contradicts another.
 2. Write `docs/README.md` (or root README) as the index: the document map table, reading order by
    persona, and status badges.
-3. Give the user a short handoff: what was generated, the recommended reading order, the open
+3. Write `.keel/meta.json` recording the generation, so `/keel version` and `/keel upgrade` have
+   something to compare against from day one — same shape as Upgrade Mode's, `keelVersion` set to
+   this SKILL.md's own `metadata.version`:
+   ```json
+   {
+     "keelVersion": "{{INSTALLED_KEEL_VERSION}}",
+     "generatedAt": "{{ISO_DATE}}",
+     "documentsGenerated": ["list of all docs generated"],
+     "skillsInstalled": ["impeccable", "modern-web-guidance"]
+   }
+   ```
+4. Give the user a short handoff: what was generated, the recommended reading order, the open
    `[NEEDS DECISION]` items still to resolve, and the suggested first build step (usually:
    *"open this folder in Claude Code and start at the IMPLEMENTATION_PLAN's Phase 0"*).
-4. Offer to iterate — refine any doc, go deeper on a round, or add a document that was deferred.
+5. Offer to iterate — refine any doc, go deeper on a round, or add a document that was deferred.
 
 ---
 
@@ -394,6 +408,57 @@ Load these as needed; you do not need all of them in context at once.
 - Not a code generator. Keel produces the spec; the build happens afterward in Claude Code.
 - Not a one-size template stamper. If you find yourself generating the same 15 files regardless of
   the project, you are doing it wrong — re-read principle 2.
+
+---
+
+## Version Mode — `/keel version`
+
+**Trigger:** user says "keel version", "what version of keel is this", "check keel version", "is
+my keel up to date", "which keel version generated these docs", "check for keel updates", or any
+equivalent phrasing.
+
+**Purpose:** two different questions get conflated as "what version is this" — *the skill version
+actually running* vs. *the version that last touched this project's docs* — plus, best-effort,
+*whether a newer keel exists to update to*. Answer all three, distinctly.
+
+**Read-only. No permission gate, no edits, no report file.** Reply inline and stop.
+
+### What to check
+
+1. **Installed skill version** — this SKILL.md's own frontmatter `metadata.version`. This is the
+   version actually executing this command right now; no file I/O needed, always accurate.
+2. **Project doc version** — only if run inside a project with keel-generated docs (same ≥3-doc
+   detection as Upgrade Mode):
+   - If `.keel/meta.json` exists, read `keelVersion` (the version that generated or last touched
+     the docs), plus `lastUpgraded` / `lastArchived` if present.
+   - If keel docs are present but `.keel/meta.json` is absent, the project predates version
+     tracking (pre-v0.3, or generated before this file existed) — say so; don't guess a version.
+   - Compare the project's `keelVersion` to the installed skill version from step 1:
+     - Older → flag it: *"This project's docs were last touched by v{{X}}; the installed skill is
+       v{{Y}} — run `/keel upgrade` to pick up what's new."*
+     - Equal → *"Docs are current with the installed skill."*
+   - If not run inside a keel project at all, skip this step and say so (nothing to compare).
+3. **Latest published version** — best-effort only, never blocking:
+   - If a fetch-capable tool is available this session, fetch
+     `https://raw.githubusercontent.com/achatt89/keel/main/plugins/keel/.claude-plugin/plugin.json`
+     and read its `version`.
+   - Newer than the installed skill → say so and give the update path exactly as documented (the
+     docs site's own "Update" instructions): `/plugin marketplace update thelogicatelier` then
+     `/plugin install keel@thelogicatelier`, then restart Claude Code. (`plugin install` alone
+     reads the local cache and will reinstall the version already known — `marketplace update`
+     must run first.)
+   - Same or can't tell → say "you're on the latest" / nothing to report.
+   - No fetch tool, offline, or the fetch fails → skip this step silently. The two local checks
+     above already answer the question that matters most for someone mid-session.
+
+### Output format
+
+A compact status block, not a report document:
+```
+Installed keel skill: v{{X}}
+This project's docs: v{{Y}} (last touched {{date}}) — {{behind, run /keel upgrade | current}}
+Latest published: v{{Z}} — {{update available, see below | you're on it | couldn't check}}
+```
 
 ---
 
@@ -433,7 +498,9 @@ with keel-standard headings. If not detected, respond:
 
    *Hook config:* .claude/settings.json · .claude/hooks/modern-web-guidance-hook.mjs
 
-   *Keel metadata:* .keel/meta.json (present in projects generated after v0.3)
+   *Keel metadata:* .keel/meta.json (written at generation from v1.3+; earlier projects only have
+   it if a prior `/keel upgrade` created it — its absence is expected for older, un-upgraded
+   projects, not itself a gap)
 
 2. **Read key docs.** Read CLAUDE.md, IMPLEMENTATION_PLAN.md, and DESIGN.md (if present) in full.
    Understand the project domain, current phase, and whether it has a UI.
@@ -541,10 +608,12 @@ rather than overwriting; update skills-lock.json.
 **After all edits:** grep for any `{{PLACEHOLDER}}` introduced by the new content and fill them
 from project context already established during this session. Report any that couldn't be filled.
 
-**Update .keel/meta.json** — create or update this file to record the upgrade:
+**Update .keel/meta.json** — create or update this file to record the upgrade. `keelVersion` is
+this SKILL.md's own `metadata.version` (the version actually running this upgrade) — never the
+literal string "current":
 ```json
 {
-  "keelVersion": "current",
+  "keelVersion": "{{INSTALLED_KEEL_VERSION, e.g. 1.3.0}}",
   "lastUpgraded": "{{ISO_DATE}}",
   "documentsGenerated": ["list of all docs present after upgrade"],
   "skillsInstalled": ["impeccable", "modern-web-guidance"],

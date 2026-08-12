@@ -3,6 +3,22 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.3.0] — 2026-08-12
+
+### Added
+- `/keel version`: a read-only mode that reports the installed keel skill version (read from
+  `SKILL.md`'s own frontmatter — always accurate, no I/O), the version that last touched the
+  current project's docs (`.keel/meta.json`), and flags when the project is behind the installed
+  skill. Best-effort checks the latest published version on GitHub when a fetch tool is available
+  and surfaces the exact update path if newer; degrades silently (never blocks) when it can't.
+- `.keel/meta.json` is now written at initial generation (Phase 5), not only on first
+  `/keel upgrade` or `/keel archive` — every new keel project has version tracking from day one.
+
+### Fixed
+- `.keel/meta.json`'s `keelVersion` field was being written as the literal string `"current"`
+  instead of the actual installed version — meaningless for any version comparison, including the
+  one `/keel version` now depends on. Now sourced from `SKILL.md`'s `metadata.version`.
+
 ## [1.2.0] — 2026-08-12
 
 ### Added
