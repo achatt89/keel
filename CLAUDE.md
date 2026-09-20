@@ -9,7 +9,7 @@ keel is a Claude Code plugin/skill that interviews founders about a greenfield i
 |------|------|
 | plugins/keel/.claude-plugin/plugin.json | Plugin manifest |
 | plugins/keel/skills/keel/SKILL.md | Skill definition (the agent brain) |
-| plugins/keel/skills/keel/references/ | Interview personas, document catalog, conventions, templates |
+| plugins/keel/skills/keel/references/ | Interview personas, document catalog, conventions, templates (`templates/adr/`, `templates/workflows/`), upgrade + archive guides |
 | .agents/skills/modern-web-guidance/ | Modern web guidance skill (auto-pulled) |
 | .claude/skills/impeccable/ | Impeccable FE quality skill |
 | docs/ | GitHub Pages documentation site |
@@ -36,10 +36,9 @@ Trigger: any HTML/CSS/JS/TS edit in docs/
 keel documents projects using the templates in references/templates/. The document it generates for this REPO (what you're reading) is itself a usage of the keel convention.
 
 ## Current status
-v1.3.0 — stable. GitHub Pages docs site added. Impeccable + modern-web-guidance hooks active.
-Generated workflow scripts are goal-directed (`/goal` per task) and branch per phase (task
-worktrees → phase branch → main, doc-sync gates the final merge). `/keel archive` relocates
-finished/superseded doc detail into PHASE_ARCHIVE.md to keep CLAUDE.md/IMPLEMENTATION_PLAN.md/ADR.md
-light for new sessions. `/keel version` reports the installed skill version, the version that last
-touched a project's docs (`.keel/meta.json`, now written at generation too), and best-effort checks
-for a newer published keel.
+v2.0.0 — doc format 2, on branch `feat/keel-2.0` (not yet merged). Evidence ladder + deploy-state
+ladder, per-file table-based ADRs (no addenda), AGENTS.md canonical keystone with byte budgets and
+doc-sync auto-archive, Verify stage writing `.keel/evidence/`, ADR reservation at scope, two work
+units (`/keel phase new`, `/keel change`) + `/keel closeout`, new DEPLOYMENT / CHANGELOG / SPIKE /
+COST_ANALYSIS / AUDIT / FEEDBACK_ROUNDS templates, and a 1.x → 2.0 `FORMAT_MIGRATION` path in
+`/keel upgrade`. Origin: retrospective across mysha, interview-strategist, ospraye, cortextOS.

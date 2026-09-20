@@ -31,7 +31,7 @@
     </a>
 
     <div class="header-actions">
-      <span class="version-badge" aria-label="Version 1.3.0">v1.3.0</span>
+      <span class="version-badge" aria-label="Version 2.0.0">v2.0.0</span>
       <a
         href="https://github.com/achatt89/keel"
         class="github-link"
@@ -111,6 +111,9 @@
           </li>
           <li>
             <a href="#handoff" class="nav-link nav-link-child">Handoff</a>
+          </li>
+          <li>
+            <a href="#building-on" class="nav-link nav-link-child">Building On: Phases &amp; Changes</a>
           </li>
           <li>
             <a href="#version" class="nav-link nav-link-child">Checking Your Version</a>
@@ -483,7 +486,7 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
 
         <h2>How building proceeds</h2>
         <p>
-          Alongside the docs, Keel generates one workflow script per <code>IMPLEMENTATION_PLAN</code> phase. Running a phase script checks out a dedicated phase branch off <code>main</code>, then fans out its divisible tasks as parallel agents, each in its own <code>git worktree</code> branched off that phase branch. Every task agent opens with <code>/goal</code> &mdash; a completion condition covering the implementation, its tests, lint, and an end-to-end <code>verify</code> pass (plus a manual in-browser check via <code>claude-in-chrome</code> for UI work) &mdash; so it won't end its turn early. Task branches merge back into the phase branch; only the phase branch, carrying the mandatory doc-sync commit, ever merges to <code>main</code>.
+          Alongside the docs, Keel generates one workflow script per <code>IMPLEMENTATION_PLAN</code> phase. Running a phase script checks out a dedicated phase branch off <code>main</code>, then fans out its divisible tasks as parallel agents, each in its own <code>git worktree</code> branched off that phase branch. Every task agent opens with <code>/goal</code> &mdash; a completion condition covering the implementation, its tests, lint, and an end-to-end <code>verify</code> pass (plus a manual in-browser check via <code>claude-in-chrome</code> for UI work) &mdash; so it won't end its turn early. Task branches merge back into the phase branch, then a <strong>Verify</strong> stage runs every suite once and writes an evidence record (<code>.keel/evidence/phase-N.json</code>) that the doc-sync step cites &mdash; it never re-runs or re-narrates. Only the phase branch, carrying the doc-sync commit, ever merges to <code>main</code>.
         </p>
         <p>
           What happens if a task's goal isn't being met is a choice you make during the Delivery / Ops interview round: bounded retries then escalate to you (the default), persistent until met, or escalate on the first failure.
@@ -492,6 +495,63 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         <div class="callout">
           <p>The recommended first action after a Keel session: open your project folder in Claude Code, point it at <code>CLAUDE.md</code>, and say "let's start building."</p>
         </div>
+
+        <footer class="content-footer">
+          <a href="#building-on">Building On: Phases &amp; Changes &rarr;</a>
+        </footer>
+      </article>
+
+      <!-- Building On -->
+      <article class="content-section" id="section-building-on" aria-labelledby="heading-building-on">
+        <h1 id="heading-building-on">Building On: Phases &amp; Changes</h1>
+        <p class="lead">
+          Keel 2.0 is shaped by what four production projects taught over ~2,000 commits: docs stay trustworthy only when every claim carries evidence, and they stay readable only when the journal lives somewhere other than the keystone file.
+        </p>
+
+        <h2>Two units of work</h2>
+        <ul class="feature-list" role="list">
+          <li>
+            <span class="feature-key">Phase</span>
+            <span class="feature-desc">A gated milestone. <code>/keel phase new &lt;slug&gt;</code> scopes it: a plan block with an exit-gate table, reserved ADR stubs (so parallel worktrees never collide on numbers), a workflow script, and a CHANGELOG line. Insert with <code>--after N</code>, split with <code>--split N</code>; existing numbers never change.</span>
+          </li>
+          <li>
+            <span class="feature-key">Change</span>
+            <span class="feature-desc">Hotfix-weight work. <code>/keel change &lt;slug&gt;</code> gives it a <code>chg/</code> branch, a <code>CHG-xxx</code> row, and a CHANGELOG line &mdash; no phase block, no fan-out script. Phases stop being the unit for one-line fixes.</span>
+          </li>
+          <li>
+            <span class="feature-key">Closeout</span>
+            <span class="feature-desc"><code>/keel closeout</code> generates a phase whose scope is exactly the open deferred items, once the table grows past a threshold or every N phases.</span>
+          </li>
+        </ul>
+
+        <h2>Claims carry evidence</h2>
+        <p>
+          A ✅ is never bare. Every exit gate records its evidence level &mdash; <code>code-read</code> &lt; <code>unit</code> &lt; <code>integration</code> &lt; <code>local-browser</code> &lt; <code>staging</code> &lt; <code>prod-live</code> &mdash; and the artefact behind it (commit, test report, CI run, browser transcript). Deploy state is tracked separately, in one place: <code>on-branch &rarr; merged &rarr; deployed vNN &rarr; live-verified</code>, flipped by the merge step and the deploy procedure, never by prose. A gate whose evidence falls short of what the gate demands stays <em>partial</em>; the phase stays open.
+        </p>
+
+        <h2>Where things live now</h2>
+        <ul class="feature-list" role="list">
+          <li>
+            <span class="feature-key">AGENTS.md</span>
+            <span class="feature-desc">The canonical keystone (cross-tool standard); <code>CLAUDE.md</code> is <code>@AGENTS.md</code> plus Claude-specific sections. Status is a two-row table. Hard budget: 12&nbsp;KB &mdash; doc-sync auto-archives past it.</span>
+          </li>
+          <li>
+            <span class="feature-key">docs/adr/</span>
+            <span class="feature-desc">One table-based file per decision. Lifecycle <code>Proposed &rarr; Accepted &rarr; Built &rarr; Superseded</code>; a single <em>Build deviation</em> row is the only post-acceptance edit. No addenda &mdash; incidents are postmortems, deploys are log rows.</span>
+          </li>
+          <li>
+            <span class="feature-key">DEPLOYMENT.md</span>
+            <span class="feature-desc">One doc for every environment: the env matrix, promotion path, build-time vs runtime config table, pre/post-deploy checklists, rollback per component, and the deploy log.</span>
+          </li>
+          <li>
+            <span class="feature-key">CHANGELOG.md</span>
+            <span class="feature-desc">What shipped and in what deploy state, one line per Phase or Change. The journal that used to bloat the keystone.</span>
+          </li>
+          <li>
+            <span class="feature-key">RUNBOOK.md postmortems</span>
+            <span class="feature-desc">Incidents get a <code>PM-xxx</code> row: trigger, root cause, fix, and where the prevention landed. Playbooks are <em>Symptom &middot; Check &middot; Fix &middot; Escalate</em> tables.</span>
+          </li>
+        </ul>
 
         <footer class="content-footer">
           <a href="#version">Checking Your Version &rarr;</a>
@@ -583,8 +643,21 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
           </li>
         </ul>
 
+        <h2>Moving a project to the 2.0 format</h2>
+        <p>
+          A project documented by keel 1.x is detected as <em>format 1</em> (a single <code>ADR.md</code> with addenda, a prose status section, bullet exit gates, no <code>DEPLOYMENT.md</code>). <code>/keel upgrade</code> then offers a <code>FORMAT_MIGRATION</code> path that runs as one reviewable commit per step on a <code>keel-upgrade-2.0</code> branch: archive first, audit, <strong>classify</strong> every ADR addendum and status paragraph (build deviation, deploy state, incident, client round) and relocate it verbatim to its new home, reformat ADRs into <code>docs/adr/</code> in parallel worktrees, rebuild the plan and keystone with evidence levels set to <em>what the prose actually claimed</em> (never upgraded), seed <code>DEPLOYMENT.md</code> from what's on disk and <code>CHANGELOG.md</code> from git history, regenerate the scripts, and write an <code>UPGRADE_REPORT.md</code> listing every relocation source &rarr; destination. IDs never change; nothing is deleted; anything unclassifiable is left in an <em>Unclassified (review)</em> row rather than guessed.
+        </p>
+
         <h2>Gap categories</h2>
         <ul class="feature-list" role="list">
+          <li>
+            <span class="feature-key">FORMAT_MIGRATION</span>
+            <span class="feature-desc">The doc set is in the 1.x layout; the 2.0 migration path above applies.</span>
+          </li>
+          <li>
+            <span class="feature-key">BUDGET_EXCEEDED</span>
+            <span class="feature-desc">A living doc is over its byte budget and doc-sync found nothing archivable &mdash; a human raises the budget or trims by hand.</span>
+          </li>
           <li>
             <span class="feature-key">MISSING_DOC</span>
             <span class="feature-desc">A document that should exist for this project type is absent entirely.</span>
@@ -620,12 +693,12 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
       <article class="content-section" id="section-archive" aria-labelledby="heading-archive">
         <h1 id="heading-archive">Archiving &amp; Trimming</h1>
         <p class="lead">
-          <code>/keel archive</code> relocates finished or superseded detail out of <code>CLAUDE.md</code>, <code>IMPLEMENTATION_PLAN.md</code>, and <code>ADR.md</code> into a new <code>PHASE_ARCHIVE.md</code> &mdash; keeping the docs a fresh session reads light on tokens, without deleting anything.
+          <code>/keel archive</code> relocates finished or superseded detail out of <code>AGENTS.md</code>, <code>IMPLEMENTATION_PLAN.md</code>, <code>CHANGELOG.md</code>, <code>RUNBOOK.md</code>, and <code>docs/adr/</code> into <code>PHASE_ARCHIVE.md</code> &mdash; keeping the docs a fresh session reads light on tokens, without deleting anything.
         </p>
 
         <h2>When to run it</h2>
         <p>
-          Long-running projects accumulate real detail in the living docs: completed phase write-ups, resolved deferred items, superseded decisions. That detail is worth keeping &mdash; it gets revisited &mdash; but it costs context on every session start. Run <code>/keel archive</code> at natural checkpoints: the end of a phase, when <code>CLAUDE.md</code> has drifted past its ~70&ndash;120 line target, or whenever a session start feels heavier than it should.
+          Long-running projects accumulate real detail in the living docs: completed phase write-ups, resolved deferred items, superseded decisions. That detail is worth keeping &mdash; it gets revisited &mdash; but it costs context on every session start. You mostly don't have to: every living doc has a byte budget in <code>.keel/meta.json</code> (keystone 12&nbsp;KB by default), and the doc-sync workflow measures each one after every sync and runs the archive automatically when a budget is breached &mdash; one commit per file, so a bad relocation reverts alone. Run <code>/keel archive</code> by hand at natural checkpoints, or when doc-sync reports <code>BUDGET_EXCEEDED</code> and you'd rather trim than raise the budget.
         </p>
 
         <div class="callout">
@@ -667,12 +740,20 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
             <span class="feature-desc">Deferred-items table rows already marked ✅ resolved.</span>
           </li>
           <li>
-            <span class="feature-key">Superseded decisions</span>
-            <span class="feature-desc">An ADR marked superseded keeps its ID and a one-line stub in ADR.md; its full Context/Options/Consequences prose moves.</span>
+            <span class="feature-key">Merged changes</span>
+            <span class="feature-desc">Changes-table rows already merged or deployed, beyond the most recent ten.</span>
           </li>
           <li>
-            <span class="feature-key">CLAUDE.md drift</span>
-            <span class="feature-desc">Content that's grown past the keystone-index job &mdash; stale invariants, old status lines left instead of overwritten.</span>
+            <span class="feature-key">Superseded decisions</span>
+            <span class="feature-desc">An ADR marked superseded keeps its ID and index row; its body moves.</span>
+          </li>
+          <li>
+            <span class="feature-key">Keystone drift</span>
+            <span class="feature-desc">Anything in AGENTS.md beyond the keystone-index job &mdash; stacked status history, sections duplicating a doc they point at.</span>
+          </li>
+          <li>
+            <span class="feature-key">Old releases &amp; closed postmortems</span>
+            <span class="feature-desc">CHANGELOG sections older than the last three releases; postmortems whose prevention has landed and are older than 90 days.</span>
           </li>
         </ul>
 
@@ -698,8 +779,8 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
             </thead>
             <tbody>
               <tr>
-                <td>CLAUDE.md</td>
-                <td>Keystone index: invariants, document map, working agreements, and current project status. Every other document is referenced from here.</td>
+                <td>AGENTS.md / CLAUDE.md</td>
+                <td>Keystone index: invariants with their enforcement and gaps, document map, two-row status, pre-PR checklist. <code>AGENTS.md</code> is canonical; <code>CLAUDE.md</code> imports it and adds Claude-specific sections. Budgeted at 12&nbsp;KB.</td>
               </tr>
               <tr>
                 <td>BRD.md</td>
@@ -722,8 +803,8 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
                 <td>High- and low-level design: sequence flows, module map, API interfaces, and key types.</td>
               </tr>
               <tr>
-                <td>ADR.md</td>
-                <td>Architecture Decision Records: every significant technical bet, with context, consequences, and revisit triggers.</td>
+                <td>docs/adr/</td>
+                <td>Architecture Decision Records, one table-based file per decision: Y-statement decision, options with a verdict, consequences, revisit trigger, lifecycle status with commits. <code>adr/README.md</code> is the index and the open-decisions register.</td>
               </tr>
               <tr>
                 <td>NFR.md</td>
@@ -750,8 +831,28 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
                 <td>How to run the project: dev server, build, test, migrate, seed, and any environment-specific variations.</td>
               </tr>
               <tr>
+                <td>DEPLOYMENT.md</td>
+                <td>Every environment in one place: env matrix, promotion path and gates, build-time vs runtime config, pre/post-deploy checklists, rollback, deploy log, known gotchas.</td>
+              </tr>
+              <tr>
+                <td>CHANGELOG.md</td>
+                <td>What shipped, in what deploy state &mdash; one line per Phase or Change, Keep-a-Changelog layout, fed by doc-sync.</td>
+              </tr>
+              <tr>
                 <td>RUNBOOK.md</td>
-                <td>How to operate and recover the system: deployment steps, monitoring, alerting, and incident response.</td>
+                <td>How to operate and recover the system: incident playbooks as Symptom &middot; Check &middot; Fix &middot; Escalate tables, monitoring, drills, and the postmortem register.</td>
+              </tr>
+              <tr>
+                <td>FEEDBACK_ROUNDS.md</td>
+                <td>External feedback batches (client, founder, user tests) and where each item went &mdash; a Phase, a Change, or a deferred row. Generated for client-facing products.</td>
+              </tr>
+              <tr>
+                <td>SPIKE_&lt;slug&gt;.md / AUDIT_&lt;kind&gt;_&lt;date&gt;.md / COST_ANALYSIS.md</td>
+                <td>On-demand records: an investigation (what exists, what doesn't, negative-result searches), a dated audit snapshot with disposition, and measured unit economics with the methodology to reproduce them.</td>
+              </tr>
+              <tr>
+                <td>docs/keel-transcript.md</td>
+                <td>The interview itself, kept with the docs it produced.</td>
               </tr>
               <tr>
                 <td>almanac/</td>
@@ -759,7 +860,7 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
               </tr>
               <tr>
                 <td>PHASE_ARCHIVE.md</td>
-                <td>Relocated detail for finished or superseded work &mdash; completed phases, resolved deferred items, superseded decisions. Created on-demand by <code>/keel archive</code>, never at initial generation.</td>
+                <td>Relocated detail for finished or superseded work &mdash; completed phases, resolved deferred items, superseded decisions. Created by <code>/keel archive</code> or by doc-sync's automatic budget trigger, never at initial generation.</td>
               </tr>
             </tbody>
           </table>

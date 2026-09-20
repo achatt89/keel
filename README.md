@@ -43,19 +43,26 @@ Keel selects adaptively from this catalog (it won't generate all of them for a s
 
 | Document | What it answers |
 |---|---|
-| `CLAUDE.md` | The keystone index — invariants, document map, working agreements, current status |
+| `AGENTS.md` / `CLAUDE.md` | The keystone index — invariants with enforcement + gaps, document map, two-row status, pre-PR checklist. `AGENTS.md` is canonical; `CLAUDE.md` imports it. Budgeted at 12 KB |
 | `BRD.md` | Business requirements — problem, objectives, constraints, risks |
 | `PRD.md` | Product requirements — personas, journeys, features, roadmap |
-| `ENGINEERING_DESIGN.md` | Design pillars, data classification, non-negotiables |
+| `ENGINEERING_DESIGN.md` | Design pillars, data classification, non-negotiables (with how each is enforced) |
 | `ARCHITECTURE.md` | Components, data flows, trust boundaries, controls, accepted risks |
 | `HLD.md` / `LLD.md` | High- and low-level design — flows, module map, interfaces, types |
-| `ADR.md` | Architecture Decision Records — every significant bet, with revisit triggers |
+| `docs/adr/` | Architecture Decision Records — one table-based file per decision, lifecycle status with commits, open-decisions register in its README |
 | `NFR.md` | Non-functional requirements — perf, security, cost, each with a verification |
 | `DESIGN.md` | UX/UI design system — tokens, components, accessibility (if there's a UI) |
 | `COMPLIANCE.md` / `THREAT_MODEL.md` | Data protection & threats (if you hold sensitive data) |
-| `IMPLEMENTATION_PLAN.md` | Phased build plan with concrete exit gates |
-| `COMMANDS.md` / `RUNBOOK.md` | How to run it; how to operate and recover it |
+| `IMPLEMENTATION_PLAN.md` | Phased build plan — exit gates as evidence tables, a Changes table for hotfix-weight work, deferred items |
+| `DEPLOYMENT.md` | Every environment in one doc — env matrix, promotion path, build-time vs runtime config, checklists, rollback, deploy log |
+| `CHANGELOG.md` | What shipped, in what deploy state — fed by doc-sync |
+| `COMMANDS.md` / `RUNBOOK.md` | How to run it; how to operate and recover it — playbook tables and a postmortem register |
+| `FEEDBACK_ROUNDS.md` · `SPIKE_*.md` · `AUDIT_*.md` · `COST_ANALYSIS.md` | Client feedback batches; investigations; dated audits; measured unit economics — on demand |
 | `almanac/` | An optional topology-stable knowledge base (positioning, methodology, GTM, AI data) |
+
+Every ✅ in these docs carries an evidence level (`code-read` → `unit` → `integration` → `local-browser` →
+`staging` → `prod-live`) and an artefact. Deploy state (`on-branch` → `merged` → `deployed vNN` →
+`live-verified`) lives in one place. Living docs have byte budgets; doc-sync auto-archives past them.
 
 ## How to use it
 
@@ -70,6 +77,10 @@ I want to build <your idea>. Let's lay the foundations.
 ```
 /keel
 ```
+
+Once a project is documented, the ongoing modes are `/keel phase new <slug>` (scope a gated
+milestone), `/keel change <slug>` (a hotfix-weight unit), `/keel closeout` (sweep deferred items),
+`/keel archive`, `/keel upgrade` (including the 1.x → 2.0 format migration), and `/keel version`.
 
 Keel takes it from there: intake → interview → proposed doc set → generation → handoff. Set aside a
 focused session — the interview is where the value is created.
