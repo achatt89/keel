@@ -191,11 +191,12 @@ if (breached.length) {
     5. Commit this file's relocation on its own:
          git add ${b.file} docs/PHASE_ARCHIVE.md .keel/meta.json && \\
          git commit -m "docs: auto-archive — ${b.file} ${b.size}B > ${b.budget}B (<count> items relocated)"
-    6. If nothing eligible exists, or it is still over budget after one pass: make NO edits
-       (git checkout -- ${b.file} if you started), and report exactly
-       "BUDGET_EXCEEDED: ${b.file} <size>B > ${b.budget}B — nothing archivable" (or "— still over
-       after relocating <count> items"). Do not try again; a human raises the budget in
-       .keel/meta.json or trims by hand.
+    6. If nothing eligible exists: make NO edits (git checkout -- ${b.file} if you started) and
+       report exactly "BUDGET_EXCEEDED: ${b.file} <size>B > ${b.budget}B — nothing archivable".
+       If you relocated everything eligible and it is still over budget: keep and commit that
+       progress (step 5), then report "BUDGET_EXCEEDED: ${b.file} <size>B > ${b.budget}B — still
+       over after relocating <count> items". Either way do not try again; a human raises the
+       budget in .keel/meta.json or trims by hand.
 
     Report: items relocated by category, before/after sizes, commit sha — or the BUDGET_EXCEEDED line.
   `, { label: `archive:${b.file}`, phase: 'Archive' }))
