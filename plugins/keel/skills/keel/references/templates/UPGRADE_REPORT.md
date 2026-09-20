@@ -63,7 +63,7 @@
 
 | File | Budget | Before | After | Status | If over: archivable via |
 |---|---|---|---|---|---|
-| AGENTS.md (or CLAUDE.md on format 1) | {{12288}} | {{bytes}} | {{bytes}} | ✅ / ⚠️ over by {{N}} | {{CLAUDE_DRIFT: N status entries}} |
+| AGENTS.md (or CLAUDE.md on format 1) | {{12288}} | {{bytes}} | {{bytes}} | ✅ / ⚠️ over by {{N}} | {{KEYSTONE_DRIFT: N status entries}} |
 | CLAUDE.md | {{12288}} | | | | |
 | docs/IMPLEMENTATION_PLAN.md | {{65536}} | | | | {{PHASE_COMPLETE: N phases · DEFERRED_RESOLVED: N rows}} |
 | docs/adr/README.md (or ADR.md on format 1) | {{16384}} | | | | {{ADR_SUPERSEDED: N}} |

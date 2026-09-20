@@ -1081,7 +1081,7 @@ in-progress phase is never eligible):
 - `ADR_SUPERSEDED` — ADR entries marked ⚠️ Superseded by ADR-xxx, still carrying full
   Context/Options/Consequences content (per-file: the file body collapses to its header table;
   the file and its index row stay).
-- `CLAUDE_DRIFT` — keystone (AGENTS.md / CLAUDE.md) content beyond its index job: stale
+- `KEYSTONE_DRIFT` — keystone (AGENTS.md / CLAUDE.md) content beyond its index job: stale
   invariants no longer enforced, old status lines appended instead of overwritten, anything past
   the byte budget.
 - `CHANGELOG_OVERFLOW` — CHANGELOG entries older than the last two released/deployed versions

@@ -14,6 +14,9 @@
     "docs/adr/README.md": 16384
   },
   "evidenceDir": ".keel/evidence",
+  "closeout": { "maxOpenDeferred": 8, "everyNPhases": 5 },
+  "deployLogKeep": 10,
+  "lastArchiveTrigger": null,
   "documentsGenerated": [],
   "skillsInstalled": []
 }

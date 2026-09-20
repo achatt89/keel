@@ -101,7 +101,7 @@ lives. There's a real chance this work gets revisited; that's exactly why it's k
 
 ## Archived Notes
 
-<!-- Keel guidance: catch-all for AGENTS_DRIFT / BUDGET_BREACH and STALE_SECTION entries —
+<!-- Keel guidance: catch-all for KEYSTONE_DRIFT / BUDGET_BREACH and STALE_SECTION entries —
      anything trimmed from a doc that isn't covered above. One heading per entry naming its
      source doc + section, and the budget that triggered it if auto-archived. -->
 

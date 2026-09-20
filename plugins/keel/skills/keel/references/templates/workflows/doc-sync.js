@@ -164,15 +164,15 @@ if (breached.length) {
       "## Phase N — <name> ✅  <one-line outcome>. Full detail: PHASE_ARCHIVE.md#phase-n-<slug>";
       the phase-status table row stays.
     - DEFERRED_RESOLVED: ✅ rows of the deferred table → PHASE_ARCHIVE "Resolved deferred items".
-    - CHANGES_MERGED: Changes-table rows whose deploy state is [merged]/[deployed]/[live-verified]
+    - CHANGE_MERGED: Changes-table rows whose deploy state is [merged]/[deployed]/[live-verified]
       AND older than the last 10 rows → PHASE_ARCHIVE "Changes history".
     - ADR_SUPERSEDED: ⚠️ Superseded ADRs → body to PHASE_ARCHIVE, index row stays.
-    - STATUS_HISTORY: anything in AGENTS.md/CLAUDE.md beyond the 2-row status table, stacked old
+    - KEYSTONE_DRIFT: anything in AGENTS.md/CLAUDE.md beyond the 2-row status table, stacked old
       status entries, sections that duplicate a doc they point at → PHASE_ARCHIVE
       "#agents-md-current-status-history"; leave a one-line pointer.
     - CHANGELOG_OVERFLOW: CHANGELOG.md released sections older than the last 3 releases →
       PHASE_ARCHIVE "Changelog history" (only if CHANGELOG.md is the breached file).
-    - POSTMORTEMS_CLOSED: RUNBOOK Postmortems rows whose prevention has landed (commit cited) and
+    - POSTMORTEM_CLOSED: RUNBOOK Postmortems rows whose prevention has landed (commit cited) and
       are older than 90 days → PHASE_ARCHIVE (only if RUNBOOK.md is the breached file).
 
     NEVER touch: the 🔄 / ⬜ phases · open deferred rows · Proposed / Accepted / UNCLASSIFIED

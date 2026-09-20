@@ -20,7 +20,7 @@
 | `PHASE_COMPLETE` | {{N}} | {{~N}} |
 | `DEFERRED_RESOLVED` | {{N}} | {{~N}} |
 | `ADR_SUPERSEDED` | {{N}} | {{~N}} |
-| `CLAUDE_DRIFT` | {{N}} | {{~N}} |
+| `KEYSTONE_DRIFT` | {{N}} | {{~N}} |
 | `STALE_SECTION` | {{N}} | {{~N}} |
 | **Total** | **{{N}}** | **{{~N}}** |
 

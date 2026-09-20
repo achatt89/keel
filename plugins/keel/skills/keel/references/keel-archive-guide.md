@@ -57,7 +57,7 @@ answer.
 | `DEFERRED_RESOLVED` | IMPLEMENTATION_PLAN.md | Deferred-items table row marked ✅ resolved |
 | `CHANGE_MERGED` | IMPLEMENTATION_PLAN.md `## Changes` | `CHG-xxx` rows whose Deploy state is `live-verified` (or `merged` for projects with no remote environment) and older than the last 10 rows |
 | `ADR_SUPERSEDED` | `docs/adr/ADR-NNN-*.md` (legacy: ADR.md) | Status ⚠️ Superseded by ADR-xxx, Options/Consequences tables (and any remaining prose) still in the file |
-| `CLAUDE_DRIFT` | AGENTS.md (legacy: CLAUDE.md) | Content beyond the keystone-index job: stale invariants no longer enforced, old status lines appended instead of overwritten, any section that's grown past a light skim |
+| `KEYSTONE_DRIFT` | AGENTS.md (legacy: CLAUDE.md) | Content beyond the keystone-index job: stale invariants no longer enforced, old status lines appended instead of overwritten, any section that's grown past a light skim |
 | `CHANGELOG_OVERFLOW` | CHANGELOG.md | Entries older than the last two released/deployed versions, once the file is over budget or named by the user; `[Unreleased]` and the newest two versions always stay |
 | `POSTMORTEM_CLOSED` | RUNBOOK.md `## Postmortems` | A `PM-xxx` row whose prevention has landed (the named DEPLOYMENT gotcha / test / lint rule exists on disk) and whose `### PM-xxx` narrative is still inline |
 | `STALE_SECTION` | Any doc | User names a specific section directly ("archive the old auth design notes in DESIGN.md") |
@@ -169,7 +169,7 @@ lint rule; if it cannot be found, the row is not closed and is not archived).
 
 **Archive entry:** the narrative verbatim under "Archived Postmortems".
 
-### `CLAUDE_DRIFT` (AGENTS.md — legacy: CLAUDE.md)
+### `KEYSTONE_DRIFT` (AGENTS.md — legacy: CLAUDE.md)
 
 **Before:** any section that's grown past its light-file job — extra paragraphs under Current
 status, invariants that reference a component since removed, old working-agreement bullets
@@ -188,7 +188,7 @@ Phase X3 report so the user can object before it happens.
 
 ### `STALE_SECTION` (any doc, user-directed)
 
-Same pattern as `CLAUDE_DRIFT`: trim in place, leave a one-line summary + link, move the full
+Same pattern as `KEYSTONE_DRIFT`: trim in place, leave a one-line summary + link, move the full
 text to a new heading under "Archived Notes" naming its source doc and section.
 
 ---
@@ -206,7 +206,7 @@ text to a new heading under "Archived Notes" naming its source doc and section.
 | ADR ⚠️ Superseded, body still in the file | Yes — `ADR_SUPERSEDED` |
 | ADR accepted and active | No |
 | ADR with unresolved `[NEEDS DECISION]` elsewhere pointing at it | No |
-| Keystone content beyond its template shape | Yes — `CLAUDE_DRIFT` |
+| Keystone content beyond its template shape | Yes — `KEYSTONE_DRIFT` |
 | Keystone Current status / Document map / Invariants / Pre-PR checklist / Git workflow | No |
 | CHANGELOG version older than the newest two | Yes — `CHANGELOG_OVERFLOW` |
 | CHANGELOG `[Unreleased]` or newest two versions | No |
