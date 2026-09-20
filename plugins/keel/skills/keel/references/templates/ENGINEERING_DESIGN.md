@@ -158,15 +158,19 @@
 <!-- Keel guidance: the numbered rules that hold the pillars up. EACH ONE names its
      enforcement mechanism — a lint rule, a DB constraint/trigger, a typed interface, a
      CI gate — not "by code review." A rule whose enforcement depends on a reviewer
-     noticing its absence is treated as not enforced. State the exception path explicitly
-     if one exists (e.g. an audited admin bypass counted against a committed baseline).
-     These are the invariants CLAUDE.md will summarize. Keep them imperative and testable. -->
+     noticing its absence is treated as not enforced — and that is what the Gap column is
+     for: "—" when the mechanism is live; otherwise the honest state ("lint rule not yet
+     written — deferred item #n", "enforced in API, not in worker — Phase 4") so nobody
+     relies on a rule that isn't airtight. State the exception path explicitly if one exists.
+     AGENTS.md summarises this table (same numbering). Keep rules imperative and testable. -->
 
-1. **{{RULE}}** — enforced by {{MECHANISM}}.
-2. **{{RULE}}** — enforced by {{MECHANISM}}; the only exception is {{AUDITED_EXCEPTION_PATH}}.
-3. **{{RULE}}** — enforced by {{MECHANISM}}.
-4. **{{RULE}}** — enforced by {{MECHANISM}}.
-5. **{{RULE}}** — enforced by {{MECHANISM}}.
+| # | Rule | Enforced by | Exception path | Gap |
+|---|---|---|---|---|
+| 1 | **{{RULE}}** | {{MECHANISM}} | — | — |
+| 2 | **{{RULE}}** | {{MECHANISM}} | {{AUDITED_EXCEPTION_PATH}} | — |
+| 3 | **{{RULE}}** | {{MECHANISM}} | — | {{e.g. "trigger live; lint rule pending — deferred item #n"}} |
+| 4 | **{{RULE}}** | {{MECHANISM}} | — | — |
+| 5 | **{{RULE}}** | {{MECHANISM}} | — | — |
 
 <!-- Keel guidance: include as many as the system genuinely needs (a sensitive platform
      may have 15+; a simple product 4–6). Don't invent rules to pad the list. -->

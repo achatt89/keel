@@ -25,7 +25,7 @@
     Owns its own §-numbering so HLD/LLD/NFR can cross-reference (e.g. "§6").
 
   Cross-reference chain: BRD (what/why) → this doc (how/component) →
-    HLD.md (flows/topology) → LLD.md (module/type) → ADR.md (why) →
+    HLD.md (flows/topology) → LLD.md (module/type) → docs/adr/ (why) →
     NFR.md (verification). Reference by id (P-03, ADR-014) or doc+§.
 
   Delete all <!-- Keel guidance --> comments when filling this in.

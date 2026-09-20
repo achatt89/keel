@@ -3,8 +3,8 @@
   WHAT: A catalog of every doc in docs/ with a status badge and a one-line description,
         plus a per-persona reading order and a note on ID conventions.
   INCLUDE WHEN: docs/ holds 3+ files — once the folder needs a map. Below that, the
-        CLAUDE.md document map is enough; omit this file.
-  DEPENDS ON: All docs (written last, alongside CLAUDE.md, so it lists only what exists).
+        AGENTS.md document map is enough; omit this file.
+  DEPENDS ON: All docs (written last, alongside AGENTS.md, so it lists only what exists).
   OWNS: No IDs. It is the docs index — every other doc owns its own namespace.
   Delete all <!-- Keel guidance --> comments (and this block) when filling this in.
 -->
@@ -18,7 +18,7 @@
 ## Documents
 
 <!-- Keel guidance: one row per file that exists on disk — no more, no less (the
-     CLAUDE.md document map and this table must agree). Status badge from the
+     AGENTS.md document map and this table must agree). Status badge from the
      conventions set: ✅ complete · 🔄 in progress · ⬜ not started · ⚠️ superseded.
      Description is one line: the doc's job, not its contents. Order by reading
      dependency (requirements spine → technical → experience → operational → index). -->
@@ -31,7 +31,7 @@
 | [{{ARCHITECTURE}}]({{ARCHITECTURE}}) | {{STATUS}} | Components, schema, trust boundaries, controls by threat category, accepted risks |
 | [{{HLD}}]({{HLD}}) | {{STATUS}} | High-level design — component interactions, end-to-end data flows, deployment topology |
 | [{{LLD}}]({{LLD}}) | {{STATUS}} | Low-level design — module map, interfaces, shared types, security-module implementations |
-| [{{ADR}}]({{ADR}}) | {{STATUS}} | Architecture decision records — one per significant bet, with revisit triggers |
+| [adr/README.md](adr/README.md) | {{STATUS}} | Architecture decision records — one file per decision under `adr/`, index + open questions in its README |
 | [{{NFR}}]({{NFR}}) | {{STATUS}} | Non-functional requirements — targets + verification methods, build-time gates |
 | [{{DESIGN_DOC}}]({{DESIGN_DOC}}) | {{STATUS}} | UX/UI design system — language, brand, tokens, components, patterns, accessibility |
 | [{{COMPLIANCE}}]({{COMPLIANCE}}) | {{STATUS}} | Data protection — inventory, rights workflows, consent, retention, breach response |
@@ -72,6 +72,6 @@ tombstone, never renumber). Cross-reference by ID for requirements/decisions/fea
 | `{{OBJECTIVE_PREFIX}}-xx` | `{{BRD}}` | Business objective |
 | `{{REQ_PREFIX}}-xxx` | `{{BRD}}` | Requirement (grouped by outcome) |
 | `F-xx` | `{{PRD}}` | Feature |
-| `ADR-xxx` | `{{ADR}}` | Decision record |
+| `ADR-xxx` | `adr/` | Decision record (`adr/ADR-xxx-<slug>.md`) |
 | `NFR-<AREA>-xxx` | `{{NFR}}` | Non-functional requirement |
 | `Phase 0..N` | `{{IMPLEMENTATION_PLAN}}` | Build phase |
