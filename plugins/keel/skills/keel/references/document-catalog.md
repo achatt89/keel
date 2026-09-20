@@ -8,9 +8,10 @@ document for every project** — match the set to the project's real complexity.
 
 | Tier | Default set |
 |---|---|
-| **Prototype / weekend** | `CLAUDE.md`, `BRD.md` (lite), `ARCHITECTURE.md` (lite), `IMPLEMENTATION_PLAN.md` |
-| **Product / MVP** | + `PRD.md`, `ENGINEERING_DESIGN.md`, `HLD.md`, `LLD.md`, `ADR.md`, `NFR.md`, `DESIGN.md` (if UI), `COMMANDS.md`, `RUNBOOK.md`, `docs/README.md` |
-| **Platform / regulated** | + `COMPLIANCE.md`, `THREAT_MODEL.md`, plug-in/contract specs (e.g. `CONNECTOR_SPEC.md`), and an `almanac/` if warranted |
+| **Prototype / weekend** | `AGENTS.md` + `CLAUDE.md`, `BRD.md` (lite), `ARCHITECTURE.md` (lite), `IMPLEMENTATION_PLAN.md`, `CHANGELOG.md`, `docs/keel-transcript.md` |
+| **Product / MVP** | + `PRD.md`, `ENGINEERING_DESIGN.md`, `HLD.md`, `LLD.md`, `docs/adr/`, `NFR.md`, `DESIGN.md` (if UI), `COMMANDS.md`, `DEPLOYMENT.md`, `RUNBOOK.md`, `docs/README.md`, `FEEDBACK_ROUNDS.md` (if clients review builds) |
+| **Platform / regulated** | + `COMPLIANCE.md`, `THREAT_MODEL.md`, plug-in/contract specs (e.g. `CONNECTOR_SPEC.md`), `COST_ANALYSIS.md` (if usage-metered / AI spend), and an `almanac/` if warranted |
+| **On demand (any tier)** | `SPIKE_<slug>.md`, `AUDIT_<date>.md`, `PHASE_ARCHIVE.md` — created by a mode or a session, never at generation |
 
 These are starting points. A Product-tier project with no UI drops DESIGN; a Prototype that
 happens to touch health data pulls COMPLIANCE up. Always present the proposed set to the user with
@@ -18,14 +19,20 @@ a one-line justification per inclusion and per omission, and adjust.
 
 ## The catalog
 
-### `CLAUDE.md` — the keystone index *(always)*
-- **Purpose:** The entry point Claude Code reads first. A *light* file: one-line project
-  description, a document-map table (which doc to read when), the hard invariants/non-negotiables,
-  the git/working workflow, and a "current status" line updated as the build progresses.
+### `AGENTS.md` — the keystone index *(always, canonical)*
+- **Purpose:** The entry point every coding agent and contributor reads first. A *light* file
+  (12 KB budget, enforced by doc-sync): one-line description, document map, hard-invariants table
+  (`Rule · Enforced by · Gap · Source`), the working workflow, a two-row status table with deploy
+  state + evidence, working agreements, and a pre-PR checklist derived from the invariants.
 - **Include:** Always. It's the spine that points at everything else.
 - **Depends on:** Everything (written last, indexes what exists).
-- **Owns:** Nothing (no IDs); references all other docs. Keep it light — detail lives in the docs
-  it points to. When CLAUDE.md and a referenced doc disagree, the doc wins.
+- **Owns:** Nothing (no IDs). When AGENTS.md and a referenced doc disagree, the doc wins. Narrative
+  never lives here — CHANGELOG.md and PHASE_ARCHIVE.md do.
+
+### `CLAUDE.md` — Claude-only additions *(always, thin)*
+- **Purpose:** First line `@AGENTS.md`; then only Claude Code specifics — Workflow tool, `/goal`,
+  `/keel` modes, impeccable / modern-web-guidance hooks. Never a copy of AGENTS.md.
+- **Include:** Always, next to AGENTS.md. Counts toward the same session byte budget.
 
 ### `BRD.md` — Business Requirements Document *(always, scaled)*
 - **Purpose:** Problem, objectives, market positioning, business requirements, constraints,
@@ -83,14 +90,19 @@ a one-line justification per inclusion and per omission, and adjust.
 - **Owns:** Module map; the canonical type/interface namespace. References ADRs for decisions baked
   into type shapes.
 
-### `ADR.md` — Architecture Decision Records *(product+)*
-- **Purpose:** One record per significant decision: context, options considered (with pros/cons),
-  the decision, consequences (easier/harder/off-the-table), and a **revisit trigger**. Immutable
-  once accepted; superseded decisions get new ADRs.
+### `docs/adr/` — Architecture Decision Records *(product+)*
+- **Purpose:** One **file** per decision (`docs/adr/ADR-xxx-<slug>.md`), table-based: header
+  (Status carrying the lifecycle `Proposed → Accepted → Built → Superseded` with commits, Deciders
+  `founder/engineering/legal`, Bounded by), ≤2-sentence context, a Y-statement decision + revisit
+  trigger, options with ✓/✗, and a consequences table whose `Build deviation` row is the only
+  post-acceptance edit. `docs/adr/README.md` is the index plus the **Open decisions** register
+  (one row per question, with locations and decider). No addenda; deploy state → CHANGELOG /
+  DEPLOYMENT; incidents → RUNBOOK postmortems.
 - **Include:** Whenever there are non-obvious technical bets (almost always at product tier+). Even
   a prototype benefits from 3–5 ADRs on its hard bets.
 - **Depends on:** Architect (+ Security) rounds; the "hard bets" surfaced there.
-- **Owns:** `ADR-xxx`. Referenced from nearly every other technical doc.
+- **Owns:** `ADR-xxx` (reserved in the index at phase scope, so parallel worktrees never collide).
+  Referenced from nearly every other technical doc.
 
 ### `NFR.md` — Non-Functional Requirements *(product+)*
 - **Purpose:** Measurable targets for performance, scalability, availability, security, cost,
@@ -159,38 +171,93 @@ a one-line justification per inclusion and per omission, and adjust.
 - **Owns:** The plugin interface contract.
 
 ### `IMPLEMENTATION_PLAN.md` — build plan & phase gates *(always)*
-- **Purpose:** Phases (0..N) with goal, scope (cross-refs), deliverables, and **exit gates**; a
-  phase-status table; standing rules; and a requirement-coverage map (requirement → phase).
+- **Purpose:** Phases (0..N) with goal, scope (cross-refs), deliverables, and an **exit-gate table**
+  (`Gate · Evidence level · Artefact · Verified by · Status`); a phase-status table with deploy
+  state; standing rules (incl. "claims carry evidence"); a **Changes** table (`CHG-xxx`, the
+  hotfix-weight unit); deferred items with owner + revisit trigger; a requirement-coverage map.
 - **Include:** Always. For a prototype it's a short checklist; for a platform it's the master
   build sequence with gates.
 - **Depends on:** All requirement + technical docs; Delivery/Ops round.
-- **Owns:** `Phase 0..N`. References BRD/PRD/ADR/NFR per phase. Phase status is updated as the
-  build progresses (this is the doc the builder touches most).
+- **Owns:** `Phase 0..N`, `CHG-xxx`. References BRD/PRD/ADR/NFR per phase. Updated by doc-sync
+  as the build progresses (this is the doc the builder touches most).
 
 ### `PHASE_ARCHIVE.md` — relocated detail for finished/superseded work *(created on-demand)*
-- **Purpose:** The overflow tank for the living docs. Holds full detail moved out of `CLAUDE.md`,
-  `IMPLEMENTATION_PLAN.md`, and `ADR.md` by `/keel archive` — completed phase write-ups, resolved
-  deferred items, superseded ADR bodies — so those stay light for a new session while the detail
-  stays one link away for whoever revisits it.
-- **Include:** Never part of initial generation (Phase 3) — there's nothing to archive yet.
-  Created the first time `/keel archive` runs; see SKILL.md "Archive Mode".
+- **Purpose:** The overflow tank for the living docs. Holds full detail moved out of `AGENTS.md`,
+  `IMPLEMENTATION_PLAN.md`, `docs/adr/`, `CHANGELOG.md` and `RUNBOOK.md` — completed phase
+  write-ups, resolved deferred items and changes, superseded ADR bodies, released CHANGELOG
+  sections, closed postmortems — so those stay light while the detail stays one link away.
+- **Include:** Never part of initial generation — there's nothing to archive yet. Created the
+  first time `/keel archive` runs, or automatically by doc-sync on a byte-budget breach.
 - **Depends on:** Whichever doc each entry was moved from.
 - **Owns:** No new IDs. Every entry keeps the ID it had in its source (`Phase N`, `ADR-xxx`) —
   archiving relocates prose, not the record.
 
 ### `COMMANDS.md` — command & env reference *(if it runs)*
-- **Purpose:** Dev/test/deploy commands and the environment-variable reference. Copy-paste ready.
+- **Purpose:** Dev/test commands, seed/test-data tooling, local↔remote data reconciliation, and the
+  environment-variable reference (per-env *values* live in DEPLOYMENT.md). Copy-paste ready.
 - **Include:** Anything that's actually run/built/deployed.
 - **Depends on:** Architect + Delivery/Ops rounds.
 - **Owns:** Nothing; the operational command surface.
 
+### `DEPLOYMENT.md` — how it ships *(operated systems)*
+- **Purpose:** The environment matrix (local / dev / staging / prod — URL, host+region, DB, secrets
+  store, who deploys, command), the promotion path and its gates, the **build-time vs runtime
+  config table** per env, pre-deploy checklist, post-deploy live-verification checklist, rollback
+  per component, known gotchas, and the **deploy log** (`vNN · date · commit · env · verified-by`)
+  — the only place deploy state is authored (with CHANGELOG.md).
+- **Include:** Anything deployed. One doc, one matrix — never one file per environment.
+- **Depends on:** ARCHITECTURE, COMMANDS, NFR, what's on disk (`fly.toml`, `deploy.sh`, CI).
+- **Owns:** The env matrix, the deploy log. `/keel archive` trims the log, never the matrix.
+
+### `CHANGELOG.md` — what shipped, and is it live *(always)*
+- **Purpose:** Keep-a-Changelog. `[Unreleased]` is appended by doc-sync per phase/change; the deploy
+  step stamps entries `deployed vNN` → `live-verified`. The home for the merged/deployed/verified
+  history that otherwise leaks into ADRs and status lines.
+- **Include:** Always. Released sections older than the retention window move to PHASE_ARCHIVE.md.
+- **Owns:** Deploy state per change/phase (shared with DEPLOYMENT's deploy log per deploy).
+
 ### `RUNBOOK.md` — operations & incident response *(operated systems)*
-- **Purpose:** Environments, first-time setup, standard deploy, rollback paths, incident-response
-  playbooks, monitoring dashboards/SLOs/alerts, backup & recovery, security-review cadence,
-  pre-launch checklist.
+- **Purpose:** Incident-response playbooks (`Symptom · Check · Fix · Escalate`), monitoring
+  dashboards/SLOs/alerts, backup & recovery, security-review cadence, routine operations,
+  data-subject-rights procedures, pre-launch checklist, and **Postmortems** (`PM-xxx`: date,
+  trigger, root cause, fix, prevention) — the home for "what went wrong after the decision".
+  Environments, deploy and rollback live in DEPLOYMENT.md.
 - **Include:** Anything deployed and operated (not weekend prototypes).
-- **Depends on:** NFR (thresholds), COMMANDS, ARCHITECTURE.
-- **Owns:** Incident playbooks, the pre-launch checklist.
+- **Depends on:** NFR (thresholds), COMMANDS, DEPLOYMENT, ARCHITECTURE.
+- **Owns:** `PM-xxx`, incident playbooks, the pre-launch checklist.
+
+### `FEEDBACK_ROUNDS.md` — client / stakeholder feedback *(products with external reviewers)*
+- **Purpose:** One row per feedback round (`FR-xx · date · source · items → Phase/CHG · status`),
+  so a client request traces to the work that answered it, and a session can see what is still
+  unanswered. The input side of the post-launch loop.
+- **Include:** When someone outside the build team reviews builds (client, founder-as-client,
+  design partner). Omit for solo internal tools.
+- **Owns:** `FR-xx`.
+
+### `SPIKE_<slug>.md` — investigation record *(on demand)*
+- **Purpose:** A time-boxed investigation before a decision: what exists, what does **not**
+  exist, structural constraints that will bite, related open items, a decision checklist, and an
+  appendix of negative-result checks (the greps that found nothing), so nobody redoes it.
+- **Include:** Created by a session when a phase needs research before it can be scoped. Feeds
+  one or more ADRs; never a decision itself.
+
+### `AUDIT_<date>.md` — dated audit snapshot *(on demand)*
+- **Purpose:** A point-in-time audit (UI/UX, security, accessibility, performance): dimension
+  scores, P0/P1/P2 findings, positive findings worth preserving, systemic patterns (fix once).
+  Findings become deferred items or a phase; the snapshot itself is never edited.
+- **Include:** When an audit is run (`/impeccable audit`, pen test, review). Dated, immutable.
+
+### `COST_ANALYSIS.md` — measured cost model *(usage-metered / AI spend)*
+- **Purpose:** Per-unit cost formulas built from **measured** token/usage data, not estimates; the
+  methodology so a future reader can reproduce or challenge it; caveats the data surfaced; the
+  revisit trigger.
+- **Include:** Anything with per-request AI/LLM or metered-infrastructure cost that bounds a `BO-xx`
+  or `NFR-COST`. Omit when cost is flat hosting.
+
+### `docs/keel-transcript.md` — the interview *(always)*
+- **Purpose:** The Keel interview verbatim — the founder's own words that every requirement traces
+  back to. Read when a requirement's intent is disputed.
+- **Include:** Always, written at the end of generation. Never edited afterwards.
 
 ### `docs/README.md` — documentation index *(when docs/ has 3+ files)*
 - **Purpose:** Catalog of all docs with status badges and a per-persona reading order.
@@ -214,11 +281,13 @@ a one-line justification per inclusion and per omission, and adjust.
    plug-in specs)
 3. **Experience:** `DESIGN` (alongside PRD)
    3a. **FE skill infrastructure** (if skills integration): `PRODUCT.md` + `.claude/hooks/modern-web-guidance-hook.mjs` + `.claude/settings.json` — generated immediately after `DESIGN.md`, before operational docs.
-4. **Operational:** `IMPLEMENTATION_PLAN` → `COMMANDS` → `RUNBOOK`
+4. **Operational:** `IMPLEMENTATION_PLAN` → `COMMANDS` → `DEPLOYMENT` → `RUNBOOK` → `CHANGELOG`
+   (seeded with `[Unreleased]` and the generation entry) → `FEEDBACK_ROUNDS` (if included)
 5. **Knowledge base:** `almanac/*` (if included)
-6. **Indexes last:** `docs/README.md`, then `CLAUDE.md` — so they map what actually exists.
-7. **On-demand:** `PHASE_ARCHIVE.md` — created and appended to only by `/keel archive`, never
-   during initial generation or `/keel upgrade`.
+6. **Indexes last:** `docs/README.md`, `docs/adr/README.md`, then `AGENTS.md` + `CLAUDE.md` — so
+   they map what actually exists. `docs/keel-transcript.md` is written with them.
+7. **On-demand:** `PHASE_ARCHIVE.md` (first archive), `SPIKE_*.md` / `AUDIT_*.md` (sessions),
+   `COST_ANALYSIS.md` (first measurement) — never during initial generation.
 
 Fix the ID namespace and the BRD/PRD spine *before* parallelizing any later docs, so every parallel
 document references a stable base.

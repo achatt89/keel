@@ -1,105 +1,25 @@
 <!--
-  Keel template — CLAUDE.md (the keystone index)
-  WHAT: The entry point Claude Code / a new contributor reads first. A LIGHT file:
-        one-line description, a document-map table, the hard invariants, the working
-        workflow, and a living "current status" line.
-  INCLUDE WHEN: Always — every Keel-generated suite has exactly one CLAUDE.md.
-  DEPENDS ON: Everything; written last so it indexes only docs that actually exist.
-  OWNS: No IDs. References every other doc. When this file and a referenced doc
-        disagree, the doc wins — fix the pointer here, not the doc.
-  KEEP IT LIGHT: This is the #1 rule. Detail lives in the docs this file points to.
-        Target ~70–120 lines. If a section grows past a few lines, it belongs in a
-        referenced doc with a pointer here. Resist the urge to explain — link instead.
-        As the project ages this file can drift past its target (old status lines left
-        instead of overwritten, invariants for since-removed components) — run
-        `/keel archive` to relocate that drift into PHASE_ARCHIVE.md and trim back.
+  Keel template — CLAUDE.md (thin: Claude-only additions to AGENTS.md)
+  WHAT: Claude Code reads this file first. Its FIRST LINE imports AGENTS.md — the canonical
+        keystone index — so nothing in AGENTS.md is ever duplicated here. Everything below the
+        import is Claude-Code-specific: skill hooks, the Workflow tool, `/goal`, `/keel` modes.
+  INCLUDE WHEN: Always — exactly one, next to AGENTS.md.
+  BYTE BUDGET: counts toward the same 12 KB session budget as AGENTS.md (`.keel/meta.json`).
   Delete all <!-- Keel guidance --> comments (and this block) when filling this in.
 -->
 
-# {{PROJECT_NAME}} — CLAUDE.md
+@AGENTS.md
 
-<!-- Keel guidance: one or two sentences. What the project is, the stack in a clause,
-     and the single overriding value (e.g. "security and auditability rank above
-     feature velocity"). No marketing. No detail that lives elsewhere. -->
-{{PROJECT_NAME}} is {{ONE_LINE_DESCRIPTION}} ({{STACK_SUMMARY}}). {{OVERRIDING_PRINCIPLE}}.
+# {{PROJECT_NAME}} — Claude Code notes
 
-This file is deliberately light. The documents below are the source of truth — read the
-relevant one *before* touching code.
+<!-- Keel guidance: everything general lives in AGENTS.md (imported above). Only Claude-Code
+     tooling goes here. If a line would also be true for Codex or Cursor, it belongs in AGENTS.md. -->
 
-## Document map
+## Workflow tooling
 
-<!-- Keel guidance: list ONLY docs that exist on disk (conventions traceability rule).
-     One row per doc. "When you are…" is the trigger that sends a reader there. Drop
-     rows for docs the project doesn't warrant; add rows for ones it does. -->
-
-| Read this | When you are |
-|---|---|
-| `docs/{{ENGINEERING_DESIGN}}` | Starting any work — design pillars, the core domain model, data classification, **non-negotiables** |
-| `docs/{{DESIGN_DOC}}` | Building UI — the design system: tokens, components, patterns, multi-interface rules |
-| `docs/{{IMPLEMENTATION_PLAN}}` | Picking up work — current phase, scope, and the exit gates that block the next phase |
-| `docs/{{LLD}}` | Writing code — module map, interfaces, schemas, security-module implementations |
-| `docs/{{ARCHITECTURE}}` | Making structural choices — components, schema, trust boundaries, controls by threat category, accepted risks |
-| `docs/{{EXTENSION_SPEC}}` | Adding or changing a {{EXTENSION_POINT}} — the authoritative contract |
-| `docs/{{ADR}}` | Wondering "why is it like this?" — or recording a new decision |
-| `docs/{{NFR}}` | Writing tests/gates — acceptance criteria, CI build gates, perf budgets |
-| `docs/{{COMPLIANCE}}` | Touching personal/regulated data — data classes, consent, retention, erasure/export |
-| `docs/{{BRD}}` / `docs/{{PRD}}` | Questioning scope or product behaviour |
-| `{{COMMANDS}}` | Running anything — dev/test/deploy commands and the env-var reference |
-| `{{RUNBOOK}}` | Operating or responding to an incident |
-| `docs/PHASE_ARCHIVE.md` *(only once `/keel archive` has run)* | Revisiting finished or superseded work — relocated detail, nothing deleted |
-
-## Hard invariants (full list + rationale: {{ENGINEERING_DESIGN}} §{{NONNEG_SECTION}})
-
-<!-- Keel guidance: a SHORT numbered list — the rules that must never be violated, each
-     one line, each pointing at the doc/ADR that details and justifies it. These are the
-     project's non-negotiables, not a tutorial. Pull them from ENGINEERING_DESIGN's
-     non-negotiables and the CI-failing lint rules. Keep to the genuinely load-bearing
-     few; if everything is an invariant, nothing is. -->
-
-1. {{INVARIANT_ISOLATION}} — every {{SCOPED_QUERY}} carries its scope key; the access layer is the mechanism, {{BACKSTOP}} is only the backstop. (see {{ENGINEERING_DESIGN}})
-2. {{INVARIANT_TRUST_BOUNDARY}} — untrusted input crosses {{BOUNDARY}} only through {{GUARD}}; this is a CI-failing lint rule — never disable or work around it. (see {{ADR}})
-3. {{INVARIANT_APPEND_ONLY}} — {{APPEND_ONLY_TABLES}} are append-only (trigger-enforced); never UPDATE/DELETE. (see {{ARCHITECTURE}})
-4. {{INVARIANT_SINGLE_PATH}} — {{SENSITIVE_OPERATION}} happens only via {{CANONICAL_MODULE}}; never call the underlying API directly. (see {{LLD}})
-5. {{INVARIANT_RBAC}} — authorization checks live only in {{RBAC_MODULE}}; inline role checks are a CI-failing lint rule. (see {{ADR}})
-6. {{INVARIANT_OTHER}} — {{RATIONALE}}. (see {{DOC}})
-
-## Git & working workflow (mandatory — the build loop)
-
-<!-- Keel guidance: these are non-negotiables, not suggestions. The workflow scripts in
-     .claude/workflows/ encode this loop — use them to run every phase. Detail and rationale
-     in IMPLEMENTATION_PLAN "Standing rules". -->
-
-0. **Version control from commit one.** If this folder isn't a git repo yet, `git init` and make an initial commit (the generated docs are the first commit) before any feature work.
-1. **Branch per phase, not per task.** A phase's workflow script creates/checks out `phase-N-<slug>` from `main` — the single integration branch for everything in that phase. Never commit directly to `main`. For work outside a phase script (hotfixes, small config tweaks), branch per feature off `main` instead (`git checkout -b feat/<task> main`).
-2. **Run the phase workflow script** for any planned phase of work:
-   `claude --workflow .claude/workflows/phase-N-<slug>.js`
-   Or invoke via the Workflow tool inside a Claude Code session. The script checks out the phase branch, then fans out divisible tasks as parallel agents in separate `git worktree`s branched off it — one worktree per task, agents never share a working copy. Each task agent opens with `/goal` (code, tests, lint, `verify`, and a manual `claude-in-chrome` pass for UI work — it won't stop early); exit-strategy-when-stuck policy is in IMPLEMENTATION_PLAN "Standing rules". Task branches merge back into the phase branch, never straight to `main` — only the phase branch, carrying every task plus the doc-sync commit, ever merges to `main`.
-   For undivisible work (small hotfixes, config tweaks): branch-per-feature still required; worktree still preferred for isolation.
-3. **Write tests with the code, never after.** Unit tests for logic/edge paths; integration tests for cross-module behaviour; smoke tests for wiring. Security- and isolation-critical behaviour is *proven by a test*. "No test needed" is a stated judgement, not a default.
-4. **Definition of done per change:** {{DOD_GATES}} (details: IMPLEMENTATION_PLAN "Standing rules").
-5. **Doc sync before every merge to `main`** — run `.claude/workflows/doc-sync.js` on the phase branch (the phase script does this automatically, after tasks are integrated) and wait for its commit before that branch merges to `main`. It updates: this file's Current status · IMPLEMENTATION_PLAN phase table · ADR.md for new decisions · deferred-items table. A phase branch without the doc-sync commit is not done, whatever its tests say.
-6. **Merge to `main`** only after gates pass and the doc-sync commit is present on the phase branch.
-7. **Decisions captured without fail.** Any decision made during work — including "we chose X over Y because Z" — becomes an ADR entry before merge. `[NEEDS DECISION]` markers resolved during work are removed and converted to ADR entries, never just deleted.
-
-## Current status
-
-<!-- Keel guidance: ONE or TWO lines, updated after every merge (workflow step 6).
-     What just shipped + what's next. All real detail belongs in IMPLEMENTATION_PLAN.
-     If this section grows past two lines, move the detail out. -->
-
-> Updated after every merge to `main`. One or two lines only — detail lives in `{{IMPLEMENTATION_PLAN}}`.
-
-- **Last completed:** {{LAST_COMPLETED}}.
-- **Now:** {{CURRENT_WORK}}.
-
-## Working agreements
-
-<!-- Keel guidance: 3–5 bullets of standing rules that aren't workflow steps — the
-     conventions a contributor must hold. Keep terse; point to docs for detail. -->
-
-- Definition of done per change: {{DOD_SUMMARY}} (details: {{IMPLEMENTATION_PLAN}}).
-- New {{SCOPED_RESOURCE}} gets its scope key + {{ISOLATION_CONTROL}} before its first migration merges; new decisions become {{ADR}} entries; new accepted risks go to {{ARCHITECTURE}}.
-- When this file and a referenced doc disagree, **the referenced doc wins** — fix the pointer, not the doc.
+- Phase scripts run via the Workflow tool or `claude --workflow .claude/workflows/phase-N-<slug>.js`; task agents open with `/goal` and the exit strategy in IMPLEMENTATION_PLAN "Standing rules".
+- Keel modes: `/keel phase new <slug>` · `/keel change <slug>` · `/keel closeout` · `/keel archive` · `/keel upgrade` · `/keel version`.
+- Browser verification for UI work is `claude-in-chrome`; its transcript path is the artefact cited in the evidence file.
 
 ## Active skills *(UI projects — remove this section if no UI or skills integration was skipped)*
 
