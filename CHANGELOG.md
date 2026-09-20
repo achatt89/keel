@@ -3,6 +3,74 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.0.0] — 2026-09-20
+
+Shaped by a retrospective across four keel-documented production projects (mysha, interview-strategist,
+ospraye, cortextOS — ~1,800 commits, ~600 doc-touching). The pattern in every one: docs stayed
+trustworthy only when every claim carried evidence, and stayed readable only when the journal lived
+somewhere other than the keystone. **Breaking:** doc format 2 — existing projects migrate via
+`/keel upgrade` (FORMAT_MIGRATION).
+
+### Added
+- **Evidence ladder** (`code-read < unit < integration < local-browser < staging < prod-live`). Every
+  ✅ carries a level + artefact. Exit gates are tables (`Gate · Evidence level · Artefact · Verified
+  by · Status`); a gate whose evidence falls short of its wording is `partial` and the phase stays
+  open. Standing rule 7: *claims carry evidence*.
+- **Deploy-state ladder** (`on-branch → merged → deployed vNN → live-verified`) with one home:
+  `CHANGELOG.md` + `DEPLOYMENT.md` deploy log. Flipped by the Merge step and the deploy procedure,
+  never by prose — kills the "flip pre-merge language" commits.
+- **Verify stage** in `phase-template.js` between Integrate and Doc Sync: runs every suite once,
+  records skipped tests by name, and writes `.keel/evidence/phase-N.json`; doc-sync cites it and
+  never re-runs. `prod-live` cannot be written by scripts, only by a deploy.
+- **ADR reservation at scope**: the phase script's Setup reserves `ADR-NNN` stubs so parallel
+  worktrees never collide on numbers; migrations are timestamp-named.
+- **Two work units**: `/keel phase new <slug> [--after N | --split N]` (gated milestone, fractional
+  numbering rules) and `/keel change <slug>` (hotfix-weight: `chg/` branch, `CHG-xxx` row,
+  CHANGELOG line, `change-template.js`, no phase block). `/keel closeout` generates a deferred-items
+  sweep phase past a threshold.
+- **Byte budgets + auto-archive**: `.keel/meta.json` `budgets` (keystone 12 KB default); doc-sync's
+  deterministic Budget step measures every living doc and runs the archive per breached file, one
+  commit each; reports `BUDGET_EXCEEDED` and stops rather than loop.
+- **New templates**: `DEPLOYMENT.md` (env matrix, promotion path, build-time vs runtime config,
+  pre/post-deploy checklists, rollback, deploy log, gotchas — one doc for all environments),
+  `CHANGELOG.md`, `SPIKE.md`, `COST_ANALYSIS.md`, `AUDIT.md`, `FEEDBACK_ROUNDS.md`,
+  `keel-meta.json`; `docs/keel-transcript.md` is now a standard output.
+- **Decider tags** (`founder` / `engineering` / `legal`) on ADRs and open decisions; open decisions
+  are one row per *question* with a Locations column.
+- `/keel version` reports doc format and per-file size vs budget.
+
+### Changed
+- **ADRs are per-file and table-based** (`docs/adr/ADR-NNN-slug.md`, index + open decisions in
+  `docs/adr/README.md`): header table, ≤2-sentence context, Y-statement decision, options with ✓/✗,
+  consequences incl. a single `Build deviation` row. Lifecycle `Proposed → Accepted → Built →
+  Superseded`. **Addenda abolished** — incidents go to RUNBOOK postmortems, deploy status to the
+  deploy log.
+- **AGENTS.md is the canonical keystone**; `CLAUDE.md` is `@AGENTS.md` + Claude-only sections.
+  Status is a two-row table; hard invariants are `Rule · Enforced by · Gap · Source`; a pre-PR
+  checklist is derived from them.
+- `RUNBOOK.md`: environments/deploy/rollback moved to DEPLOYMENT; playbooks are `Symptom · Check ·
+  Fix · Escalate` tables; new Postmortems register (`PM-xxx`).
+- `COMMANDS.md`: deployment section is commands-only; new seed/test-data and local↔remote data
+  reconciliation sections; env-var table gains a build-time/runtime `Kind` column.
+- `ENGINEERING_DESIGN.md` non-negotiables gain `Enforced by · Exception path · Gap` columns.
+- Deferred items gain `Owner · Revisit trigger`; phase-status table gains `Deploy state`.
+- `/keel upgrade`: format-1 detection, `FORMAT_MIGRATION` + `BUDGET_EXCEEDED` gap classes, and the
+  U0–U7 migration sequence (archive first; classify addenda/status prose with verbatim relocation;
+  parallel ADR reformat; evidence levels set to what the prose actually claimed; DEPLOYMENT seeded
+  from disk, CHANGELOG from git log; `UPGRADE_REPORT.md` lists every relocation).
+- `/keel archive`: categories renamed/added — `KEYSTONE_DRIFT`, `CHANGE_MERGED`,
+  `CHANGELOG_OVERFLOW`, `POSTMORTEM_CLOSED`; DEPLOYMENT env matrix and evidence files are never
+  archived.
+- Delivery/Ops interview round asks about environments, promotion path, build-vs-runtime config,
+  deploy authority, and live-verification checks.
+
+### Fixed
+- Docs site: `#version` and `#archive` sidebar links were not registered in the section router and
+  fell through to the default section.
+
+### Removed
+- `references/templates/ADR.md` (single-file ADR template) — replaced by `templates/adr/`.
+
 ## [1.3.0] — 2026-08-12
 
 ### Added

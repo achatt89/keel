@@ -8,7 +8,7 @@
 # Keel Archive Report — {{PROJECT_NAME}}
 
 **Report date:** {{DATE}}
-**Docs scanned:** {{CLAUDE.md, IMPLEMENTATION_PLAN.md, ADR.md, DESIGN.md — whichever exist}}
+**Docs scanned:** {{AGENTS.md, IMPLEMENTATION_PLAN.md, docs/adr/, CHANGELOG.md, RUNBOOK.md, DESIGN.md — whichever exist}}
 **PHASE_ARCHIVE.md:** {{Exists (N entries) / Will be created}}
 
 ---
@@ -20,7 +20,7 @@
 | `PHASE_COMPLETE` | {{N}} | {{~N}} |
 | `DEFERRED_RESOLVED` | {{N}} | {{~N}} |
 | `ADR_SUPERSEDED` | {{N}} | {{~N}} |
-| `CLAUDE_DRIFT` | {{N}} | {{~N}} |
+| `KEYSTONE_DRIFT` | {{N}} | {{~N}} |
 | `STALE_SECTION` | {{N}} | {{~N}} |
 | **Total** | **{{N}}** | **{{~N}}** |
 
@@ -30,9 +30,11 @@
 
 | Doc | Current lines | Projected lines | Reduction |
 |---|---|---|---|
-| CLAUDE.md | {{N}} | {{N}} | {{-N%}} |
+| AGENTS.md | {{N}} | {{N}} | {{-N%}} |
 | IMPLEMENTATION_PLAN.md | {{N}} | {{N}} | {{-N%}} |
-| ADR.md | {{N}} | {{N}} | {{-N%}} |
+| docs/adr/ (superseded bodies) | {{N}} | {{N}} | {{-N%}} |
+| CHANGELOG.md | {{N}} | {{N}} | {{-N%}} |
+| RUNBOOK.md (postmortems) | {{N}} | {{N}} | {{-N%}} |
 | PHASE_ARCHIVE.md | {{N (0 if new)}} | {{N}} | +{{N}} (relocated, not new content) |
 
 ---
@@ -57,7 +59,7 @@
 |---|---|---|---|
 | A-1 | {{ADR-xxx: title}} | {{full Context/Options/Consequences prose}} | {{ID, title, status, one-line why, link}} |
 
-### CLAUDE.md / Other Drift
+### AGENTS.md / Other Drift
 
 | ID | Doc | Section | What moves | Reason |
 |---|---|---|---|---|

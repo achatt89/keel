@@ -201,7 +201,7 @@ Every {{EXTENSION_POINT}} MUST pass these. Tests live alongside the implementati
 
 <!-- Keel guidance: the step-by-step a contributor follows. Keep it to the loop; the
      interface detail is §2. End with the doc-sync step so the registry and the docs
-     stay in agreement (the CLAUDE.md / docs-README invariant). -->
+     stay in agreement (the AGENTS.md / docs-README invariant). -->
 
 1. Create the {{EXTENSION_POINT}} directory ({{IMPL_FILE}}, tests, fixtures).
 2. Implement `{{INTERFACE_NAME}}` (§2) honouring every rule.

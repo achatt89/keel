@@ -35,7 +35,7 @@
 **Version:** 0.1
 **Date:** {{DATE}}
 **Status:** Draft
-**References:** ARCHITECTURE.md, BRD.md, ADR.md
+**References:** ARCHITECTURE.md, BRD.md, docs/adr/
 
 ---
 

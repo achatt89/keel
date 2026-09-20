@@ -1,0 +1,22 @@
+{
+  "keelVersion": "2.0.0",
+  "docFormat": 2,
+  "generatedAt": "{{YYYY-MM-DD}}",
+  "lastUpgraded": null,
+  "lastArchived": null,
+  "archivedEntries": 0,
+  "adrLayout": "per-file",
+  "goalExitStrategy": "bounded-retries-then-escalate",
+  "budgets": {
+    "AGENTS.md": 12288,
+    "CLAUDE.md": 12288,
+    "docs/IMPLEMENTATION_PLAN.md": 65536,
+    "docs/adr/README.md": 16384
+  },
+  "evidenceDir": ".keel/evidence",
+  "closeout": { "maxOpenDeferred": 8, "everyNPhases": 5 },
+  "deployLogKeep": 10,
+  "lastArchiveTrigger": null,
+  "documentsGenerated": [],
+  "skillsInstalled": []
+}
