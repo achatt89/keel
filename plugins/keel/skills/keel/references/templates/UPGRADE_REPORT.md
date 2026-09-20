@@ -8,9 +8,11 @@
 # Keel Upgrade Report — {{PROJECT_NAME}}
 
 **Audit date:** {{DATE}}
-**Keel feature set compared:** v1.1+ (goal-directed task execution via `/goal`, impeccable lifecycle integration, workflow-first phases, modern-web-guidance in toto)
+**Keel feature set compared:** v2.0 (doc format 2 — per-file table ADRs, evidence-ladder exit gates, DEPLOYMENT + CHANGELOG, AGENTS.md keystone, byte budgets, Phase/Change units)
+**Project doc format detected:** {{1 / 2}} ({{by meta.json / by N of 12 indicators}})
+**Upgrade path:** {{Feature upgrade (surgical U4) / Format migration (U0–U7)}}
 **Project type:** {{Web app / API / CLI / Fullstack / other}}
-**Has UI:** {{Yes / No}}
+**Has UI:** {{Yes / No}} · **Operated (remote environments):** {{Yes / No}}
 **Skills opted-in:** {{impeccable / modern-web-guidance / none / both}}
 
 ---
@@ -29,21 +31,42 @@
 
 | Doc | Present | Status | Gap count |
 |---|---|---|---|
-| BRD.md | ✅/❌ | ✅ Current / ⚠️ Has gaps / ❌ Missing | {{N}} |
+| BRD.md | ✅/❌ | ✅ Current / ⚠️ Has gaps / ❌ Missing / 🔁 Format 1 | {{N}} |
 | PRD.md | | | |
 | ARCHITECTURE.md | | | |
-| ADR.md | | | |
+| docs/adr/ (README + ADR-NNN-*.md) — or legacy ADR.md | | | |
 | NFR.md | | | |
 | ENGINEERING_DESIGN.md | | | |
 | IMPLEMENTATION_PLAN.md | | | |
+| DEPLOYMENT.md | | | |
+| CHANGELOG.md | | | |
 | COMMANDS.md | | | |
 | RUNBOOK.md | | | |
+| AGENTS.md | | | |
 | CLAUDE.md | | | |
 | DESIGN.md | | | |
 | PRODUCT.md | | | |
-| .claude/workflows/ | | | |
+| FEEDBACK_ROUNDS.md | | | |
+| docs/keel-transcript.md | | | |
+| .claude/workflows/ (doc-sync, change-template, phase-*) | | | |
+| .keel/evidence/ | | | |
 | .claude/settings.json | | | |
 | Skill files | | | |
+
+---
+
+## Budgets
+
+<!-- Keel guidance: one row per budgeted path (.keel/meta.json `budgets`, or the defaults).
+     On the migration path fill "After" in U7; on the feature path "After" = "Before" unless
+     an archive ran. Over-budget rows name the archive category that would bring them under. -->
+
+| File | Budget | Before | After | Status | If over: archivable via |
+|---|---|---|---|---|---|
+| AGENTS.md (or CLAUDE.md on format 1) | {{12288}} | {{bytes}} | {{bytes}} | ✅ / ⚠️ over by {{N}} | {{CLAUDE_DRIFT: N status entries}} |
+| CLAUDE.md | {{12288}} | | | | |
+| docs/IMPLEMENTATION_PLAN.md | {{65536}} | | | | {{PHASE_COMPLETE: N phases · DEFERRED_RESOLVED: N rows}} |
+| docs/adr/README.md (or ADR.md on format 1) | {{16384}} | | | | {{ADR_SUPERSEDED: N}} |
 
 ---
 
@@ -53,7 +76,7 @@
 
 | ID | Doc | Category | Gap description | Action |
 |---|---|---|---|---|
-| C-1 | {{doc}} | {{MISSING_DOC / MISSING_SECTION / OUTDATED_CONVENTION / MISSING_SKILL}} | {{what is missing or wrong}} | {{what to do: add section X / replace block Y / install skill Z}} |
+| C-1 | {{doc}} | {{MISSING_DOC / MISSING_SECTION / OUTDATED_CONVENTION / MISSING_SKILL / FORMAT_MIGRATION / BUDGET_EXCEEDED}} | {{what is missing or wrong — for FORMAT_MIGRATION, the counts: N addenda, N status entries, N bullet gates}} | {{what to do: add section X / replace block Y / install skill Z / migrate via U2–U4}} |
 
 ### 🟡 Important gaps
 
@@ -69,6 +92,33 @@
 
 ---
 
+## Relocations (format migration only)
+
+<!-- Keel guidance: this table is the U2 work order and, after U7, the audit trail. It is
+     produced BEFORE anything is written and reviewed by the user — a wrong classification
+     misplaces content; a right one is lossless. One row per block moved. "Verbatim" is ✓
+     when the full original text landed at the destination; a row can only be ✗ if the
+     block was fully expressed by a single structured cell (a `Build deviation` row) — and
+     then the original is still recoverable from git. Fill "Classified as" from the rubric in
+     keel-upgrade-guide.md "The addenda classifier". Unclassified rows stay in place. -->
+
+| # | Source (doc · ADR / section · line) | Text (first ~80 chars) | Classified as | Destination (doc · anchor · new ID) | Verbatim |
+|---|---|---|---|---|---|
+| R-1 | {{ADR.md · ADR-065 Addendum 1 ¶2 · L4102}} | {{"Prod checkout was on `pk_test_` …"}} | {{incident}} | {{RUNBOOK.md#pm-001 · PM-001}} | ✓ |
+| R-2 | {{ADR.md · ADR-065 Addendum 3 · L4140}} | {{"the backend was throwing it away …"}} | {{incident + deploy-state}} | {{RUNBOOK.md#pm-003 · PM-003; DEPLOYMENT.md#deploy-log v30; CHANGELOG [deployed v30]}} | ✓ |
+| R-3 | {{CLAUDE.md · Current status · L52}} | {{"Prior (merged): GA4 client-side tag …"}} | {{deploy-state}} | {{CHANGELOG.md [merged] ADR-062; PHASE_ARCHIVE.md#claude-md-notes (verbatim)}} | ✓ |
+| R-4 | {{ADR.md · ADR-034 Addendum 5 · L2210}} | {{…}} | {{unclassified}} | {{stays — ADR-034 `Unclassified (review)`}} | — |
+
+**Totals:** {{N}} blocks · decision-deviation {{n}} · deploy-state {{n}} · incident {{n}} · client-round {{n}} · still-open {{n}} · new decision {{n}} · unclassified {{n}} (review these first)
+
+**Claimed above evidence** (U4 — gates whose migrated `Evidence level` is below what the gate text demands; phases stay ✅, rows show the real level):
+
+| Phase | Gate | Gate demands | Prose claimed | Migrated level | Artefact |
+|---|---|---|---|---|---|
+| {{5.4}} | {{Skills screen shows all rows …}} | {{local-browser}} | {{"mechanism is unit-tested; no browser pass ran"}} | {{unit}} | {{[NEEDS DECISION]}} |
+
+---
+
 ## New keel features available
 
 Features added to keel since this project was first generated.
@@ -76,6 +126,17 @@ These can be integrated into the project without re-running the full interview.
 
 | Feature | Current state in this project | Benefit |
 |---|---|---|
+| Per-file, table-based ADRs (`docs/adr/`) with lifecycle status + Build deviation row | {{Current / Format 1 (N ADRs, N addenda)}} | ADRs stay immutable and small; deploy/incident history has its own homes |
+| IMPLEMENTATION_PLAN — exit gates as evidence table + `Deploy state` column | {{Current / Bullets}} | Overclaiming becomes visible: every ✅ names its evidence level and artefact |
+| IMPLEMENTATION_PLAN — `## Changes` table (CHG-xxx) + `/keel change` | {{Present / Absent}} | Hotfixes stop being fractional phases; the status table stays a milestone table |
+| DEPLOYMENT.md (env matrix, build-vs-runtime config, deploy log) | {{Present / Absent / Absent — not operated}} | One home for every environment fact; catches "docs say AWS, deploy is Fly" drift |
+| CHANGELOG.md fed by doc-sync | {{Present / Absent}} | Deploy state has one home; no more "flip pre-merge language" commits |
+| AGENTS.md canonical + `CLAUDE.md` = `@AGENTS.md` | {{Current / Copy (drifted by N lines) / Absent}} | One keystone for every agent tool; no drift between two hand-maintained copies |
+| Byte budgets + doc-sync auto-archive | {{Current / Absent}} | Every session opens on a keystone under ~3K tokens |
+| Phase scripts — `Verify` stage + `.keel/evidence/` + ADR reservation | {{Current / N scripts to patch}} | Evidence is produced once, cited by doc-sync; no ADR-number collisions across worktrees |
+| RUNBOOK `## Postmortems` (PM-xxx) | {{Present / Absent}} | Incidents are pattern-matchable, and their prevention is tracked to where it landed |
+| FEEDBACK_ROUNDS.md (FR-xx) | {{Present / Absent / n/a}} | Client/founder feedback batches spawn phases and changes by reference |
+| `/keel phase new` · `/keel closeout` | {{n/a — commands}} | Scoping and deferred-items closeout become rituals, not hand work |
 | DESIGN.md §12 — full 23-command impeccable lifecycle table | {{Present (current) / Present (outdated — N commands) / Absent}} | Maps every impeccable command to the right build moment; prevents under-use |
 | IMPLEMENTATION_PLAN — workflow-first standing rules | {{Current / Outdated / Absent}} | Encodes the build loop (worktrees, doc-sync, ADR capture) as non-negotiables |
 | IMPLEMENTATION_PLAN — goal-directed-tasks bullet | {{Current / Outdated / Absent}} | Each task agent opens with `/goal`; encodes this project's exit strategy when a goal isn't met |

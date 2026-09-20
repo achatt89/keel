@@ -175,8 +175,9 @@ PRD (UX flows), almanac website-copy.
 ## 6. Delivery / Ops — *build & run, and how you work* *(include for anything that will be built)*
 
 **Goal:** Establish phasing, environments, deployment, operability, **and the ways of working**
-that govern how the build is conducted. **Feeds:** IMPLEMENTATION_PLAN, COMMANDS, RUNBOOK, NFR
-(availability/observability), and the git/working-workflow section of CLAUDE.md.
+that govern how the build is conducted. **Feeds:** IMPLEMENTATION_PLAN, DEPLOYMENT, COMMANDS,
+RUNBOOK, CHANGELOG, NFR (availability/observability), `.keel/meta.json` budgets, and the
+git/working-workflow section of AGENTS.md.
 
 > **Ways of working — always ask these (even for prototypes).** They become the mandatory build
 > loop baked into `CLAUDE.md` and `IMPLEMENTATION_PLAN`'s standing rules. There are strong proven
@@ -206,10 +207,20 @@ that govern how the build is conducted. **Feeds:** IMPLEMENTATION_PLAN, COMMANDS
 >     immediately. Best for regulated/high-stakes codebases where autonomous retries need sign-off.
 >   *(Default: Bounded retries, then escalate.)* Record the choice — it's baked into
 >   `IMPLEMENTATION_PLAN`'s standing rules and every generated phase workflow script.
-> - **Documentation in lockstep:** After *each chunk/phase* of work, auto-update `CLAUDE.md`
->   (current status), the `IMPLEMENTATION_PLAN` phase table, and any doc the change touched (ADRs,
->   README index, RUNBOOK) — so docs never lag code? *(Default: yes — a merge isn't done until the
->   docs reflect reality.)*
+> - **Documentation in lockstep:** After *each chunk/phase* of work, auto-update `AGENTS.md`
+>   (current status), the `IMPLEMENTATION_PLAN` phase table, `CHANGELOG.md`, and any doc the
+>   change touched (ADRs, README index, RUNBOOK) — so docs never lag code? *(Default: yes — a
+>   merge isn't done until the docs reflect reality.)*
+> - **Evidence for "done":** Confirm the evidence ladder (`code-read < unit < integration <
+>   local-browser < staging < prod-live`): nothing is marked ✅ without a level and an artefact,
+>   and only a deploy can write `prod-live`. Which level does *this* project's launch gate
+>   demand? *(Default: `prod-live` for anything operated; `local-browser` for a prototype.)*
+> - **Phase vs Change:** A **Phase** is a gated milestone (plan block, workflow script, evidence
+>   table); a **Change** is hotfix-weight (branch + `CHG-xxx` row + CHANGELOG line, no phase
+>   block). Agree that single-scope fixes are Changes, never fractional phases? *(Default: yes.)*
+> - **Byte budgets:** Living docs carry byte budgets in `.keel/meta.json`; doc-sync auto-archives
+>   at breach. Keep the defaults (keystone 12KB, IMPLEMENTATION_PLAN 64KB, ADR index 16KB) or
+>   set your own? *(Default: keep.)*
 > - **Definition of done:** What gates must be green before any change merges (lint + custom
 >   security lint, unit + integration tests, isolation/critical suite, dependency audit)?
 > - **Solo vs team:** Solo, small team, or with Claude Code agents? (A solo dev may skip worktrees
@@ -217,10 +228,22 @@ that govern how the build is conducted. **Feeds:** IMPLEMENTATION_PLAN, COMMANDS
 
 - **Phasing:** What's the natural build order? What must exist before anything else is safe to
   build (foundations, guardrails)? What are the phase boundaries and exit criteria?
-- **Environments:** Local / staging / production? How does a developer run it locally? What's the
-  minimal dev setup?
-- **Deploy:** Where does it run (which host/platform)? How does code get to production — CI/CD,
-  manual, scripts? How do you roll back?
+- **Environments (→ DEPLOYMENT §1):** Which environments exist or will — local / dev / staging /
+  production? For each: host and region, database, where secrets live, who may deploy to it.
+  How does a developer run it locally? What's the minimal dev setup?
+- **Promotion path (→ DEPLOYMENT §2):** How does a change travel local → staging → prod, and what
+  must be true at each hop (which evidence level)? Is there a staging at all, or does local go
+  straight to prod — and is that a decision or an accident?
+- **Build-time vs runtime config (→ DEPLOYMENT §3):** Which values are baked in at build time
+  (public keys, feature flags, `NEXT_PUBLIC_*`-style vars, build args) versus read at runtime?
+  Where does each come from per environment? *(Probe this — a test payment key baked into a
+  production build is the canonical silent failure, and it is always a build-vs-runtime confusion.)*
+- **Deploy (→ DEPLOYMENT §4–§6):** How does code get to production — CI/CD, manual, scripts? Who
+  is allowed to run a prod deploy? How do you roll back each component (app, database, static
+  assets)? What is the pre-deploy checklist today, even if it lives in someone's head?
+- **Live verification (→ DEPLOYMENT §5):** After a deploy, what concrete checks prove it worked —
+  a URL, a `curl`, a purchase in test mode, a pixel firing? These become the post-deploy
+  checklist that makes "live-verified" a fact rather than a claim.
 - **Observability:** How will you know it's healthy — metrics, logs, traces, alerts? What are the
   SLOs that matter? What's the first thing you'd check in an incident?
 - **Operations:** Routine ops (backups, migrations, key rotation, scaling)? Likely incident types
