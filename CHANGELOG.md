@@ -3,6 +3,20 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.5.1] — 2026-10-31
+
+The docs now have a Markdown source, `docs/site/*.md`, for the new keel.thelogicatelier.com site.
+
+### Added
+- **docs/site/*.md**: the 18 docs pages as GitHub-flavoured Markdown with frontmatter (title, lead,
+  group, order, slug, anchor). Converted by script from `docs/index.html` at 2.5.0, wording
+  unchanged. Format spec: `docs/site/README.md`. The GitHub Pages site stays as is until cutover.
+
+### Changed
+- **Release hook** (disabled) now triggers the site's deploy workflow with workflow_dispatch, which
+  needs only an Actions-scoped token.
+- **README** no longer calls the repo private or asks readers to log in; it is public (MIT).
+
 ## [2.5.0] — 2026-10-31
 
 Every release now publishes machine-readable release notes, generated from this changelog so they cannot drift.
