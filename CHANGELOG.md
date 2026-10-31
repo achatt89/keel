@@ -3,6 +3,17 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.5.2] — 2026-10-31
+
+The release feed now lists install methods per tool, so a site can show one tab per tool.
+
+### Added
+- **release.json `install.tools`**: one entry per tool keel is documented and tested in, with how to
+  start it, a docs page, and each install method's commands (terminal or in-tool). Today that is
+  Claude Code only, with three methods: plugin, personal skill and project skill. Codex and
+  Antigravity are not listed: keel has not been tested in them, and phase scripts rely on Claude Code
+  features (the Workflow tool, `.claude/agents` subagents, `/goal`). Additive within schema v1.
+
 ## [2.5.1] — 2026-10-31
 
 The docs now have a Markdown source, `docs/site/*.md`, for the new keel.thelogicatelier.com site.

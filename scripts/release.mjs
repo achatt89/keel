@@ -17,6 +17,20 @@ const INSTALL = {
   commands: ['/plugin marketplace add achatt89/keel', '/plugin install keel@thelogicatelier'],
   update: ['/plugin marketplace update thelogicatelier', '/plugin install keel@thelogicatelier'],
   note: 'Restart Claude Code after installing or updating, then run /keel upgrade in an existing keel project.',
+  // One entry per tool keel is documented and tested in. Add a tool only once it is (not before).
+  tools: [{
+    id: 'claude-code', name: 'Claude Code', start: '/keel', docs: 'docs/site/05-plugin-install.md',
+    methods: [
+      { id: 'plugin', label: 'Plugin (recommended)', shell: false,
+        commands: ['/plugin marketplace add achatt89/keel', '/plugin install keel@thelogicatelier'] },
+      { id: 'personal-skill', label: 'Personal skill (no plugin system)', shell: true,
+        commands: ['git clone https://github.com/achatt89/keel.git ~/code/keel', 'mkdir -p ~/.claude/skills',
+          'ln -s ~/code/keel/plugins/keel/skills/keel ~/.claude/skills/keel'] },
+      { id: 'project-skill', label: 'Project skill (one repo, shared with the team)', shell: true,
+        commands: ['git clone https://github.com/achatt89/keel.git ~/code/keel', 'mkdir -p .claude/skills',
+          'cp -R ~/code/keel/plugins/keel/skills/keel .claude/skills/keel'] },
+    ],
+  }],
 }
 const REQUIREMENTS = {
   claudeCode: 'a build with the /plugin command (else install as a personal skill; see README)',
@@ -97,7 +111,7 @@ if (process.argv.includes('--self-test')) {
   const ok = j.schemaVersion === 1 && j.version === '1.1.0' && j.date === '2026-02-01' && j.summary === 'Better things.' &&
     JSON.stringify(j.highlights) === '["Feature A","Feature B"]' && j.versions.length === 2 &&
     j.versions[1].summary === 'First.' && j.compareUrl.endsWith('/compare/keel--v1.0.0...keel--v1.1.0') &&
-    j.tagUrl.endsWith('/tree/keel--v1.1.0') && build(r, new Set()).json.includes('"compareUrl": null') &&
+    j.tagUrl.endsWith('/tree/keel--v1.1.0') && j.install.tools[0].methods.length === 3 && build(r, new Set()).json.includes('"compareUrl": null') &&
     b.md.startsWith('# keel 1.1.0 — 2026-02-01') && b.md.includes('/plugin install keel@thelogicatelier') &&
     stampErrors(r, v).length === 0
   w('docs/index.html', '<span class="version-badge">v1.0.9</span>')                 // drift is caught
