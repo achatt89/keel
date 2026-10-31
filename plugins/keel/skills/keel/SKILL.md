@@ -25,7 +25,7 @@ description: >
   "what version of keel is this", "check keel version", "is my keel up to date", "which keel
   version generated these docs", "check for keel updates").
 metadata:
-  version: 2.4.0
+  version: 2.4.1
 license: MIT
 ---
 
@@ -537,7 +537,7 @@ platform handling sensitive data gets the full fan-out with adversarial verifica
    document map matches the files on disk, no document contradicts another, `CLAUDE.md` opens
    with `@AGENTS.md` and duplicates nothing from it, no ✅ anywhere lacks an evidence level, and
    `node .keel/doc-size.mjs` passes with no breach. A generated doc over its budget is **split
-   now** (keel-archive-guide "Splitting an oversize doc": `docs/<name>/NN-<slug>.md` parts, the
+   now** (`node .keel/doc-size.mjs --split <doc>`, then add the Parts table's IDs column) (keel-archive-guide "Splitting an oversize doc": `docs/<name>/NN-<slug>.md` parts, the
    parent a slim index linking every part, each part linking back) — never handed over oversize.
 2. Write `docs/README.md` (or root README) as the index: the document map table, reading order by
    persona, and status badges.
@@ -1012,13 +1012,20 @@ replace §12 entirely with the current comprehensive version. Never touch §1–
 copy `references/templates/workflows/doc-sync.js` and `change-template.js` verbatim. Generate
 per-phase workflow scripts from `references/templates/workflows/phase-template.js` (one per
 IMPLEMENTATION_PLAN phase that is not ✅), filling `{{GOAL_EXIT_STRATEGY_BLOCK}}` per the Phase U3
-answer. If `doc-sync.js` exists but predates the Split stage (no `.keel/doc-size.mjs` call):
+answer. If `doc-sync.js` exists but predates split-aware doc sync (no `doc-size.mjs --split` in it):
 replace it verbatim — it carries no project-specific content. Copy
 `references/templates/keel-doc-size.mjs` to `.keel/doc-size.mjs` and add `"defaultBudget": 32768`.
 
 *Oversize docs* (if the split was approved in U3) — archive first where the doc has archivable
 detail, then split per keel-archive-guide.md "Splitting an oversize doc", one commit per doc; run
-`node .keel/doc-size.mjs` after each and fix any LINK ERROR before moving on. Create `.keel/evidence/` if absent.
+`node .keel/doc-size.mjs` after each and fix any LINK ERROR before moving on. Use
+`node .keel/doc-size.mjs --split <doc>` for the split itself (deterministic, verbatim, repoints
+inbound anchor links); split by hand to the same shape only where it refuses.
+
+*Split-aware roles (2.4.1)* — replace `.keel/doc-size.mjs` and `doc-sync.js` verbatim; add the
+"Split docs — required, every edit" section to an existing `.claude/agents/doc-sync.md`
+(regenerate it if unedited) and the "Editing docs" note to `security.md` / `design.md`; for a
+full-time doc agent, give the user that section's text to add to its brief. Create `.keel/evidence/` if absent.
 
 If phase scripts already exist:
 - **Missing the `Verify` stage** (no `.keel/evidence/phase-N.json` written, Doc Sync re-runs

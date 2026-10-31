@@ -3,6 +3,27 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.4.1] — 2026-10-31
+
+### Added
+- **`node .keel/doc-size.mjs --split <doc>`** — deterministic split per the 2.4.0 rule: a plain
+  doc's `## ` sections move verbatim to `docs/<name>/NN-<slug>.md` (small neighbours merged,
+  headings inside code fences ignored) and the parent becomes an index with a Parts table; an
+  oversize part keeps its first chunk and moves the rest to new parts added to the index; inbound
+  `NAME.md#anchor` links are repointed. Refuses the keystone. The self-test appends to an
+  over-limit doc and asserts the split, the links both ways, the repointed link, a second split
+  of a grown part, and a clean check afterwards.
+
+### Changed
+- **Split-aware doc sync.** `SYNC_RULES` and `.claude/agents/doc-sync.md` now require: write into
+  the right part of a split doc, never the index; a part about to breach gets a new part (linked
+  both ways) or `--split`; a plain doc an edit would push over budget is split, not piled on. The
+  caller's review round checks index-stays-index, links both ways and no breach. The size/link
+  check is the last step before the doc-sync commit (no commit with a link error). The Split
+  stage runs `--split` first. Security/design subagents follow the same rules if they edit a doc.
+- Docs site: split layout covered on Roles, Version (Budgets row), Archive (tool + writing to a
+  split doc), "Where things live" and the catalog; badge 2.4.1.
+
 ## [2.4.0] — 2026-10-31
 
 ### Added

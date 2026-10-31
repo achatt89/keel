@@ -90,6 +90,20 @@ const SYNC_RULES = `
   with refs (Phase N / CHG-NNN / ADR-xxx). An incident found and fixed → RUNBOOK.md Postmortems
   row (PM-xxx) as well; never an ADR addendum.
 
+  Split-aware writing (applies to EVERY doc edit below — budgets: .keel/meta.json):
+  - Before editing a doc NAME.md, check for a sibling folder <name in lower-kebab>/ (DESIGN.md →
+    design/). If it exists, NAME.md is an INDEX: write the new content into the part that holds
+    that section (its "## Parts" table says which). Never append content to the index; the index
+    only gains a Parts row.
+  - New content that fits no existing part, or would push a part over its budget: add a new part
+    (next free NN-<slug>.md, header "# <Doc title> — <section>" + "> Part of [NAME.md](../NAME.md)
+    · all parts listed there.") and its row in the index's Parts table — or, if a part ends up
+    over budget anyway, run: node .keel/doc-size.mjs --split <that part>.
+  - A plain doc that your edit pushes over its budget is split, not piled on:
+    node .keel/doc-size.mjs --split <doc>   (never for AGENTS.md / CLAUDE.md — those archive).
+  - After your edits: node .keel/doc-size.mjs must report no LINK ERROR and no BREACH on a doc
+    you touched (other than the keystone). Put its summary line in your Report.
+
   Step 7 — Other docs touched: COMMANDS.md (new command) · DEPLOYMENT.md (new env var /
   build-arg / gotcha) · RUNBOOK.md (new playbook / postmortem) · requirement coverage map ·
   FEEDBACK_ROUNDS.md (if this work closes a feedback item).
@@ -147,6 +161,10 @@ for (let round = 1; round <= MAX_ROUNDS; round++) {
   2. What the docs now say: git diff (uncommitted doc edits) + the report's "changed" list.
   3. List every thing the work did that the docs do not capture, specifically (file, what is
      missing, which doc should hold it). Also any ✅ / "verified" without a level + artefact.
+  4. Split integrity: run node .keel/doc-size.mjs. Each of these is a gap to list: a split doc's
+     index that gained body content (anything beyond its intro and Parts table — check git diff
+     on the index), any LINK ERROR (a part not linked from its index, or not linking back), any
+     BREACH on a non-keystone doc the role touched.
   complete = true only if that list is empty.
 `, {
     label: `doc-sync-review-r${round}`,
@@ -169,8 +187,13 @@ await agent(`
   Add one row per gap to IMPLEMENTATION_PLAN.md's Deferred items table:
   | Doc sync incomplete: <gap> | <branch> | doc-sync hit its ${MAX_ROUNDS}-round cap | engineering | next doc-sync on this area | — | ⬜ |
   Do not attempt the gaps yourself.`}
+  Last step before the commit — size + link check: node .keel/doc-size.mjs
+    - BREACH with action "split" → node .keel/doc-size.mjs --split <file>, then re-run the check.
+      (archive / archive-then-split breaches are left for the Archive stage that follows.)
+    - Any LINK ERROR → fix the link (add the Parts row, or the "> Part of" line); never delete a
+      part. Re-run until no LINK ERROR. Do not commit with a LINK ERROR.
   Commit:
-    git add AGENTS.md CLAUDE.md docs/IMPLEMENTATION_PLAN.md docs/adr CHANGELOG.md 2>/dev/null; git add -u
+    git add -A docs AGENTS.md CLAUDE.md CHANGELOG.md 2>/dev/null; git add -u
     git commit -m "docs: sync — <what> | <n> ADRs | <n> deferred | evidence: <level>"
   Report the commit sha, files updated, and any deferred doc gaps.
 `, { label: 'doc-sync-commit' })
@@ -274,8 +297,12 @@ if (toSplit.length) {
   await pipeline(toSplit, (b) => agent(`
     Working directory: <project root>
 
-    Split: ${b.file} is ${b.size} bytes, budget ${b.budget}. Split it per keel-archive-guide.md
-    "Splitting an oversize doc". Move, never delete or reword; IDs never change.
+    Split: ${b.file} is ${b.size} bytes, budget ${b.budget}. Run the deterministic split first:
+      node .keel/doc-size.mjs --split ${b.file}
+    It implements keel-archive-guide.md "Splitting an oversize doc" exactly (below, for review
+    and for the case it refuses: e.g. a single section with no lower heading — then split by hand
+    to the same shape). Then add the IDs column to the index's Parts table and a one-line purpose
+    if missing. Move, never delete or reword; IDs never change.
     - Parent docs/NAME.md → folder docs/<name in lower-kebab>/ (DESIGN.md → docs/design/,
       IMPLEMENTATION_PLAN.md → docs/implementation-plan/), parts NN-<section-slug>.md, one per
       top-level "## " section in original order (merge adjacent small sections; a section still

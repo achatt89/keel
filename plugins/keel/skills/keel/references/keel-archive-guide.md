@@ -250,6 +250,15 @@ against the parent's budget; the family total is reported, not judged). It **fai
 is not linked from the parent's Parts table or has no link back to the parent. Doc-sync stops on
 that failure; fix the link, never delete the part.
 
+**Tool:** `node .keel/doc-size.mjs --split <doc>` does all of the above deterministically (plain
+doc or an oversize part; verbatim; skips headings inside code fences; repoints inbound anchored
+links) and refuses the keystone. Then add the IDs column and purpose line to the index by hand.
+
+**Writing to a split doc later** (doc-sync and any role that edits docs): new content goes into
+the part that holds its section, never the index; a part about to breach gets a new part (or
+`--split`); a plain doc an edit would push over budget is split first. The caller's doc-sync
+review checks it and the size/link check is the last step before the commit.
+
 **Commit:** one per doc — `docs: split DESIGN.md into design/ (N parts) — <size>B > <budget>B`.
 
 ## Severity / eligibility reference
