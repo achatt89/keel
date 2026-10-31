@@ -3,6 +3,35 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.4.2] — 2026-10-31
+
+Fixes the conflicts a real `/keel upgrade` to 2.4.1 hit on a large project (cortextOS), generically.
+
+### Changed
+- **`doc-size.mjs` gives one verdict per doc** — `ok` / `waived` / `archive` / `split` / `manual`,
+  each with its reason. doc-sync acts on `archive` and `split` only; `manual` is reported.
+- **Archives are never budgeted or split** (`*ARCHIVE*`, `LEGACY_*`, `archive/`, meta `"archives"`);
+  `--split` refuses them.
+- **A folder beside a doc is a split only if the doc has a `## Parts` heading** — `docs/ADR.md`
+  next to `docs/adr/` no longer produced 260 false link errors or measured ADR files as parts.
+- **ADR index budget scales with the ADR count** (320 B per `ADR-*.md`); over that → `manual`.
+- **Keystone over budget**: archive, then move whole sections out to `docs/agents/NN-<slug>.md`
+  behind a `## Parts` table (checked both ways) — never compress wording. "tight" note under 2% headroom.
+- **Archive-then-split** is now two verdicts: `archive`, then `split` only on the re-check after
+  archiving (`--after-archive`).
+- **Generated files and docs without headings** → `manual` instead of a split that fails or is overwritten.
+- **Link check** reads reference-style links, angle-bracket links and repo-absolute `/docs/x.md`.
+- **`--split` is idempotent**: on an index with nothing new it refuses and changes nothing; new
+  sections written into an index move out and append rows to the existing Parts table.
+
+### Added
+- **Waivers** in `.keel/meta.json` — `"waivers": {"<doc>": {"reason", "reviewed", "max"?}}`,
+  "review due" after `waiverReviewDays` (90). Only the user grants one. Legacy `budgetExceptions`
+  are read as unreviewed waivers; `/keel upgrade` moves them after asking.
+- Self-test fixtures for every case above (archive, ADR folder + index, legacy and current waivers,
+  waiver `max`, generated, no headings, reference/absolute links, tight and over-budget keystone,
+  keystone parts, repeat split, new section in an index).
+
 ## [2.4.1] — 2026-10-31
 
 ### Added

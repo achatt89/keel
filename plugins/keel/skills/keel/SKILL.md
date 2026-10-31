@@ -25,7 +25,7 @@ description: >
   "what version of keel is this", "check keel version", "is my keel up to date", "which keel
   version generated these docs", "check for keel updates").
 metadata:
-  version: 2.4.1
+  version: 2.4.2
 license: MIT
 ---
 
@@ -643,7 +643,8 @@ actually running* vs. *the version that last touched this project's docs* — pl
        upgrade` will offer the format-2 migration."*
    - **Budgets.** Run `node .keel/doc-size.mjs` from the project root (read-only; if the project
      has no copy, run this skill's own `references/templates/keel-doc-size.mjs` the same way) and report size vs budget per file, split
-     families (index + N parts = total), each breach with its action (archive / split), and any
+     families (index + N parts = total), each doc's verdict (ok / waived / archive / split /
+     manual) with its reason, and any
      LINK ERROR — the same check doc-sync runs, so a session can see what the next doc-sync will do.
    - If not run inside a keel project at all, skip this step and say so (nothing to compare).
 3. **Latest published version** — best-effort only, never blocking:
@@ -891,8 +892,10 @@ check for every absent doc. Produce a structured gap list.
   `budgets` absent); reported with size vs budget, what archive category would bring it under,
   and — if archiving cannot (or the doc has nothing archivable) — the **proposed split**: folder,
   parts table (part file · sections · bytes), and inbound anchor links to rewrite. Applied in U4
-  only on approval. Keystone: archive only. A split doc's LINK ERROR is `MISSING_SECTION`
-  (Critical).
+  only on approval. Use the checker's verdict as-is: `ok`/`waived` → no gap; `archive`/`split` →
+  propose; `manual` → report with its reason. Keystone: archive, then move sections out. A split
+  doc's LINK ERROR is `MISSING_SECTION` (Critical). A legacy `budgetExceptions` entry →
+  OUTDATED_CONVENTION (Minor): confirm and move it to `waivers`.
 
 **Severity:**
 - `Critical` — doc missing entirely, or a core security/governance section absent, or PRODUCT.md missing in a UI project with impeccable, or a `FORMAT_MIGRATION` on the keystone / ADRs / IMPLEMENTATION_PLAN (the docs every session reads)
@@ -1021,6 +1024,16 @@ detail, then split per keel-archive-guide.md "Splitting an oversize doc", one co
 `node .keel/doc-size.mjs` after each and fix any LINK ERROR before moving on. Use
 `node .keel/doc-size.mjs --split <doc>` for the split itself (deterministic, verbatim, repoints
 inbound anchor links); split by hand to the same shape only where it refuses.
+
+*Doc verdicts and waivers (2.4.2)* — replace `.keel/doc-size.mjs` and `doc-sync.js` verbatim (both
+carry no project content). Move each `"budgetExceptions"` entry into `"waivers"` as
+`{ "reason": <the old string>, "reviewed": <today> }` only after the user confirms it in U3 (show
+the doc, size, budget and reason; options: keep waiver · archive/split instead), then delete
+`budgetExceptions`. Idempotent: a doc already in `waivers` is not asked again unless its review is
+due; a doc the checker already calls `ok`/`waived` gets no proposal; `--split` on an index with
+nothing new refuses and changes nothing. Never propose splitting an `archive` or `manual` doc —
+report `manual` ones with the checker's reason. Keystone over budget: propose moving named
+sections to `docs/agents/` (conventions "Byte budgets"), never compressing.
 
 *Split-aware roles (2.4.1)* — replace `.keel/doc-size.mjs` and `doc-sync.js` verbatim; add the
 "Split docs — required, every edit" section to an existing `.claude/agents/doc-sync.md`

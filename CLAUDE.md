@@ -36,6 +36,11 @@ Trigger: any HTML/CSS/JS/TS edit in docs/
 keel documents projects using the templates in references/templates/. The document it generates for this REPO (what you're reading) is itself a usage of the keel convention.
 
 ## Current status
+v2.4.2 — one verdict per doc from `doc-size.mjs` (ok/waived/archive/split/manual + reason);
+archives never budgeted/split; ADR folder no longer mistaken for a split; ADR index budget scales;
+waivers in meta.json (reason + reviewed); keystone moves sections out, never compresses;
+idempotent `--split`. Fixes cortextOS 2.4.1 upgrade conflicts. Merged to main.
+
 v2.4.1 — split-aware doc sync: `doc-size.mjs --split` (deterministic, verbatim, fence-safe, repoints
 anchored links; self-test appends to an over-limit doc and asserts the split); doc-sync rules +
 subagent write into parts not the index; caller review checks index/links/size; size+link check is

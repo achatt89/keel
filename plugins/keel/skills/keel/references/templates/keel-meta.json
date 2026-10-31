@@ -1,5 +1,5 @@
 {
-  "keelVersion": "2.4.1",
+  "keelVersion": "2.4.2",
   "docFormat": 2,
   "generatedAt": "{{YYYY-MM-DD}}",
   "lastUpgraded": null,
@@ -14,6 +14,8 @@
     "docs/adr/README.md": 16384
   },
   "defaultBudget": 32768,
+  "waivers": {},
+  "waiverReviewDays": 90,
   "evidenceDir": ".keel/evidence",
   "closeout": {
     "maxOpenDeferred": 8,

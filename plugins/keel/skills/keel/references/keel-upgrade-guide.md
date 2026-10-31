@@ -374,10 +374,14 @@ Every project that will be built:
 - [ ] `.keel/doc-size.mjs` present (with `--split`) and `defaultBudget` in meta.json → MISSING_FEATURE (Important)
 - [ ] doc-sync role brief (`.claude/agents/doc-sync.md` or the full-time doc agent's) has the
   "Split docs — required, every edit" rules → OUTDATED_CONVENTION (Important)
-- [ ] `node .keel/doc-size.mjs`: every breach of a non-keystone doc → `BUDGET_EXCEEDED` with the
+- [ ] `node .keel/doc-size.mjs`: every `archive`/`split` verdict → `BUDGET_EXCEEDED` with the
   proposed action (archive, then split) and the proposed parts table (part file · sections · bytes)
   for the user to approve in U3 · every LINK ERROR → MISSING_SECTION (Critical: a part nobody can
   reach, or that can't reach its index)
+- [ ] `.keel/doc-size.mjs` prints a verdict per doc (2.4.2: `ok`/`waived`/`archive`/`split`/`manual`)
+  → else OUTDATED_CONVENTION (Important): replace verbatim with `doc-sync.js`
+- [ ] `.keel/meta.json` has no `budgetExceptions` (moved to `waivers` with `reason` + `reviewed`)
+  → OUTDATED_CONVENTION (Minor; ask the user per entry)
 - [ ] `.claude/hooks/keel-update-check.mjs` + SessionStart entry → MISSING_FEATURE (Optional, opt-in)
 
 ---

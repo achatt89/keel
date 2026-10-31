@@ -101,8 +101,11 @@ const SYNC_RULES = `
     over budget anyway, run: node .keel/doc-size.mjs --split <that part>.
   - A plain doc that your edit pushes over its budget is split, not piled on:
     node .keel/doc-size.mjs --split <doc>   (never for AGENTS.md / CLAUDE.md — those archive).
-  - After your edits: node .keel/doc-size.mjs must report no LINK ERROR and no BREACH on a doc
-    you touched (other than the keystone). Put its summary line in your Report.
+  - After your edits: node .keel/doc-size.mjs must report no LINK ERROR and no "split" verdict
+    on a doc you touched. "ok"/"waived" are fine; "archive"/"manual" go in your Report for the
+    caller (never compress the keystone's wording to fit — archive, then move whole sections out
+    to a linked doc). Never split a doc the checker calls archive, waived or manual.
+    Put its non-ok lines in your Report.
 
   Step 7 — Other docs touched: COMMANDS.md (new command) · DEPLOYMENT.md (new env var /
   build-arg / gotcha) · RUNBOOK.md (new playbook / postmortem) · requirement coverage map ·
@@ -164,7 +167,8 @@ for (let round = 1; round <= MAX_ROUNDS; round++) {
   4. Split integrity: run node .keel/doc-size.mjs. Each of these is a gap to list: a split doc's
      index that gained body content (anything beyond its intro and Parts table — check git diff
      on the index), any LINK ERROR (a part not linked from its index, or not linking back), any
-     BREACH on a non-keystone doc the role touched.
+     "split" verdict on a doc the role touched, any doc newly over budget with no verdict reason
+     the caller accepts. A new waiver needs the caller's (human's) approval — never self-granted.
   complete = true only if that list is empty.
 `, {
     label: `doc-sync-review-r${round}`,
@@ -188,8 +192,9 @@ await agent(`
   | Doc sync incomplete: <gap> | <branch> | doc-sync hit its ${MAX_ROUNDS}-round cap | engineering | next doc-sync on this area | — | ⬜ |
   Do not attempt the gaps yourself.`}
   Last step before the commit — size + link check: node .keel/doc-size.mjs
-    - BREACH with action "split" → node .keel/doc-size.mjs --split <file>, then re-run the check.
-      (archive / archive-then-split breaches are left for the Archive stage that follows.)
+    - verdict "split" → node .keel/doc-size.mjs --split <file>, then re-run the check.
+      ("archive" is left for the Archive stage that follows; "ok"/"waived" need nothing; "manual"
+      goes into the Report with its reason — do not hand-split it here.)
     - Any LINK ERROR → fix the link (add the Parts row, or the "> Part of" line); never delete a
       part. Re-run until no LINK ERROR. Do not commit with a LINK ERROR.
   Commit:
@@ -201,29 +206,29 @@ await agent(`
 phase('Budget')
 
 // Deterministic: .keel/doc-size.mjs measures every doc once (split parents and their parts
-// separately), names the action per breach, and checks split-doc links. No judgement here.
+// separately), gives one verdict per doc (ok/waived/archive/split/manual + reason), and checks
+// split-doc links. Archives, waivers, generated files and ADR indexes are handled there. No judgement here.
 const SIZE_SCHEMA = {
   type: 'object',
   properties: {
     ok: { type: 'boolean' },
     breaches: { type: 'array', items: { type: 'object', properties: {
       file: { type: 'string' }, size: { type: 'number' }, budget: { type: 'number' },
-      action: { type: 'string', enum: ['archive', 'archive-then-split', 'split'] } },
-      required: ['file', 'size', 'budget', 'action'] } },
+      action: { type: 'string', enum: ['archive', 'split', 'manual'] }, reason: { type: 'string' } },
+      required: ['file', 'size', 'budget', 'action', 'reason'] } },
     linkErrors: { type: 'array', items: { type: 'string' } },
   },
   required: ['ok', 'breaches', 'linkErrors'],
 }
-const sizeCheck = (label) => agent(`
+const sizeCheck = (label, after = false) => agent(`
   Working directory: <project root>
   Size + split-link check. Mechanical — run it and return its JSON fields; edit nothing.
   1. If .keel/meta.json has no "budgets", add exactly ${JSON.stringify(DEFAULT_BUDGETS)} and
      "defaultBudget": 32768, then commit: git add .keel/meta.json && git commit -m "chore: keel budgets"
-  2. node .keel/doc-size.mjs --json   (exit 1 only means linkErrors is non-empty — still return it)
-     If .keel/doc-size.mjs is missing: report every budgets key over its wc -c budget as a breach
-     (AGENTS.md/CLAUDE.md → "archive", IMPLEMENTATION_PLAN/CHANGELOG/RUNBOOK/DEPLOYMENT/adr README →
-     "archive-then-split", anything else → "split"), linkErrors [], ok true, and say
-     "doc-size.mjs missing — run /keel upgrade".
+  2. node .keel/doc-size.mjs --json${after ? ' --after-archive' : ''}  (exit 1 only means linkErrors is non-empty — still return it)
+     Return ok, linkErrors, and breaches exactly as printed (each has action + reason).
+     If .keel/doc-size.mjs is missing: return breaches [], linkErrors [], ok true, and say
+     "doc-size.mjs missing — run /keel upgrade" (do not guess verdicts by hand).
 `, { label, effort: 'low', schema: SIZE_SCHEMA })
 
 let size = await sizeCheck('size-check')
@@ -231,7 +236,7 @@ log(size.breaches.length
   ? 'Budget breached: ' + size.breaches.map(b => `${b.file} ${b.size}B > ${b.budget}B → ${b.action}`).join(', ')
   : 'Budgets OK')
 
-const toArchive = size.breaches.filter(b => b.action !== 'split')
+const toArchive = size.breaches.filter(b => b.action === 'archive')
 if (toArchive.length) {
   phase('Archive')
 
@@ -280,15 +285,23 @@ if (toArchive.length) {
        report exactly "BUDGET_EXCEEDED: ${b.file} <size>B > ${b.budget}B — nothing archivable".
        If you relocated everything eligible and it is still over budget: keep and commit that
        progress (step 5), then report "STILL_OVER: ${b.file} <size>B > ${b.budget}B". Do not try
-       again — the Split stage takes it from here (keystone files are never split: for AGENTS.md /
-       CLAUDE.md report "BUDGET_EXCEEDED" and a human raises the budget or trims by hand).
+       again — the Split stage takes it from here. Keystone files (AGENTS.md / CLAUDE.md) are
+       never split and never compressed to fit: if still over, MOVE whole sections out (detail a
+       session does not need every time — e.g. long tables, Delegation detail) verbatim to
+       docs/<agents|claude>/NN-<slug>.md, each starting "# <title> — <section>" then
+       "> Part of [AGENTS.md](../../AGENTS.md) · all parts listed there.", and leave in the keystone
+       a "## Parts" table linking each (docs/agents/NN-slug.md) with a one-line "read when".
+       Hard rules (invariants, workflow steps) stay in the keystone. Commit as "docs: move
+       <section> out of ${b.file}". Report "BUDGET_EXCEEDED" only if nothing can move.
 
     Report: items relocated by category, before/after sizes, commit sha — or the BUDGET_EXCEEDED line.
   `, { label: `archive:${b.file}`, phase: 'Archive' }))
-  size = await sizeCheck('size-recheck')
+  size = await sizeCheck('size-recheck', true)
 }
 
-const toSplit = size.breaches.filter(b => b.action !== 'archive')
+const manual = size.breaches.filter(b => b.action === 'manual')
+if (manual.length) log('Needs a human (no automatic fix): ' + manual.map(b => `${b.file} — ${b.reason}`).join('; '))
+const toSplit = size.breaches.filter(b => b.action === 'split')
 if (toSplit.length) {
   phase('Split')
 

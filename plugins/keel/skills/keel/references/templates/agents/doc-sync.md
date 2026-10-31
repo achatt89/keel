@@ -25,7 +25,10 @@ other touched docs → evidence-ladder lint). Read it and follow it exactly.
    `node .keel/doc-size.mjs --split <doc>` (never `AGENTS.md` / `CLAUDE.md`).
 4. Your caller's review checks that every index stayed an index, every part is linked both ways,
    and nothing you touched is over budget — expect feedback otherwise.
-5. Run `node .keel/doc-size.mjs` as your last step; no LINK ERROR, no BREACH on a doc you touched.
+5. Run `node .keel/doc-size.mjs` as your last step; no LINK ERROR, no `split` verdict on a doc you
+   touched. `ok`/`waived` need nothing. Never split a doc it calls `archive` (archives, keystone) or
+   `manual` — report those with the checker's reason. Never add a waiver yourself; never compress
+   the keystone to fit — move whole sections out (caller decides).
    Put its summary under `checked:` in your Report.
 
 **Follow-up rounds:** fix exactly the gaps the caller listed, nothing else, and report again.
