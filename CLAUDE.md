@@ -36,6 +36,11 @@ Trigger: any HTML/CSS/JS/TS edit in docs/
 keel documents projects using the templates in references/templates/. The document it generates for this REPO (what you're reading) is itself a usage of the keel convention.
 
 ## Current status
+v2.3.0 — doc-sync role (`.claude/agents/doc-sync.md` unless a full-time doc agent exists): the
+caller delegates doc sync before the completing commit, reviews the `## Report`, ≤3 feedback rounds,
+leftovers → deferred items (`doc-sync.js` Sync stage; phase scripts call it). Report-back delegation
+model (AGENTS.md "Delegation"); all three subagent templates carry a fixed Report block. Merged to main.
+
 v2.2.0 — review roles are repo-local subagents (`.claude/agents/security.md`, `design.md`) unless a
 full-time agent for the role exists (then it gets the skill); no orchestrator hire/spawn requests.
 AGENTS.md step 9 "Review before done", evidence retention (`keel-evidence-prune.mjs`, doc-sync Prune),

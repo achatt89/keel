@@ -31,7 +31,7 @@
     </a>
 
     <div class="header-actions">
-      <span class="version-badge" aria-label="Version 2.2.0">v2.2.0</span>
+      <span class="version-badge" aria-label="Version 2.3.0">v2.3.0</span>
       <a
         href="https://github.com/achatt89/keel"
         class="github-link"
@@ -114,6 +114,9 @@
           </li>
           <li>
             <a href="#building-on" class="nav-link nav-link-child">Building On: Phases &amp; Changes</a>
+          </li>
+          <li>
+            <a href="#roles" class="nav-link nav-link-child">Roles &amp; Delegation</a>
           </li>
           <li>
             <a href="#version" class="nav-link nav-link-child">Checking Your Version</a>
@@ -288,6 +291,7 @@
           <code>marketplace update</code> fetches the latest manifest from GitHub and refreshes the local cache.
           <code>plugin install</code> alone reads from that cache; running it without the update step first will reinstall the version Claude Code already knows about, not the latest one.
         </p>
+        <p>Then restart Claude Code and run <code>/keel upgrade</code> in each project keel has documented, so its docs and workflow scripts pick up the new version.</p>
 
         <h2>Uninstall</h2>
         <pre><code>/plugin uninstall keel@thelogicatelier</code></pre>
@@ -486,7 +490,7 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
 
         <h2>How building proceeds</h2>
         <p>
-          Alongside the docs, Keel generates one workflow script per <code>IMPLEMENTATION_PLAN</code> phase. Running a phase script checks out a dedicated phase branch off <code>main</code>, then fans out its divisible tasks as parallel agents, each in its own <code>git worktree</code> branched off that phase branch. Every task agent opens with <code>/goal</code> &mdash; a completion condition covering the implementation, its tests, lint, and an end-to-end <code>verify</code> pass (plus a manual in-browser check via <code>claude-in-chrome</code> for UI work) &mdash; so it won't end its turn early. Task branches merge back into the phase branch, then a <strong>Verify</strong> stage runs every suite once and writes an evidence record (<code>.keel/evidence/phase-N.json</code>) that the doc-sync step cites &mdash; it never re-runs or re-narrates. Only the phase branch, carrying the doc-sync commit, ever merges to <code>main</code>.
+          Alongside the docs, Keel generates one workflow script per <code>IMPLEMENTATION_PLAN</code> phase. Running a phase script checks out a dedicated phase branch off <code>main</code>, then fans out its divisible tasks as parallel agents, each in its own <code>git worktree</code> branched off that phase branch. Every task agent opens with <code>/goal</code> &mdash; a completion condition covering the implementation, its tests, lint, and an end-to-end <code>verify</code> pass (plus a manual in-browser check via <code>claude-in-chrome</code> for UI work) &mdash; so it won't end its turn early. Task branches merge back into the phase branch, then a <strong>Verify</strong> stage runs every suite once and writes an evidence record (<code>.keel/evidence/phase-N.json</code>) that the doc-sync step cites &mdash; it never re-runs or re-narrates. Doc sync is delegated to the doc-sync role and checked by the caller (see <a href="#roles">Roles &amp; Delegation</a>). Only the phase branch, carrying the doc-sync commit, ever merges to <code>main</code>.
         </p>
         <p>
           What happens if a task's goal isn't being met is a choice you make during the Delivery / Ops interview round: bounded retries then escalate to you (the default), persistent until met, or escalate on the first failure.
@@ -548,10 +552,97 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
             <span class="feature-desc">What shipped and in what deploy state, one line per Phase or Change. The journal that used to bloat the keystone.</span>
           </li>
           <li>
+            <span class="feature-key">.claude/agents/</span>
+            <span class="feature-desc">Repo-local subagents for the doc-sync, security and design roles, written only where the project has no full-time agent for that role. Each returns a fixed Report to its caller.</span>
+          </li>
+          <li>
             <span class="feature-key">RUNBOOK.md postmortems</span>
             <span class="feature-desc">Incidents get a <code>PM-xxx</code> row: trigger, root cause, fix, and where the prevention landed. Playbooks are <em>Symptom &middot; Check &middot; Fix &middot; Escalate</em> tables.</span>
           </li>
         </ul>
+
+        <footer class="content-footer">
+          <a href="#roles">Roles &amp; Delegation &rarr;</a>
+        </footer>
+      </article>
+
+      <!-- Roles & Delegation -->
+      <article class="content-section" id="section-roles" aria-labelledby="heading-roles">
+        <h1 id="heading-roles">Roles &amp; Delegation</h1>
+        <p class="lead">
+          Three jobs must happen after every piece of work: the docs get updated, the change gets a security review, and UI work gets a design review. Keel gives each job one owner and makes the agent doing the work responsible for checking the result.
+        </p>
+
+        <h2>One owner per role</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Role</th>
+                <th scope="col">Set up when</th>
+                <th scope="col">Runs</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>doc-sync</td>
+                <td>Every project</td>
+                <td>After each piece of work, before the commit that completes it.</td>
+              </tr>
+              <tr>
+                <td>security</td>
+                <td>You accepted the <code>security-audit</code> skill</td>
+                <td>After any task that changed code, on the branch diff, before the task is reported done.</td>
+              </tr>
+              <tr>
+                <td>design</td>
+                <td>You accepted impeccable or modern-web-guidance</td>
+                <td>Before UI work (shape it), after UI edits (critique and audit), before merge.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          If the project already has a full-time agent for a role (a doc or architect agent, a security or QA agent, a design agent), that agent owns it and keel writes nothing extra. Otherwise keel writes a repo-local Claude Code subagent: <code>.claude/agents/doc-sync.md</code>, <code>security.md</code> or <code>design.md</code>. Keel never asks an orchestrator to hire or spawn an agent. <code>.keel/meta.json</code> records each owner under <code>agents</code>.
+        </p>
+
+        <h2>The caller supervises</h2>
+        <p>
+          The agent doing the work is the <strong>caller</strong>. It delegates to a role, reads the report that comes back, and decides what happens next: accept, ask for a specific fix, or escalate. Subagents never commit, push, merge, or message anyone but their caller; the caller commits. If the caller has its own supervisor or orchestrator, it keeps reporting upward exactly as before.
+        </p>
+        <p>Every role ends its reply with the same fixed block, so callers can read it reliably:</p>
+        <pre><code>## Report
+role: doc-sync | security | design
+caller: &lt;who delegated this&gt;
+scope: &lt;branch&gt; · &lt;diff range&gt;
+status: done | partial | blocked
+changed:
+- &lt;file&gt; — &lt;what changed&gt;
+checked: &lt;what was compared or examined&gt;
+findings:
+- &lt;finding, or what could not be done&gt;
+evidence: &lt;path, or none&gt;
+not verified: &lt;what was not checked&gt;
+needs from caller: &lt;decisions, or none&gt;</code></pre>
+
+        <h2>The doc-sync loop</h2>
+        <p>
+          Before committing, the caller hands doc sync to the doc-sync role. It updates the status table, the implementation plan, decision records, deferred items, the changelog and any doc the work touched, then reports. The caller compares that report with what it actually did (<code>git log</code>, <code>git diff main</code>, the evidence record) and sends back anything missing. There is a hard cap of <strong>three rounds</strong>: whatever is still missing after round three becomes a deferred item, and the caller commits and moves on. <code>.claude/workflows/doc-sync.js</code> runs this loop for every phase and change.
+        </p>
+
+        <h2>The security skill</h2>
+        <p>
+          Keel offers Cloudflare's <code>security-audit</code> skill but never installs it silently. Before asking, it shows the source repository and the exact commit, and says plainly that this is a global, third-party install. You can answer yes, not now (asked again on the next upgrade) or never. On yes it runs:
+        </p>
+        <pre><code>npx skills add https://github.com/cloudflare/security-audit-skill --skill security-audit --global</code></pre>
+        <p>
+          A confirmed high or critical finding, or a design P0/P1, means the task is not done.
+        </p>
+
+        <h2>Evidence retention</h2>
+        <p>
+          Review runs are saved under <code>.keel/evidence/&lt;role&gt;/&lt;branch&gt;/</code>. A small script keeps the newest three runs per branch and removes a merged or deleted branch's runs 30 days after its last run. It never deletes the exit-gate records or the security ledger that the next audit reuses. Both numbers can be changed in <code>.keel/meta.json</code> under <code>evidenceRetention</code>. It runs at the end of every doc sync.
+        </p>
 
         <footer class="content-footer">
           <a href="#version">Checking Your Version &rarr;</a>
@@ -606,14 +697,6 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
           Projects can also opt in to a session-start hook (<code>.claude/hooks/keel-update-check.mjs</code>) that does the same check without invoking keel. Turn both off with <code>KEEL_NO_UPDATE_CHECK=1</code> or <code>"updateCheck": false</code> in <code>.keel/meta.json</code>.
         </p>
 
-        <h2>Security and design reviewers</h2>
-        <p>
-          Keel offers Cloudflare's <code>security-audit</code> skill (a global, third-party install, always asked first with the source and commit shown) and gives each installed skill one owner: a <strong>security</strong> reviewer that audits every branch's diff after dev work, and a <strong>design</strong> reviewer that drives impeccable and modern-web-guidance. If the project already has a full-time agent for the role, that agent gets the skill. Otherwise keel writes a repo-local subagent, <code>.claude/agents/security.md</code> or <code>design.md</code>, which Claude Code calls on its own. <code>AGENTS.md</code> carries the hard rule: no task is done until the reviewers have run on its diff.
-        </p>
-        <p>
-          Review runs land in <code>.keel/evidence/&lt;role&gt;/&lt;branch&gt;/</code>. A retention script keeps the newest three runs per branch and drops a merged branch's runs after 30 days; it never touches gate records or the security ledger. <code>/keel upgrade</code> offers all of this to existing projects, and replaces any agent request a 2.1 upgrade recorded.
-        </p>
-
         <footer class="content-footer">
           <a href="#upgrade">Upgrading Existing Projects &rarr;</a>
         </footer>
@@ -656,6 +739,30 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
           <li>
             <span class="phase-label">Phase U5</span>
             <span class="phase-desc"><strong>Codebase audit:</strong> generate a checklist of implementation gaps derived from the now-current docs, or save it as <code>CODEBASE_AUDIT.md</code> for later.</span>
+          </li>
+        </ul>
+
+        <h2>What an upgrade adds (2.1 to 2.3)</h2>
+        <ul class="feature-list" role="list">
+          <li>
+            <span class="feature-key">Role owners</span>
+            <span class="feature-desc">Sets up the doc-sync role, and the security and design roles for skills you have accepted: your full-time agent for the role if there is one, otherwise a repo-local subagent. Adds AGENTS.md workflow step 5 (doc sync before the completing commit, three rounds at most), step 9 (review before done), the Delegation section and the matching pre-PR checklist lines.</span>
+          </li>
+          <li>
+            <span class="feature-key">Workflow scripts</span>
+            <span class="feature-desc">Replaces <code>doc-sync.js</code> with the delegate-and-review version and points each unfinished phase script's Doc Sync stage at it. Adds the evidence prune script.</span>
+          </li>
+          <li>
+            <span class="feature-key">Security skill</span>
+            <span class="feature-desc">Asks about the <code>security-audit</code> skill (source and commit shown, global install), unless you said never.</span>
+          </li>
+          <li>
+            <span class="feature-key">Update check hook</span>
+            <span class="feature-desc">Offers the optional session-start hook that says when a newer keel is published.</span>
+          </li>
+          <li>
+            <span class="feature-key">Projects upgraded by 2.1</span>
+            <span class="feature-desc">A 2.1 upgrade could record a request for an orchestrator to create an agent. The upgrade replaces that record: with your full-time agent if one really exists for the role, otherwise with the repo-local subagent.</span>
           </li>
         </ul>
 
@@ -873,6 +980,10 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
               <tr>
                 <td>almanac/</td>
                 <td>Optional topology-stable knowledge base: positioning, methodology, go-to-market strategy, AI training data. Useful for products with strong editorial or brand dimensions.</td>
+              </tr>
+              <tr>
+                <td>.claude/agents/*.md</td>
+                <td>Repo-local subagents for the doc-sync, security and design roles, only where the project has no full-time agent for the role. Each ends with the fixed Report block it returns to its caller.</td>
               </tr>
               <tr>
                 <td>PHASE_ARCHIVE.md</td>

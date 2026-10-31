@@ -28,6 +28,7 @@
     '#threat-modeling':     'section-threat-modeling',
     '#handoff':             'section-handoff',
     '#building-on':         'section-building-on',
+    '#roles':               'section-roles',
     '#version':             'section-version',
     '#upgrade':             'section-upgrade',
     '#archive':             'section-archive',

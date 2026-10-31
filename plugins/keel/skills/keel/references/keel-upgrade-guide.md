@@ -364,6 +364,13 @@ Every project that will be built:
   MISSING_FEATURE (Important)
 - [ ] A role is set up → `.keel/prune-evidence.mjs` + `evidenceRetention` in meta.json →
   MISSING_FEATURE (Optional)
+- [ ] (every project) `doc-sync` role has an owner (full-time doc agent, else
+  `.claude/agents/doc-sync.md`) in `agents."doc-sync"`; `doc-sync.js` has the delegate → review →
+  ≤3-round loop; phase scripts' Doc Sync stage calls `doc-sync.js`; AGENTS.md has workflow step 5
+  (doc sync before the completing commit), the "Delegation" section and the doc-sync Pre-PR line →
+  OUTDATED_CONVENTION (Important). Fix: SKILL.md "Migrating to keel 2.3".
+- [ ] Every role subagent file ends with the `## Report` block and the caller-only rule →
+  OUTDATED_CONVENTION (Important)
 - [ ] `.claude/hooks/keel-update-check.mjs` + SessionStart entry → MISSING_FEATURE (Optional, opt-in)
 
 ---

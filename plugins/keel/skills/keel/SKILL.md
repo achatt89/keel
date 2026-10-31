@@ -25,7 +25,7 @@ description: >
   "what version of keel is this", "check keel version", "is my keel up to date", "which keel
   version generated these docs", "check for keel updates").
 metadata:
-  version: 2.2.0
+  version: 2.3.0
 license: MIT
 ---
 
@@ -242,7 +242,7 @@ shape, and its risks without guessing), stop and propose the doc suite.
    modern-web-guidance for modern web platform patterns — both fire as PostToolUse hooks*.
    If the user accepted the security skill (Security round), list **"Security agent"**
    (`security-audit` skill, global install, + its security reviewer) the same way. Any skill
-   accepted adds its review-role row (see "Review roles" below).
+   accepted adds its review-role row (see "Role owners" below).
 
 ### Phase 3 — Generate
 
@@ -370,18 +370,20 @@ Asked in the Security round (or, if that round was skipped, once here). Never in
    "github", "skillPath": "skills/security-audit/SKILL.md", "ref": "<sha>", "scope": "global" }`,
    and in `.keel/meta.json`: `skillsInstalled` += `"security-audit"`. Declined → `"securitySkill":
    "declined"` (Not now) or `"never"`; `/keel upgrade` re-asks only on `"declined"`.
-5. **Security role** — set up per "Review roles" (full-time agent if one exists, else
+5. **Security role** — set up per "Role owners" (full-time agent if one exists, else
    `.claude/agents/security.md`).
 
-### Review roles (security, design): full-time agent or repo-local subagent
+### Role owners (doc-sync, security, design): full-time agent or repo-local subagent
 
-A skill only helps if something runs it at the right moment. Each installed skill gets **one
-owner** per role: `security` (security-audit) and `design` (impeccable + modern-web-guidance).
-Keel never asks an orchestrator to hire or spawn an agent: an orchestrator cannot create lasting
-agents, and one-shot temps are never auto-invoked. Same steps for both roles:
+A rule only helps if something runs it at the right moment. Each role gets **one owner**:
+`doc-sync` (every project — the doc rules in `doc-sync.js`), `security` (if the security-audit
+skill is installed) and `design` (if impeccable / modern-web-guidance is installed). Keel never
+asks an orchestrator to hire or spawn an agent: an orchestrator cannot create lasting agents, and
+one-shot temps are never auto-invoked. Same steps for every role:
 
 1. **Look for a full-time agent for the role.** A lasting agent on this project or floor whose role
-   covers it (security / QA for `security`; design / UI for `design`): named in the session's own
+   covers it (doc / architect / tech-writer for `doc-sync`; security / QA for `security`; design /
+   UI for `design`): named in the session's own
    instructions, in AGENTS.md / CLAUDE.md, or in an existing `.claude/agents/*.md` or
    `~/.claude/agents/*.md` definition. Ask the user if unsure. Found → **do not create a
    subagent.** Hand it the skill: add the skill and the template's "Scope/When" + "How" rules to
@@ -392,11 +394,19 @@ agents, and one-shot temps are never auto-invoked. Same steps for both roles:
    Its description says *MUST BE USED PROACTIVELY* so Claude Code delegates to it unprompted.
    Record `"agents": { "<role>": { "type": "subagent", "path": ".claude/agents/<role>.md" } }`.
 3. **Make invocation reliable — don't rely on the description alone.** Fill AGENTS.md workflow
-   step 9 (*Review before done*: after any task that changed code, run the security reviewer on the
-   branch diff before reporting done; UI work also runs the design reviewer) and its Pre-PR
-   checklist line with the role owners from step 1/2, and the CLAUDE.md "Review subagents" table.
-   The phase/change Verify stages call both roles whenever `.keel/meta.json` `agents` lists them.
-4. **Evidence retention.** Review runs write to `.keel/evidence/<role>/<branch>/<run>/`. Copy
+   step 5 (*doc sync before the completing commit*: delegate to doc-sync, review its Report,
+   ≤3 feedback rounds, leftovers → deferred items) and step 9 (*Review before done*: after any task
+   that changed code, run the security reviewer on the branch diff before reporting done; UI work
+   also runs the design reviewer), their Pre-PR checklist lines, and the CLAUDE.md "Review
+   subagents" table with the owners from step 1/2. The phase/change Verify stages call security
+   and design whenever `.keel/meta.json` `agents` lists them; `doc-sync.js` runs the doc-sync loop.
+4. **Delegation model.** AGENTS.md "Delegation": the agent doing the work is the *caller* and
+   supervises its role subagents. Each subagent returns the fixed `## Report` block from its
+   template (role · caller · scope · status · changed · checked · findings · evidence · not
+   verified · needs from caller), never commits, pushes or messages anyone but its caller. The
+   caller decides the next step and commits; if it has its own supervisor, it reports upward
+   as before.
+5. **Evidence retention.** Review runs write to `.keel/evidence/<role>/<branch>/<run>/`. Copy
    `references/templates/keel-evidence-prune.mjs` to `.keel/prune-evidence.mjs` and add
    `"evidenceRetention": { "keepRunsPerBranch": 3, "pruneMergedAfterDays": 30 }` to
    `.keel/meta.json`. Rules and owner: `references/conventions.md` "Evidence retention".
@@ -421,7 +431,9 @@ mandatory build loop — worktrees, doc-sync, merge — so the builder never has
    `.claude/workflows/change-template.js` (the hotfix-weight unit `/keel change` runs — see Change
    Mode below). doc-sync writes tables not prose, enforces the evidence ladder, and ends with a
    deterministic **Budget** check against `.keel/meta.json` `budgets` that triggers a conditional
-   **Archive** step — this is how auto-archive works; there is no hook or daemon.
+   **Archive** step — this is how auto-archive works; there is no hook or daemon. Its Sync stage
+   is the doc-sync loop (delegate → review Report → ≤3 feedback rounds → commit). Set up the
+   `doc-sync` role owner per "Role owners" (always — every project has docs to sync).
 3. **For each phase in the generated `IMPLEMENTATION_PLAN.md`**, generate a phase workflow script:
    - Copy `references/templates/workflows/phase-template.js` as the base.
    - Rename to `.claude/workflows/phase-N-{{slug}}.js` (N = phase number, slug = phase name in kebab-case).
@@ -430,8 +442,8 @@ mandatory build loop — worktrees, doc-sync, merge — so the builder never has
      entries are fixed — leave their `detail` text as-is. `Setup` reserves the phase's ADR
      numbers as `Proposed` stubs (so parallel worktrees never collide on `ADR-NNN`); fill
      `{{RESERVED_ADRS}}` with the decisions the phase's scope block names. `Verify` runs the
-     suites once and writes `.keel/evidence/phase-N.json`; `Doc Sync` cites that file to fill the
-     exit-gate table; `Merge` flips the CHANGELOG line and phase-status deploy state to
+     suites once and writes `.keel/evidence/phase-N.json`; `Doc Sync` calls `doc-sync.js`, which
+     cites that file to fill the exit-gate table; `Merge` flips the CHANGELOG line and phase-status deploy state to
      `[merged]` on `main`.
    - Fill in the `TASKS` array with the scope items from that phase (each scope item = one task).
    - For phases with UI work: the task prompt already includes the impeccable + modern-web-guidance
@@ -543,7 +555,8 @@ platform handling sensitive data gets the full fan-out with adversarial verifica
      "closeout": { "maxOpenDeferred": 8, "everyNPhases": 5 },
      "documentsGenerated": ["list of all docs generated"],
      "skillsInstalled": ["impeccable", "modern-web-guidance", "security-audit"],
-     "agents": { "security": { "type": "subagent", "path": ".claude/agents/security.md" },
+     "agents": { "doc-sync": { "type": "subagent", "path": ".claude/agents/doc-sync.md" },
+                 "security": { "type": "subagent", "path": ".claude/agents/security.md" },
                  "design": { "type": "full-time", "name": "<design agent>" } },
      "evidenceRetention": { "keepRunsPerBranch": 3, "pruneMergedAfterDays": 30 },
      "updateCheck": true
@@ -574,7 +587,7 @@ Load these as needed; you do not need all of them in context at once.
 | `references/almanac-guide.md` | Deciding on / building an almanac knowledge base |
 | `references/templates/*.md`, `templates/adr/*.md` | Generating a specific document — its structural skeleton |
 | `references/templates/workflows/*.js` | Generating phase / change / doc-sync scripts; `/keel phase new`, `/keel change` |
-| `references/templates/agents/*.md` | Writing the repo-local security / design subagent |
+| `references/templates/agents/*.md` | Writing the repo-local doc-sync / security / design subagent |
 | `references/templates/keel-evidence-prune.mjs` | Evidence retention for review runs |
 | `references/templates/keel-update-check.mjs` | The opt-in SessionStart update-check hook |
 | `references/templates/keel-meta.json` | Writing or migrating `.keel/meta.json` (budgets, docFormat, adrLayout) |
@@ -820,7 +833,7 @@ CLAUDE.md *or* AGENTS.md with keel-standard headings. If not detected, respond:
    .claude/hooks/keel-update-check.mjs
 
    *Security & agents:* the security-audit skill (global or project — see "Security skill" step 1)
-   · a full-time security / design agent, or `.claude/agents/{security,design}.md` ·
+   · a full-time doc / security / design agent, or `.claude/agents/{doc-sync,security,design}.md` ·
    `.keel/meta.json` `securitySkill` / `agents` / `evidenceRetention` · `.keel/prune-evidence.mjs`
 
    *Keel metadata:* .keel/meta.json (written at generation from v1.3+; earlier projects only have
@@ -855,8 +868,10 @@ check for every absent doc. Produce a structured gap list.
 - `UNFILLED_PLACEHOLDER` — a `{{PLACEHOLDER}}` or `[NEEDS DECISION]` that should have been filled
 - `MISSING_SKILL` — impeccable or modern-web-guidance not installed in a UI project; security-audit
   not installed (unless `securitySkill` is `"never"`); an installed skill with no review-role owner;
+  no `doc-sync` role owner, or `doc-sync.js` / a phase script's Doc Sync stage without the
+  delegate-review loop (2.2 and earlier) → OUTDATED_CONVENTION, fixed by "Migrating to keel 2.3";
   an `agents` entry recorded by keel 2.1 as an orchestrator request (string value that is not a
-  `.claude/agents/` path, or `type: "requested"`) → replace per "Review roles"
+  `.claude/agents/` path, or `type: "requested"`) → replace per "Role owners"
 - `FORMAT_MIGRATION` — the doc is in the keel ≤1.x *shape* (not merely missing a section) and
   needs the lossless reformat of the Format Migration sequence: single `ADR.md` → `docs/adr/`
   table-based files; prose status → two-row table; bullet exit gates → evidence table; ADR
@@ -897,12 +912,12 @@ check for every absent doc. Produce a structured gap list.
 3. **If UI project and new skills are available but not installed** (separate AskUserQuestion):
    - "Install impeccable (FE quality, 23 lifecycle commands) + modern-web-guidance (search/retrieve/list)?"
    - Yes (recommended) / impeccable only / modern-web-guidance only / Skip
-   - Either installed (now or before) → set up the design role ("Review roles"): hand the skills
+   - Either installed (now or before) → set up the design role ("Role owners"): hand the skills
      to a full-time design agent if one exists, else write the subagent.
 
 4. **Security skill** — unless already installed or `securitySkill` is `"never"`: run the
    "Security skill" steps 2–3 (show source + sha, say it is a global install, ask). Yes → install,
-   verify, then set up the security role per "Review roles". Skill already installed → just
+   verify, then set up the security role per "Role owners". Skill already installed → just
    make sure the role has an owner.
 
    **Migrating keel 2.1 agent requests.** If `.keel/meta.json` `agents` holds an entry that 2.1
@@ -912,6 +927,17 @@ check for every absent doc. Produce a structured gap list.
    repo-local subagent and record `type: "subagent"`. Either way, also add AGENTS.md step 9, the
    Pre-PR line, the CLAUDE.md "Review subagents" table (replacing 2.1's "Permanent agents" table)
    and the evidence-prune script. Tell the user which it was.
+
+   **Migrating to keel 2.3 (doc-sync loop + Report model)** — for any project on 2.2 or earlier:
+   set up the `doc-sync` role owner ("Role owners": full-time doc agent if one exists, else
+   `.claude/agents/doc-sync.md`); replace `.claude/workflows/doc-sync.js` verbatim; replace each
+   non-✅ phase script's `Doc Sync` stage with the `await workflow({ scriptPath:
+   '.claude/workflows/doc-sync.js' })` call from `phase-template.js` (and relax its Merge check to
+   "a docs: sync commit follows the last code commit"); add the `## Report` section and the
+   caller rule to existing `security.md` / `design.md` subagents (regenerate them if unedited);
+   replace AGENTS.md workflow step 5, add the "Delegation" section and the doc-sync Pre-PR line;
+   add the doc-sync row to CLAUDE.md "Review subagents". Never touch a full-time agent's own
+   definition without saying so; give the user the text instead if you can't edit it.
 
 5. **Update-check hook** — if `.claude/hooks/keel-update-check.mjs` is absent, offer it (same
    wording as Phase 3's "Update-check hook").
@@ -994,8 +1020,8 @@ If phase scripts already exist:
 
 *Skill installation* (if approved in Phase U3) — follow the "FE skill integration" steps from
 the main keel Phase 3 generation. Check existing setup first; merge hooks into existing settings.json
-rather than overwriting; update skills-lock.json. Security skill, review roles and the
-update-check hook (if approved in U3): the "Security skill", "Review roles" and "Update-check
+rather than overwriting; update skills-lock.json. Security skill, role owners and the
+update-check hook (if approved in U3): the "Security skill", "Role owners" and "Update-check
 hook" steps from Phase 3. Workflow scripts whose Verify stage lacks the agents step: patch it in
 from the current `phase-template.js` / `change-template.js` (non-✅ phases only).
 
@@ -1014,7 +1040,8 @@ literal string "current":
   "lastUpgraded": "{{ISO_DATE}}",
   "documentsGenerated": ["list of all docs present after upgrade"],
   "skillsInstalled": ["impeccable", "modern-web-guidance", "security-audit"],
-  "agents": { "security": { "type": "subagent", "path": ".claude/agents/security.md" } },
+  "agents": { "doc-sync": { "type": "subagent", "path": ".claude/agents/doc-sync.md" },
+              "security": { "type": "subagent", "path": ".claude/agents/security.md" } },
   "evidenceRetention": { "keepRunsPerBranch": 3, "pruneMergedAfterDays": 30 },
   "upgradedGaps": ["list of gap IDs fixed"]
 }
@@ -1094,7 +1121,7 @@ fabricate one). Commit: `docs(keel-2.0): U5 AGENTS.md canonical, CLAUDE.md impor
 **U6 — Scripts.** Replace `doc-sync.js`; add `change-template.js`; patch every non-✅ phase
 script with the Verify stage + ADR reservation; create `.keel/evidence/`. ✅ phases' scripts are
 left untouched (they are history). Commit: `docs(keel-2.0): U6 workflow scripts`. Then apply
-whatever U3 approved for skills, the security skill, review roles and the update-check hook
+whatever U3 approved for skills, the security skill, role owners and the update-check hook
 (U4 "Skill installation" — same steps).
 
 **U7 — Meta & report.** Write `.keel/meta.json` with `docFormat: 2`, `adrLayout: "per-file"`,

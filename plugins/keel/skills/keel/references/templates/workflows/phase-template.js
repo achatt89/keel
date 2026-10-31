@@ -15,7 +15,7 @@ export const meta = {
     { title: 'Build', detail: '{{TASKS_SUMMARY — comma-separated list of parallel tasks}}' },
     { title: 'Integrate', detail: 'Merge each task branch into phase-{{N}}-{{SLUG}}; renumber pending ADRs' },
     { title: 'Verify', detail: 'Run every exit gate once; write .keel/evidence/phase-{{N}}.json' },
-    { title: 'Doc Sync', detail: 'Fill exit-gate table from evidence; status, ADRs, deferred, CHANGELOG' },
+    { title: 'Doc Sync', detail: 'doc-sync.js: delegate to doc-sync role, review report (≤3 rounds), commit; budget, archive, prune' },
     { title: 'Merge', detail: 'Merge phase-{{N}}-{{SLUG}} into main; flip deploy state to [merged]' },
   ],
 }
@@ -254,62 +254,11 @@ await agent(`
 phase('Doc Sync')
 
 // MANDATORY — do not skip. No merge to main without the doc-sync commit, and it lands on the
-// phase branch (not main) so main only ever receives phase branch + doc-sync as one unit.
-// This step CITES .keel/evidence/phase-{{N}}.json. It does not re-run anything.
-await agent(`
-  Working directory: <project root> — must be on phase-{{N}}-{{SLUG}} (confirm: git branch --show-current).
-
-  Phase {{N}} — mandatory doc sync before merging phase-{{N}}-{{SLUG}} to main.
-  Tables, not prose. Every claim carries an evidence level + artefact from the Verify record.
-
-  Wording rule: the merge has not happened yet, and this text must not need editing after it
-  does. Write deploy state as "on \`phase-{{N}}-{{SLUG}}\`" — never "not yet merged", "pending
-  merge", or "will be merged". The Merge step flips it to [merged] mechanically.
-
-  1. Read .keel/evidence/phase-{{N}}.json (Verify's record) and git log --oneline main..HEAD.
-     If the evidence file is missing, STOP and report — Doc Sync does not run suites itself.
-  2. IMPLEMENTATION_PLAN.md Phase {{N}} exit-gate table — one row per gate, straight from the JSON:
-       | Gate | Evidence level | Artefact | Verified by | Status |
-     Status: met → ✅, partial → 🔄 + the notes, unmet → ⬜ + the notes.
-     Phase status table: ✅ only if EVERY gate is met; otherwise 🔄 with "N/M gates met, see
-     exit-gate table". Deploy state column: "on \`phase-{{N}}-{{SLUG}}\`". Last update: today.
-     Next phase → 🔄 only if this one is ✅.
-  3. AGENTS.md (or CLAUDE.md if AGENTS.md does not exist) Current status — the 2-row table:
-       | Last completed | Phase {{N}} — <one line> · on \`phase-{{N}}-{{SLUG}}\` · evidence: .keel/evidence/phase-{{N}}.json |
-       | Now | <next phase or the open gates of this one> |
-     One line per cell. Detail belongs in CHANGELOG / IMPLEMENTATION_PLAN, not here.
-  4. ADRs (docs/adr/):
-     - Reserved stubs now "Accepted" with every {{TBD}} filled → set index row Status to
-       "Accepted → Built (<commit>)" and fill the ADR's "Build deviation" row ("none" if built
-       as decided). Decisions are one Y-statement row; if a decision needs more than that, it is
-       a second ADR, not a longer cell.
-     - Stubs still "Proposed" or with {{TBD}} cells → index Status "UNCLASSIFIED (review)".
-       Never auto-accept, never invent content, never delete the stub.
-     - Any decision visible in git log / diffs with no ADR at all → create it now (next free
-       number, same lookup as Setup) — but only if the decision was actually made; otherwise
-       an Open decisions row with a Decider tag.
-     - [NEEDS DECISION] markers resolved during the phase: remove marker + ADR. Never just delete.
-  5. Deferred items table: one row per punted item — Item · Deferred from · Reason · Owner
-     (founder | engineering | legal) · Revisit trigger · Target · Status. WHY and WHEN, not
-     just WHAT. Earlier rows now resolved → ✅ + note. Negative results ("re-checked, still
-     deferred", "investigated, not a bug") get a row or a note — never silence.
-  6. CHANGELOG.md [Unreleased]: one line per user-visible change this phase shipped, tagged
-     [on-branch] with refs (Phase {{N}}, ADR-xxx). Postmortem-shaped findings (an incident,
-     a silent breakage found and fixed) → RUNBOOK.md Postmortems table, not an ADR addendum.
-  7. Other docs the work touched: COMMANDS.md (new commands) · DEPLOYMENT.md (new env var /
-     build-arg / gotcha) · RUNBOOK.md (new playbook) · requirement coverage map.
-  8. Evidence-ladder lint before committing: grep the files you edited for "✅", "verified",
-     "live-verified", "confirmed" — each occurrence you wrote must sit in a row/line that names
-     a level and an artefact. Fix any that don't. Do not write "prod-live" anywhere.
-  9. Commit on phase-{{N}}-{{SLUG}}:
-       git add AGENTS.md CLAUDE.md docs/IMPLEMENTATION_PLAN.md docs/adr CHANGELOG.md && git add -u
-       git commit -m "docs: phase {{N}} — <met>/<total> gates met | <n> ADRs accepted | <n> deferred"
-  10. Evidence retention (you are the phase close-out owner): if .keel/prune-evidence.mjs exists,
-     run it dry, then with --apply if it lists anything, and commit
-     "chore: prune review evidence (<count> folders)". Never delete evidence by hand.
-
-  Report: gates met/partial/unmet, ADRs accepted / unclassified, deferred rows added.
-`, { label: 'doc-sync' })
+// phase branch (not main). doc-sync.js holds the rules once: it delegates to the doc-sync role,
+// reviews its report (≤3 feedback rounds, leftovers → deferred items), commits, then runs the
+// budget check, auto-archive and evidence retention (this script's caller is the phase close-out
+// owner). It cites .keel/evidence/phase-{{N}}.json and re-runs nothing.
+await workflow({ scriptPath: '.claude/workflows/doc-sync.js' })
 
 phase('Merge')
 
@@ -321,7 +270,8 @@ await agent(`
 
   1. Checkout main: git checkout main
   2. Confirm phase-{{N}}-{{SLUG}} is fully ready: git log --oneline main..phase-{{N}}-{{SLUG}}
-     — the last commit must be the doc-sync commit from the previous step, and
+     — a "docs: sync" commit must follow the last code commit (only auto-archive / prune
+     commits may come after it), and
      .keel/evidence/phase-{{N}}.json must exist on the branch. If either is missing, STOP.
   3. Merge: git merge --no-ff phase-{{N}}-{{SLUG}} -m "merge(phase-{{N}}): {{PHASE_NAME}}"
   4. Flip state — mechanical text edits only, no re-wording:

@@ -133,7 +133,8 @@ await agent(`
   Merge chg/{{SLUG}} (${CHG}) into main and flip deploy state to [merged].
 
   1. git checkout main
-  2. git log --oneline main..chg/{{SLUG}} — last commit must be the doc-sync commit, and
+  2. git log --oneline main..chg/{{SLUG}} — a "docs: sync" commit must follow the last code
+     commit (only auto-archive / prune commits may come after it), and
      .keel/evidence/${CHG.toLowerCase()}.json must exist on the branch. Missing → STOP.
   3. git merge --no-ff chg/{{SLUG}} -m "merge(${CHG.toLowerCase()}): {{CHANGE_ONE_SENTENCE}}"
   4. Flip state — mechanical substitutions only:
