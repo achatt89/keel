@@ -3,15 +3,17 @@
   "schemaVersion": 1,
   "name": "keel",
   "repository": "https://github.com/achatt89/keel",
-  "version": "2.5.2",
+  "version": "2.5.3",
+  "latest": "2.5.3",
   "date": "2026-10-31",
-  "summary": "The release feed now lists install methods per tool, so a site can show one tab per tool.",
+  "summary": "Update notices now appear only for releases that change something you use.",
   "highlights": [
-    "release.json install.tools"
+    "Update notices skip internal releases",
+    "Release audience"
   ],
-  "tag": "keel--v2.5.2",
-  "tagUrl": "https://github.com/achatt89/keel/tree/keel--v2.5.2",
-  "compareUrl": "https://github.com/achatt89/keel/compare/keel--v2.5.1...keel--v2.5.2",
+  "tag": "keel--v2.5.3",
+  "tagUrl": "https://github.com/achatt89/keel/tree/keel--v2.5.3",
+  "compareUrl": "https://github.com/achatt89/keel/compare/keel--v2.5.2...keel--v2.5.3",
   "install": {
     "commands": [
       "/plugin marketplace add achatt89/keel",
@@ -69,8 +71,23 @@
   },
   "versions": [
     {
+      "version": "2.5.3",
+      "date": "2026-10-31",
+      "audience": "user",
+      "summary": "Update notices now appear only for releases that change something you use.",
+      "highlights": [
+        "Update notices skip internal releases",
+        "Release audience"
+      ],
+      "notes": "Update notices now appear only for releases that change something you use.\n\n### Changed\n- **Update notices skip internal releases.** The session hook and `/keel version` read keel's\n  release feed and speak only when a newer *user-facing* release exists, naming the version an\n  install would give you. A project behind only by internal releases is reported as current.\n  Re-copy the hook with `/keel upgrade` to pick this up; older hook copies still announce every release.\n\n### Added\n- **Release audience.** A CHANGELOG entry can be marked `<!-- audience: internal -->` (default:\n  user). The release feed flags each version's `audience` and adds `latest`, the newest user-facing\n  release; the release notes and the docs badge show user-facing releases only, with internal ones\n  collapsed into one line. 2.5.0, 2.5.1 and 2.5.2 are marked internal.",
+      "tag": "keel--v2.5.3",
+      "tagUrl": "https://github.com/achatt89/keel/tree/keel--v2.5.3",
+      "compareUrl": "https://github.com/achatt89/keel/compare/keel--v2.5.2...keel--v2.5.3"
+    },
+    {
       "version": "2.5.2",
       "date": "2026-10-31",
+      "audience": "internal",
       "summary": "The release feed now lists install methods per tool, so a site can show one tab per tool.",
       "highlights": [
         "release.json install.tools"
@@ -83,6 +100,7 @@
     {
       "version": "2.5.1",
       "date": "2026-10-31",
+      "audience": "internal",
       "summary": "The docs now have a Markdown source, `docs/site/*.md`, for the new keel.thelogicatelier.com site.",
       "highlights": [
         "docs/site/*.md",
@@ -97,6 +115,7 @@
     {
       "version": "2.5.0",
       "date": "2026-10-31",
+      "audience": "internal",
       "summary": "Every release now publishes machine-readable release notes, generated from this changelog so they cannot drift.",
       "highlights": [
         "release.json",
@@ -113,6 +132,7 @@
     {
       "version": "2.4.3",
       "date": "2026-10-31",
+      "audience": "user",
       "summary": "Closes the remaining items of the cortextOS 2.4.1 upgrade report (12 issues; 1–4 were fixed in 2.4.2).",
       "highlights": [
         "Redirect stubs and the ADR directory are never split parents",
@@ -130,6 +150,7 @@
     {
       "version": "2.4.2",
       "date": "2026-10-31",
+      "audience": "user",
       "summary": "Fixes the conflicts a real `/keel upgrade` to 2.4.1 hit on a large project (cortextOS), generically.",
       "highlights": [
         "doc-size.mjs gives one verdict per doc",
@@ -147,6 +168,7 @@
     {
       "version": "2.4.1",
       "date": "2026-10-31",
+      "audience": "user",
       "summary": "node .keel/doc-size.mjs --split <doc>; Split-aware doc sync.",
       "highlights": [
         "node .keel/doc-size.mjs --split <doc>",
@@ -160,6 +182,7 @@
     {
       "version": "2.4.0",
       "date": "2026-10-31",
+      "audience": "user",
       "summary": "Auto-split oversize docs; keel-doc-size.mjs.",
       "highlights": [
         "Auto-split oversize docs",
@@ -173,6 +196,7 @@
     {
       "version": "2.3.0",
       "date": "2026-10-31",
+      "audience": "user",
       "summary": "Doc-sync role and loop; Report-back delegation model.",
       "highlights": [
         "Doc-sync role and loop",
@@ -186,6 +210,7 @@
     {
       "version": "2.2.0",
       "date": "2026-10-31",
+      "audience": "user",
       "summary": "Review roles are repo-local subagents, not hired agents; AGENTS.md workflow step 9 \"Review before done\"; Evidence retention.",
       "highlights": [
         "Review roles are repo-local subagents, not hired agents",
@@ -201,6 +226,7 @@
     {
       "version": "2.1.0",
       "date": "2026-10-31",
+      "audience": "user",
       "summary": "Security skill offer; Permanent agents; Update check.",
       "highlights": [
         "Security skill offer",
@@ -215,6 +241,7 @@
     {
       "version": "2.0.0",
       "date": "2026-09-20",
+      "audience": "user",
       "summary": "Shaped by a retrospective across four keel-documented production projects (mysha, interview-strategist, ospraye, cortextOS — ~1,800 commits, ~600 doc-touching). The pattern in every one: docs stayed trustworthy only when every claim carried evidence, and stayed readable only when the journal lived somewhere other than the keystone. **Breaking:** doc format 2 — existing projects migrate via `/keel upgrade` (FORMAT_MIGRATION).",
       "highlights": [
         "Evidence ladder",
@@ -232,6 +259,7 @@
     {
       "version": "1.3.0",
       "date": "2026-08-12",
+      "audience": "user",
       "summary": "",
       "highlights": [],
       "notes": "### Added\n- `/keel version`: a read-only mode that reports the installed keel skill version (read from\n  `SKILL.md`'s own frontmatter — always accurate, no I/O), the version that last touched the\n  current project's docs (`.keel/meta.json`), and flags when the project is behind the installed\n  skill. Best-effort checks the latest published version on GitHub when a fetch tool is available\n  and surfaces the exact update path if newer; degrades silently (never blocks) when it can't.\n- `.keel/meta.json` is now written at initial generation (Phase 5), not only on first\n  `/keel upgrade` or `/keel archive` — every new keel project has version tracking from day one.\n\n### Fixed\n- `.keel/meta.json`'s `keelVersion` field was being written as the literal string `\"current\"`\n  instead of the actual installed version — meaningless for any version comparison, including the\n  one `/keel version` now depends on. Now sourced from `SKILL.md`'s `metadata.version`.",
@@ -242,6 +270,7 @@
     {
       "version": "1.2.0",
       "date": "2026-08-12",
+      "audience": "user",
       "summary": "",
       "highlights": [],
       "notes": "### Added\n- `/keel archive`: a new on-demand mode that trims `CLAUDE.md`, `IMPLEMENTATION_PLAN.md`, and\n  `ADR.md` for long-running projects by relocating finished or superseded detail — completed phase\n  write-ups, resolved deferred items, superseded ADR bodies — into a new `PHASE_ARCHIVE.md`.\n  Nothing is deleted: every archived block keeps its full original content plus a link back from a\n  one-line summary left in place, since archived work has a real chance of being revisited. Scoped\n  to the `CLAUDE.md` keystone-index target (~70–120 lines) and the living-doc conventions already\n  in place; IDs (`Phase N`, `ADR-xxx`) never move. Gated behind a report + `AskUserQuestion`\n  permission step, same as `/keel upgrade`. New references: `keel-archive-guide.md` (candidate\n  categories, the never-archive list, per-category before/after mechanics),\n  `templates/PHASE_ARCHIVE.md`, `templates/ARCHIVE_REPORT.md`.",
@@ -252,6 +281,7 @@
     {
       "version": "1.1.0",
       "date": "2026-07-09",
+      "audience": "user",
       "summary": "Existing projects pick these up via `/keel upgrade` — Phase U2's audit detects each gap below (missing `/goal`, pre-phase-branch scripts, uninstalled skill files) and Phase U3 asks permission before applying.",
       "highlights": [],
       "notes": "Existing projects pick these up via `/keel upgrade` — Phase U2's audit detects each gap below\n(missing `/goal`, pre-phase-branch scripts, uninstalled skill files) and Phase U3 asks permission\nbefore applying.\n\n### Added\n- Goal-directed task execution: every worktree agent in a generated `phase-N-<slug>.js` script now\n  opens its task with `/goal`, a completion condition (implementation, tests, lint, `verify`\n  end-to-end check, and a manual `claude-in-chrome` pass for UI work) that blocks it from ending\n  its turn early. The Delivery/Ops interview round now asks how to handle a goal that isn't being\n  met — bounded retries then escalate (default), persistent until met, or escalate on first\n  failure — and bakes the choice into IMPLEMENTATION_PLAN's Standing rules and every phase script.\n- Phase workflow scripts now branch per phase, not per task: a `Setup` step creates/checks out a\n  `phase-N-<slug>` integration branch off `main`, task worktrees branch off that (not `main`), an\n  `Integrate` step merges each task branch back into it, doc-sync commits land on it, and only\n  then does the final `Merge` step put the phase branch — code plus doc-sync, as one unit — into\n  `main`. Previously task branches merged straight to `main`, which is what IMPLEMENTATION_PLAN's\n  Standing rules already described but the generated script never actually did.\n\n### Fixed\n- FE skill integration (Phase 3 / Upgrade U4) previously wrote impeccable and modern-web-guidance\n  hook/lockfile config without ever installing the underlying skill files, leaving hooks wired to\n  scripts that didn't exist. Now runs the real installers (`npx impeccable skills install`, `npx\n  skills add GoogleChrome/modern-web-guidance`) and verifies the files landed before writing any\n  downstream config.\n- impeccable's hook is no longer hand-written into the shared `.claude/settings.json`; it's\n  activated via `/impeccable hooks on`, which owns the gitignored `.claude/settings.local.json`\n  per impeccable's own convention. Keel's `settings.json` template now carries only the\n  modern-web-guidance hook.\n- `skills-lock.json` records the actually-installed version instead of a hardcoded `\"latest\"`.\n- keel-upgrade-guide.md's MISSING_SKILL checks now look for `scripts/hook.mjs` (not just a stub\n  `SKILL.md`) and no longer flag impeccable's absence from `settings.json` as a gap.",
@@ -262,6 +292,7 @@
     {
       "version": "1.0.0",
       "date": "2026-06-26",
+      "audience": "user",
       "summary": "First stable release. Docs site accessibility and quality audit pass.",
       "highlights": [],
       "notes": "First stable release. Docs site accessibility and quality audit pass.\n\n### Fixed\n- Contrast failures: nav-group-label (#475569 → #7a8fa3, 2.45:1 → 5.23:1) and dir-tree code comments (#64748b → #94a3b8, 2.70:1 → 6.7:1 on dark bg)\n- Hamburger `aria-expanded` now toggled on the controlling button, not the sidebar nav element\n- All 13 content sections get `aria-labelledby` + matching h1 `id` attributes\n- Nav group labels get `role=\"heading\" aria-level=\"2\"` for screen reader structure\n- First section has `active` class in HTML — content no longer blank without JavaScript\n- Callout side-stripe (`border-left: 3px`) replaced with full `border: 1px solid` (absolute ban)\n- Removed duplicate Google Fonts `@import` (font already loaded via `<link>` in HTML)\n- Active nav border-left reduced from 2px to 1px; font-weight bumped to 600\n\n### Added\n- `prefers-color-scheme: dark` support for the content area\n- Design tokens: `--sidebar-label`, `--code-comment`, `--surface-light`, `--ink-bright`, `--success`\n- Remaining hard-coded hex values (#f8fafc, #f1f5f9, #4ade80) replaced with tokens",
@@ -272,6 +303,7 @@
     {
       "version": "0.2.0",
       "date": "2026-06-15",
+      "audience": "user",
       "summary": "Improvements distilled from the first real Keel run (the Ospraye interview). Each change addresses a specific observation from that session.",
       "highlights": [
         "Load references, don't work from memory",
@@ -289,6 +321,7 @@
     {
       "version": "0.1.0",
       "date": "2026-06-14",
+      "audience": "user",
       "summary": "Initial release.",
       "highlights": [
         "Ways-of-working interview + generation",

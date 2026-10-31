@@ -3,7 +3,24 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.5.3] — 2026-10-31
+
+Update notices now appear only for releases that change something you use.
+
+### Changed
+- **Update notices skip internal releases.** The session hook and `/keel version` read keel's
+  release feed and speak only when a newer *user-facing* release exists, naming the version an
+  install would give you. A project behind only by internal releases is reported as current.
+  Re-copy the hook with `/keel upgrade` to pick this up; older hook copies still announce every release.
+
+### Added
+- **Release audience.** A CHANGELOG entry can be marked `<!-- audience: internal -->` (default:
+  user). The release feed flags each version's `audience` and adds `latest`, the newest user-facing
+  release; the release notes and the docs badge show user-facing releases only, with internal ones
+  collapsed into one line. 2.5.0, 2.5.1 and 2.5.2 are marked internal.
+
 ## [2.5.2] — 2026-10-31
+<!-- audience: internal -->
 
 The release feed now lists install methods per tool, so a site can show one tab per tool.
 
@@ -15,6 +32,7 @@ The release feed now lists install methods per tool, so a site can show one tab 
   features (the Workflow tool, `.claude/agents` subagents, `/goal`). Additive within schema v1.
 
 ## [2.5.1] — 2026-10-31
+<!-- audience: internal -->
 
 The docs now have a Markdown source, `docs/site/*.md`, for the new keel.thelogicatelier.com site.
 
@@ -29,6 +47,7 @@ The docs now have a Markdown source, `docs/site/*.md`, for the new keel.thelogic
 - **README** no longer calls the repo private or asks readers to log in; it is public (MIT).
 
 ## [2.5.0] — 2026-10-31
+<!-- audience: internal -->
 
 Every release now publishes machine-readable release notes, generated from this changelog so they cannot drift.
 

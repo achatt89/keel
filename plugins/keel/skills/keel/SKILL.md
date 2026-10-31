@@ -25,7 +25,8 @@ description: >
   "what version of keel is this", "check keel version", "is my keel up to date", "which keel
   version generated these docs", "check for keel updates").
 metadata:
-  version: 2.5.2
+  version: 2.5.3
+  userVersion: 2.5.3
 license: MIT
 ---
 
@@ -93,12 +94,16 @@ line** if keel is out of date, then carry on with the requested mode:
 1. **Skip entirely** if the env var `KEEL_NO_UPDATE_CHECK` is set or `.keel/meta.json` has
    `"updateCheck": false`.
 2. **Local (always, offline):** project `keelVersion` older than this SKILL.md's
-   `metadata.version` → *"This project's docs are on keel X; installed is Y — run `/keel upgrade`."*
+   `metadata.userVersion` (the newest user-facing release; `metadata.version` if absent) →
+   *"This project's docs are on keel X; installed is Y — run `/keel upgrade`."* A project behind
+   only by internal releases (no user-visible change) gets no notice.
 3. **Published (best-effort, once per session):** if a fetch tool is available, GET
-   `https://raw.githubusercontent.com/achatt89/keel/main/plugins/keel/.claude-plugin/plugin.json`
-   (its `version` is the only thing read; nothing is sent). Newer than the installed skill →
-   *"keel Z available — run `/plugin marketplace update thelogicatelier`, then `/keel upgrade`."*
-   Offline, slow, or failed → say nothing.
+   `https://raw.githubusercontent.com/achatt89/keel/main/release.json` (only `version` and
+   `latest` are read; nothing is sent). `latest` (newest user-facing release) newer than the
+   installed skill's `metadata.version` → *"keel <version> available (user-facing changes up to
+   <latest>) — run `/plugin marketplace update thelogicatelier`, then `/keel upgrade`."* (drop the
+   parenthesis when version = latest). Internal-only releases never prompt. Offline, slow, or
+   failed → say nothing.
 
 Read-only: never write a file for this check. The opt-in session hook
 (`references/templates/keel-update-check.mjs`, offered in Phase 3 and U3) does the published
@@ -629,6 +634,9 @@ actually running* vs. *the version that last touched this project's docs* — pl
 
 1. **Installed skill version** — this SKILL.md's own frontmatter `metadata.version`. This is the
    version actually executing this command right now; no file I/O needed, always accurate.
+   `metadata.userVersion` is the newest **user-facing** release it contains (later releases were
+   internal: no visible change). Compare project docs against `userVersion`, so a project behind
+   only by internal releases is reported as current.
 2. **Project doc version** — only if run inside a project with keel-generated docs (same ≥3-doc
    detection as Upgrade Mode):
    - If `.keel/meta.json` exists, read `keelVersion` (the version that generated or last touched
@@ -649,14 +657,15 @@ actually running* vs. *the version that last touched this project's docs* — pl
    - If not run inside a keel project at all, skip this step and say so (nothing to compare).
 3. **Latest published version** — best-effort only, never blocking:
    - If a fetch-capable tool is available this session, fetch
-     `https://raw.githubusercontent.com/achatt89/keel/main/plugins/keel/.claude-plugin/plugin.json`
-     and read its `version`.
-   - Newer than the installed skill → say so and give the update path exactly as documented (the
+     `https://raw.githubusercontent.com/achatt89/keel/main/release.json` and read `version` (what
+     an install gives) and `latest` (newest user-facing release; absent in old feeds = `version`).
+   - `latest` newer than the installed skill → say so, naming `version` as what they will get and give the update path exactly as documented (the
      docs site's own "Update" instructions): `/plugin marketplace update thelogicatelier` then
      `/plugin install keel@thelogicatelier`, then restart Claude Code. (`plugin install` alone
      reads the local cache and will reinstall the version already known — `marketplace update`
      must run first.)
-   - Same or can't tell → say "you're on the latest" / nothing to report.
+   - `latest` not newer (even if `version` is: only internal releases since) → "you're on the
+     latest" — never advertise an internal-only release.
    - No fetch tool, offline, or the fetch fails → skip this step silently. The two local checks
      above already answer the question that matters most for someone mid-session.
 
