@@ -146,13 +146,20 @@ Parallel worktrees + sequentially allocated IDs = collisions at Integrate. There
 - Any registry with a uniqueness rule (tags, slugs, route names) gets a uniqueness test that runs
   at Integrate, not only in each worktree.
 
-## Byte budgets & auto-archive
+## Byte budgets, auto-archive & auto-split
 
 `AGENTS.md` (and therefore `CLAUDE.md`) is loaded into every session. It has a hard budget:
-**12 KB**. Other living docs have budgets too; all live in `.keel/meta.json` (`"budgets"`), set at
-generation, editable per project. Doc-sync's last step measures each budgeted file; a breach runs
-the `/keel archive` rules automatically and commits separately (`docs: auto-archive — …`). If
-nothing is archivable, doc-sync reports `BUDGET_EXCEEDED` rather than forcing it.
+**12 KB**. Every other doc has a budget too: `.keel/meta.json` `"budgets"` per file, and
+`"defaultBudget"` (32 KB) for any doc not listed. `node .keel/doc-size.mjs` measures them — each
+file once; a split doc's index and each part separately, against the parent's budget.
+
+On a breach doc-sync acts, it does not just warn: archivable docs relocate closed detail to
+`PHASE_ARCHIVE.md` first (`docs: auto-archive — …`); anything still over is **split** into a
+sibling folder (`docs/DESIGN.md` → `docs/design/NN-<slug>.md`) behind a slim index that links every
+part, each part linking back (`docs: split …`). The keystone is never split — if archiving cannot
+bring it under, doc-sync reports `BUDGET_EXCEEDED`. A part not linked from its parent, or with no
+link back, fails the check. Mechanics: `references/keel-archive-guide.md` "Splitting an oversize
+doc".
 
 ## Evidence retention
 

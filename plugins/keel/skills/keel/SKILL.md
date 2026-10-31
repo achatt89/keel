@@ -25,7 +25,7 @@ description: >
   "what version of keel is this", "check keel version", "is my keel up to date", "which keel
   version generated these docs", "check for keel updates").
 metadata:
-  version: 2.3.0
+  version: 2.4.0
 license: MIT
 ---
 
@@ -67,7 +67,8 @@ The output is optimized to be handed to Claude Code as the source of truth for t
    current-status file, not a dumping ground; `CLAUDE.md` is a thin `@AGENTS.md` import plus
    Claude-only sections. Detail belongs in the referenced docs; when the keystone and a doc
    disagree, the doc wins. Every living doc carries a byte budget in `.keel/meta.json`
-   (conventions "Byte budgets") and doc-sync auto-archives when one is breached.
+   (conventions "Byte budgets") and doc-sync acts on a breach: archive closed detail, then split
+   what is still over into a `docs/<name>/` folder behind a slim index (never the keystone).
 6. **Write reference material, not narrative.** Terse, scannable, tables over prose, imperative
    voice, explicit IDs and status markers. Match the house style in `references/conventions.md`.
 7. **Honesty over flattery.** If the idea has a fatal flaw, an unrealistic constraint, or a
@@ -202,8 +203,8 @@ needs** — the environment matrix (local / dev / staging / prod: host, region, 
 the promotion path and the gate at each hop, which config is build-time vs runtime (the class of
 failure this prevents: a test payment key baked into a production build), who may deploy to
 production, and the concrete post-deploy checks that make "live-verified" a checklist. Ask for
-byte budgets too (defaults: keystone 12KB, IMPLEMENTATION_PLAN 64KB, ADR index 16KB) — they go in
-`.keel/meta.json` and doc-sync enforces them.
+byte budgets too (defaults: keystone 12KB, IMPLEMENTATION_PLAN 64KB, ADR index 16KB, every other
+doc 32KB) — they go in `.keel/meta.json` and doc-sync enforces them (archive, then split).
 
 ### Phase 2 — Propose the document set
 
@@ -430,8 +431,10 @@ mandatory build loop — worktrees, doc-sync, merge — so the builder never has
    and **`references/templates/workflows/change-template.js`** verbatim into
    `.claude/workflows/change-template.js` (the hotfix-weight unit `/keel change` runs — see Change
    Mode below). doc-sync writes tables not prose, enforces the evidence ladder, and ends with a
-   deterministic **Budget** check against `.keel/meta.json` `budgets` that triggers a conditional
-   **Archive** step — this is how auto-archive works; there is no hook or daemon. Its Sync stage
+   deterministic **Budget** check (`.keel/doc-size.mjs`) that triggers a conditional **Archive**
+   step and then a **Split** step for anything still over — this is how auto-archive and
+   auto-split work; there is no hook or daemon. Copy `references/templates/keel-doc-size.mjs` to
+   `.keel/doc-size.mjs` (verbatim). Its Sync stage
    is the doc-sync loop (delegate → review Report → ≤3 feedback rounds → commit). Set up the
    `doc-sync` role owner per "Role owners" (always — every project has docs to sync).
 3. **For each phase in the generated `IMPLEMENTATION_PLAN.md`**, generate a phase workflow script:
@@ -533,7 +536,9 @@ platform handling sensitive data gets the full fan-out with adversarial verifica
 1. Run a consistency pass: every cross-reference resolves, every ID is unique, AGENTS.md's
    document map matches the files on disk, no document contradicts another, `CLAUDE.md` opens
    with `@AGENTS.md` and duplicates nothing from it, no ✅ anywhere lacks an evidence level, and
-   every living doc is under its budget (`wc -c` against the budgets below).
+   `node .keel/doc-size.mjs` passes with no breach. A generated doc over its budget is **split
+   now** (keel-archive-guide "Splitting an oversize doc": `docs/<name>/NN-<slug>.md` parts, the
+   parent a slim index linking every part, each part linking back) — never handed over oversize.
 2. Write `docs/README.md` (or root README) as the index: the document map table, reading order by
    persona, and status badges.
 3. Write `.keel/meta.json` recording the generation, so `/keel version` and `/keel upgrade` have
@@ -546,6 +551,7 @@ platform handling sensitive data gets the full fan-out with adversarial verifica
      "docFormat": 2,
      "adrLayout": "per-file",
      "generatedAt": "{{ISO_DATE}}",
+     "defaultBudget": 32768,
      "budgets": {
        "AGENTS.md": 12288,
        "CLAUDE.md": 12288,
@@ -562,15 +568,16 @@ platform handling sensitive data gets the full fan-out with adversarial verifica
      "updateCheck": true
    }
    ```
-   `budgets` values are bytes; adjust from the Delivery/Ops answers. `docFormat: 2` is what
+   `budgets` values are bytes; adjust from the Delivery/Ops answers. Add `"defaultBudget": 32768`
+   (every doc not listed). `docFormat: 2` is what
    `/keel upgrade` reads to know no format migration is needed.
 4. Give the user a short handoff: what was generated, the recommended reading order, the open
    `[NEEDS DECISION]` items still to resolve (as questions, from `docs/adr/README.md`'s Open
    decisions table), the suggested first build step (usually: *"open this folder in Claude Code
    and start at the IMPLEMENTATION_PLAN's Phase 0"*), and **two standing rules stated plainly**:
    the evidence ladder (nothing is ✅ without a level + artefact; only a deploy can write
-   `prod-live`) and the byte budgets (doc-sync auto-archives at breach; `/keel version` reports
-   size vs budget).
+   `prod-live`) and the byte budgets (doc-sync archives, then splits, at breach; `/keel version`
+   reports size vs budget).
 5. Offer to iterate — refine any doc, go deeper on a round, or add a document that was deferred.
 
 ---
@@ -588,6 +595,7 @@ Load these as needed; you do not need all of them in context at once.
 | `references/templates/*.md`, `templates/adr/*.md` | Generating a specific document — its structural skeleton |
 | `references/templates/workflows/*.js` | Generating phase / change / doc-sync scripts; `/keel phase new`, `/keel change` |
 | `references/templates/agents/*.md` | Writing the repo-local doc-sync / security / design subagent |
+| `references/templates/keel-doc-size.mjs` | Size + split-link check (`.keel/doc-size.mjs`) used by doc-sync, `/keel version`, upgrade, archive |
 | `references/templates/keel-evidence-prune.mjs` | Evidence retention for review runs |
 | `references/templates/keel-update-check.mjs` | The opt-in SessionStart update-check hook |
 | `references/templates/keel-meta.json` | Writing or migrating `.keel/meta.json` (budgets, docFormat, adrLayout) |
@@ -633,10 +641,10 @@ actually running* vs. *the version that last touched this project's docs* — pl
      - Equal → *"Docs are current with the installed skill."*
      - `docFormat` missing or `< 2` → add: *"Doc format 1 (single ADR.md, prose status) — `/keel
        upgrade` will offer the format-2 migration."*
-   - **Budgets.** For every entry in `.keel/meta.json` `budgets` (or the defaults from
-     `references/templates/keel-meta.json` if the key is absent), run `wc -c` on the file and
-     report size vs budget, flagging any breach — this is the same check doc-sync runs, exposed
-     read-only so a session can see why the next doc-sync will auto-archive.
+   - **Budgets.** Run `node .keel/doc-size.mjs` from the project root (read-only; if the project
+     has no copy, run this skill's own `references/templates/keel-doc-size.mjs` the same way) and report size vs budget per file, split
+     families (index + N parts = total), each breach with its action (archive / split), and any
+     LINK ERROR — the same check doc-sync runs, so a session can see what the next doc-sync will do.
    - If not run inside a keel project at all, skip this step and say so (nothing to compare).
 3. **Latest published version** — best-effort only, never blocking:
    - If a fetch-capable tool is available this session, fetch
@@ -842,7 +850,8 @@ CLAUDE.md *or* AGENTS.md with keel-standard headings. If not detected, respond:
 
 2. **Read key docs.** Read the keystone (AGENTS.md or CLAUDE.md), IMPLEMENTATION_PLAN.md, and
    DESIGN.md (if present) in full. Understand the project domain, current phase, and whether it
-   has a UI. **Measure** every doc with `wc -c` — sizes drive both the budget report and the
+   has a UI. **Measure** every doc with `node .keel/doc-size.mjs` (or this skill's
+   `references/templates/keel-doc-size.mjs`, run from the project root, if the project has none) — sizes drive both the budget report and the
    migration plan (a 200KB keystone or an 800KB ADR.md means U0 archive and parallel U3).
 
 3. **Determine project type.** From context: has UI? · production system? · multi-surface?
@@ -878,8 +887,12 @@ check for every absent doc. Produce a structured gap list.
   addenda → Build-deviation row / deploy log / postmortem / feedback round; CLAUDE.md copy →
   `@AGENTS.md` import. One `FORMAT_MIGRATION` gap per doc, listing what it contains that must be
   relocated (counts of addenda, status entries, gates).
-- `BUDGET_EXCEEDED` — a living doc is over its byte budget (defaults if `budgets` absent);
-  reported with size vs budget and what archive category would bring it under.
+- `BUDGET_EXCEEDED` — a doc is over its byte budget (`node .keel/doc-size.mjs`; defaults if
+  `budgets` absent); reported with size vs budget, what archive category would bring it under,
+  and — if archiving cannot (or the doc has nothing archivable) — the **proposed split**: folder,
+  parts table (part file · sections · bytes), and inbound anchor links to rewrite. Applied in U4
+  only on approval. Keystone: archive only. A split doc's LINK ERROR is `MISSING_SECTION`
+  (Critical).
 
 **Severity:**
 - `Critical` — doc missing entirely, or a core security/governance section absent, or PRODUCT.md missing in a UI project with impeccable, or a `FORMAT_MIGRATION` on the keystone / ADRs / IMPLEMENTATION_PLAN (the docs every session reads)
@@ -999,8 +1012,13 @@ replace §12 entirely with the current comprehensive version. Never touch §1–
 copy `references/templates/workflows/doc-sync.js` and `change-template.js` verbatim. Generate
 per-phase workflow scripts from `references/templates/workflows/phase-template.js` (one per
 IMPLEMENTATION_PLAN phase that is not ✅), filling `{{GOAL_EXIT_STRATEGY_BLOCK}}` per the Phase U3
-answer. If `doc-sync.js` exists but predates the Budget/Archive phases (no `wc -c` budget check):
-replace it verbatim — it carries no project-specific content. Create `.keel/evidence/` if absent.
+answer. If `doc-sync.js` exists but predates the Split stage (no `.keel/doc-size.mjs` call):
+replace it verbatim — it carries no project-specific content. Copy
+`references/templates/keel-doc-size.mjs` to `.keel/doc-size.mjs` and add `"defaultBudget": 32768`.
+
+*Oversize docs* (if the split was approved in U3) — archive first where the doc has archivable
+detail, then split per keel-archive-guide.md "Splitting an oversize doc", one commit per doc; run
+`node .keel/doc-size.mjs` after each and fix any LINK ERROR before moving on. Create `.keel/evidence/` if absent.
 
 If phase scripts already exist:
 - **Missing the `Verify` stage** (no `.keel/evidence/phase-N.json` written, Doc Sync re-runs
@@ -1037,6 +1055,7 @@ literal string "current":
   "docFormat": 2,
   "adrLayout": "per-file",
   "budgets": { "AGENTS.md": 12288, "CLAUDE.md": 12288, "docs/IMPLEMENTATION_PLAN.md": 65536, "docs/adr/README.md": 16384 },
+  "defaultBudget": 32768,
   "lastUpgraded": "{{ISO_DATE}}",
   "documentsGenerated": ["list of all docs present after upgrade"],
   "skillsInstalled": ["impeccable", "modern-web-guidance", "security-audit"],
@@ -1128,7 +1147,8 @@ whatever U3 approved for skills, the security skill, role owners and the update-
 `budgets` (defaults unless the user set them in U3), `lastUpgraded`, `upgradedGaps`, and
 `migration: { from: 1, to: 2, date, relocations: N }`. Write `UPGRADE_REPORT.md` with the full
 Relocations table (source → classification → destination → verbatim ✓) and the Budgets table
-(before / after). Run the Phase 5 consistency pass, then `wc -c` every budgeted file and report.
+(before / after). Run the Phase 5 consistency pass, then `node .keel/doc-size.mjs` (split
+anything still over, as in U4 "Oversize docs") and report.
 Commit: `docs(keel-2.0): U7 meta.json docFormat 2 + upgrade report`. Hand the branch to the user
 with the review order: U2's relocations first, then U4's `Evidence level` column — those two are
 the honesty-bearing steps.
@@ -1191,11 +1211,11 @@ in its place.
 **Two ways it runs:**
 - **On demand** — this mode, interactive (report → permission → archive), at natural checkpoints.
 - **Automatically from doc-sync** — `.claude/workflows/doc-sync.js` ends with a deterministic
-  Budget check (`wc -c` per file against `.keel/meta.json` `budgets`); a breach triggers a
-  conditional Archive step that applies exactly the mechanics of Phase X4 below, non-interactively,
-  "everything eligible", and commits separately (`docs: auto-archive — <file> <size> > <budget>`).
-  If nothing is eligible it reports `BUDGET_EXCEEDED: nothing archivable` and stops — it never
-  loops, never forces, never touches the never-archive list. `/keel version` shows size vs budget
+  Budget check (`.keel/doc-size.mjs`); a breach triggers a conditional Archive step that applies
+  exactly the mechanics of Phase X4 below, non-interactively, "everything eligible", and commits
+  separately (`docs: auto-archive — <file> <size> > <budget>`). Anything still over (other than the
+  keystone) is then **split** into `docs/<name>/` parts (`docs: split …`); the keystone reports
+  `BUDGET_EXCEEDED`. It never loops, never forces, never touches the never-archive list. `/keel version` shows size vs budget
   so a breach is visible before the next doc-sync. There is no hook, daemon, or pre-commit guard;
   manual edits that breach a budget are caught at the next doc-sync, which every merge requires.
 
@@ -1217,8 +1237,8 @@ respond:
 1. Inventory the living docs: `AGENTS.md` (or legacy `CLAUDE.md`), `IMPLEMENTATION_PLAN.md`,
    `docs/adr/README.md` (or legacy `ADR.md`), `CHANGELOG.md`, `RUNBOOK.md` (postmortems),
    `DESIGN.md` (if present), and any doc the user names directly. Read each in full.
-2. Measure each doc with `wc -c` against `.keel/meta.json` `budgets` (defaults from
-   `references/templates/keel-meta.json` if absent). Report size / budget / over-by for every
+2. Measure with `node .keel/doc-size.mjs` (or this skill's `references/templates/keel-doc-size.mjs`,
+   run from the project root, if the project has none). Report size / budget / over-by for every
    budgeted file; flag unbudgeted docs that have grown noticeably beyond what a cold read at
    session start needs.
 3. Check whether `PHASE_ARCHIVE.md` already exists. If yes, read it — new entries append; the
@@ -1288,7 +1308,8 @@ Apply only what the user approved. These rules are non-negotiable:
    map still matches disk.
 2. Report before/after bytes per doc against budget and the total relocated to
    `PHASE_ARCHIVE.md`. If a budgeted file is still over budget with nothing left eligible, say
-   so plainly (`BUDGET_EXCEEDED: nothing archivable`) and name what is keeping it large — usually
+   so plainly and offer the split (keel-archive-guide "Splitting an oversize doc"; keystone
+   excepted: `BUDGET_EXCEEDED`), naming what is keeping it large — usually
    an in-progress phase block or open deferred rows that only closing the work will shrink; never
    suggest raising the budget as the first answer.
 3. Remind the user of the cadence: doc-sync auto-archives at budget breach; running this mode by

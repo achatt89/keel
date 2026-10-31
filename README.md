@@ -88,7 +88,9 @@ modern-web-guidance). The owner is the project's full-time agent for that role i
 else a repo-local subagent in `.claude/agents/`. The agent doing the work is the caller: it
 delegates, reads each subagent's fixed `## Report`, and decides what happens next. Doc sync runs
 before every completing commit with up to 3 feedback rounds (leftovers become deferred items);
-security and design reviews are part of "done". Old review runs are pruned by a retention rule. Every invocation prints one line when a
+security and design reviews are part of "done". Old review runs are pruned by a retention rule. A doc that outgrows its size budget is archived
+and then split into a `docs/<name>/` folder behind a slim index that links every part (and every
+part links back); a checker fails the doc sync if any link is missing. Every invocation prints one line when a
 newer keel is published (skip with `KEEL_NO_UPDATE_CHECK=1` or `"updateCheck": false`).
 
 Keel takes it from there: intake → interview → proposed doc set → generation → handoff. Set aside a

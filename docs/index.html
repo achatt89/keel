@@ -31,7 +31,7 @@
     </a>
 
     <div class="header-actions">
-      <span class="version-badge" aria-label="Version 2.3.0">v2.3.0</span>
+      <span class="version-badge" aria-label="Version 2.4.0">v2.4.0</span>
       <a
         href="https://github.com/achatt89/keel"
         class="github-link"
@@ -742,7 +742,7 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
           </li>
         </ul>
 
-        <h2>What an upgrade adds (2.1 to 2.3)</h2>
+        <h2>What an upgrade adds (2.1 to 2.4)</h2>
         <ul class="feature-list" role="list">
           <li>
             <span class="feature-key">Role owners</span>
@@ -755,6 +755,10 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
           <li>
             <span class="feature-key">Security skill</span>
             <span class="feature-desc">Asks about the <code>security-audit</code> skill (source and commit shown, global install), unless you said never.</span>
+          </li>
+          <li>
+            <span class="feature-key">Size check and splits (2.4)</span>
+            <span class="feature-desc">Installs <code>.keel/doc-size.mjs</code> and a 32&nbsp;KB default budget for every doc, and proposes splitting any doc that is over budget.</span>
           </li>
           <li>
             <span class="feature-key">Update check hook</span>
@@ -779,7 +783,7 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
           </li>
           <li>
             <span class="feature-key">BUDGET_EXCEEDED</span>
-            <span class="feature-desc">A living doc is over its byte budget and doc-sync found nothing archivable &mdash; a human raises the budget or trims by hand.</span>
+            <span class="feature-desc">A doc is over its byte budget. The report proposes archiving what is closed, then a split into a sub-folder with the planned parts listed; nothing moves until you approve.</span>
           </li>
           <li>
             <span class="feature-key">MISSING_DOC</span>
@@ -821,7 +825,7 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
 
         <h2>When to run it</h2>
         <p>
-          Long-running projects accumulate real detail in the living docs: completed phase write-ups, resolved deferred items, superseded decisions. That detail is worth keeping &mdash; it gets revisited &mdash; but it costs context on every session start. You mostly don't have to: every living doc has a byte budget in <code>.keel/meta.json</code> (keystone 12&nbsp;KB by default), and the doc-sync workflow measures each one after every sync and runs the archive automatically when a budget is breached &mdash; one commit per file, so a bad relocation reverts alone. Run <code>/keel archive</code> by hand at natural checkpoints, or when doc-sync reports <code>BUDGET_EXCEEDED</code> and you'd rather trim than raise the budget.
+          Long-running projects accumulate real detail in the living docs: completed phase write-ups, resolved deferred items, superseded decisions. That detail is worth keeping &mdash; it gets revisited &mdash; but it costs context on every session start. You mostly don't have to: every living doc has a byte budget in <code>.keel/meta.json</code> (keystone 12&nbsp;KB by default), and the doc-sync workflow measures each one after every sync and runs the archive automatically when a budget is breached &mdash; one commit per file, so a bad relocation reverts alone. Run <code>/keel archive</code> by hand at natural checkpoints. A doc that is still over budget after archiving is split automatically (below); only the keystone, which is never split, can end with <code>BUDGET_EXCEEDED</code>.
         </p>
 
         <div class="callout">
@@ -851,6 +855,30 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
             <span class="phase-desc"><strong>Verify:</strong> confirm every new link resolves, every ID is still unique, and report the size reclaimed.</span>
           </li>
         </ul>
+
+        <h2>Splitting an oversize doc</h2>
+        <p>
+          Most docs are mostly live content, so archiving cannot shrink them. When <code>DESIGN.md</code>, <code>ARCHITECTURE.md</code>, <code>PRD.md</code>, <code>LLD.md</code> or any other doc goes over its budget (32&nbsp;KB by default, set per file in <code>.keel/meta.json</code>), doc-sync splits it instead of warning. Docs with closed detail, such as the implementation plan, are archived first and split only if still over.
+        </p>
+        <ul class="feature-list" role="list">
+          <li>
+            <span class="feature-key">Folder</span>
+            <span class="feature-desc">The content moves, word for word, into a folder next to the parent: <code>docs/DESIGN.md</code> becomes <code>docs/design/01-foundations.md</code>, <code>02-components.md</code> and so on, one part per top-level section. IDs never change.</span>
+          </li>
+          <li>
+            <span class="feature-key">Index</span>
+            <span class="feature-desc">The parent becomes a slim index with a Parts table that links every part. Each part opens with a link back to the parent. Links elsewhere that pointed at a section are repointed to the part that now holds it.</span>
+          </li>
+          <li>
+            <span class="feature-key">Check</span>
+            <span class="feature-desc"><code>node .keel/doc-size.mjs</code> measures every file once: the index and each part against the parent's budget, with the family total reported. It fails if a part is not linked from the parent or has no link back, and doc-sync stops until that is fixed.</span>
+          </li>
+          <li>
+            <span class="feature-key">Keystone</span>
+            <span class="feature-desc"><code>AGENTS.md</code> and <code>CLAUDE.md</code> are never split; they are already indexes. If archiving cannot bring them under budget, doc-sync reports <code>BUDGET_EXCEEDED</code>.</span>
+          </li>
+        </ul>
+        <p><code>/keel upgrade</code> proposes the split for existing projects, with the planned parts listed, and applies it only when you approve.</p>
 
         <h2>What's eligible</h2>
         <ul class="feature-list" role="list">

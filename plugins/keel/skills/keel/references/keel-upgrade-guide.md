@@ -371,6 +371,11 @@ Every project that will be built:
   OUTDATED_CONVENTION (Important). Fix: SKILL.md "Migrating to keel 2.3".
 - [ ] Every role subagent file ends with the `## Report` block and the caller-only rule →
   OUTDATED_CONVENTION (Important)
+- [ ] `.keel/doc-size.mjs` present and `defaultBudget` in meta.json → MISSING_FEATURE (Important)
+- [ ] `node .keel/doc-size.mjs`: every breach of a non-keystone doc → `BUDGET_EXCEEDED` with the
+  proposed action (archive, then split) and the proposed parts table (part file · sections · bytes)
+  for the user to approve in U3 · every LINK ERROR → MISSING_SECTION (Critical: a part nobody can
+  reach, or that can't reach its index)
 - [ ] `.claude/hooks/keel-update-check.mjs` + SessionStart entry → MISSING_FEATURE (Optional, opt-in)
 
 ---

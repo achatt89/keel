@@ -136,6 +136,6 @@ security, design — or the full-time agents that own those roles) work for it.
 - [ ] `{{COMMANDS}}` / `{{DEPLOYMENT}}` / `{{RUNBOOK}}` updated if a command, env var, or procedure changed
 - [ ] security reviewer run on the diff (and design reviewer for UI); no confirmed high/critical, no P0/P1
 - [ ] doc-sync Report reviewed against the work; gaps fixed or (after 3 rounds) logged as deferred items
-- [ ] doc-sync commit present; this file under 12 KB
+- [ ] doc-sync commit present; `node .keel/doc-size.mjs` passes (this file under 12 KB; split docs fully linked both ways)
 
 <!-- Claude-only sections (Active skills, Workflow-tool notes) live in CLAUDE.md, which starts with `@AGENTS.md`. -->

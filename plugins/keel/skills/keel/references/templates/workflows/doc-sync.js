@@ -3,19 +3,21 @@
 // Run: claude --workflow .claude/workflows/doc-sync.js   (or via the Workflow tool)
 //
 // Used standalone, by change scripts and by hand; phase scripts call
-// this workflow from their Doc Sync step. Stages: Sync (delegate ⇄ review, ≤3 rounds) → Budget → (Archive, only if a budget is breached) → Prune.
+// this workflow from their Doc Sync step. Stages: Sync (delegate ⇄ review, ≤3 rounds) → Budget → Archive / Split (only on a breach) → Prune.
 // Sync writes tables, not prose, and every claim carries an evidence level + artefact.
-// Budget is a deterministic byte check against .keel/meta.json "budgets"; Archive relocates
-// (never deletes) per keel-archive-guide until the doc is back under budget, or reports that
-// nothing is archivable. It never loops.
+// Budget runs .keel/doc-size.mjs (every doc once, split parts separately, link check). Archive
+// relocates (never deletes) closed detail per keel-archive-guide; whatever is still over budget
+// is Split into docs/<name>/ parts behind a slim index (keystone excepted). A split-link error
+// throws, so the merge after doc-sync cannot proceed. Each stage runs once; it never loops.
 
 export const meta = {
   name: 'doc-sync',
   description: 'Mandatory pre-merge doc sync: status tables, exit-gate evidence, ADRs, deferred items, CHANGELOG; then byte-budget check + auto-archive',
   phases: [
     { title: 'Sync', detail: 'Delegate to the doc-sync role, review its report, feedback ≤3 rounds, then commit (gaps → deferred items)' },
-    { title: 'Budget', detail: 'wc -c every living doc against .keel/meta.json budgets' },
-    { title: 'Archive', detail: 'Only if breached: relocate closed detail to PHASE_ARCHIVE.md, one commit per doc' },
+    { title: 'Budget', detail: '.keel/doc-size.mjs: every doc + split parts against budgets; split-link check' },
+    { title: 'Archive', detail: 'Breaches on archivable docs: relocate closed detail to PHASE_ARCHIVE.md, one commit per doc' },
+    { title: 'Split', detail: 'Still over budget: split the doc into docs/<name>/ parts behind a slim index; link check must pass' },
     { title: 'Prune', detail: 'Evidence retention: drop old review runs (never gate records or the ledger)' },
   ],
 }
@@ -175,52 +177,44 @@ await agent(`
 
 phase('Budget')
 
-// Deterministic: shell wc -c, no judgement. Structured output so the script can branch.
-const budgetCheck = await agent(`
-  Working directory: <project root>
-
-  Byte-budget check for the living docs. Mechanical — run the commands, report the numbers.
-
-  1. Read .keel/meta.json. If it has no "budgets" object, add one with exactly
-     ${JSON.stringify(DEFAULT_BUDGETS)} (create .keel/meta.json with just that key if the file
-     is missing) and commit: git add .keel/meta.json && git commit -m "chore: keel budgets"
-  2. For every key in budgets that exists on disk: size=$(wc -c < "<file>") ; compare to budget.
-  3. Return the structured result. Do not edit any doc in this step.
-`, {
-  label: 'budget-check',
-  effort: 'low',
-  schema: {
-    type: 'object',
-    properties: {
-      breached: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            file: { type: 'string' },
-            size: { type: 'number' },
-            budget: { type: 'number' },
-          },
-          required: ['file', 'size', 'budget'],
-        },
-      },
-      checked: { type: 'number' },
-    },
-    required: ['breached', 'checked'],
+// Deterministic: .keel/doc-size.mjs measures every doc once (split parents and their parts
+// separately), names the action per breach, and checks split-doc links. No judgement here.
+const SIZE_SCHEMA = {
+  type: 'object',
+  properties: {
+    ok: { type: 'boolean' },
+    breaches: { type: 'array', items: { type: 'object', properties: {
+      file: { type: 'string' }, size: { type: 'number' }, budget: { type: 'number' },
+      action: { type: 'string', enum: ['archive', 'archive-then-split', 'split'] } },
+      required: ['file', 'size', 'budget', 'action'] } },
+    linkErrors: { type: 'array', items: { type: 'string' } },
   },
-})
+  required: ['ok', 'breaches', 'linkErrors'],
+}
+const sizeCheck = (label) => agent(`
+  Working directory: <project root>
+  Size + split-link check. Mechanical — run it and return its JSON fields; edit nothing.
+  1. If .keel/meta.json has no "budgets", add exactly ${JSON.stringify(DEFAULT_BUDGETS)} and
+     "defaultBudget": 32768, then commit: git add .keel/meta.json && git commit -m "chore: keel budgets"
+  2. node .keel/doc-size.mjs --json   (exit 1 only means linkErrors is non-empty — still return it)
+     If .keel/doc-size.mjs is missing: report every budgets key over its wc -c budget as a breach
+     (AGENTS.md/CLAUDE.md → "archive", IMPLEMENTATION_PLAN/CHANGELOG/RUNBOOK/DEPLOYMENT/adr README →
+     "archive-then-split", anything else → "split"), linkErrors [], ok true, and say
+     "doc-size.mjs missing — run /keel upgrade".
+`, { label, effort: 'low', schema: SIZE_SCHEMA })
 
-const breached = (budgetCheck && budgetCheck.breached) || []
-log(breached.length
-  ? 'Budget breached: ' + breached.map(b => `${b.file} ${b.size}B > ${b.budget}B`).join(', ')
-  : `Budgets OK (${budgetCheck ? budgetCheck.checked : 0} files checked)`)
+let size = await sizeCheck('size-check')
+log(size.breaches.length
+  ? 'Budget breached: ' + size.breaches.map(b => `${b.file} ${b.size}B > ${b.budget}B → ${b.action}`).join(', ')
+  : 'Budgets OK')
 
-if (breached.length) {
+const toArchive = size.breaches.filter(b => b.action !== 'split')
+if (toArchive.length) {
   phase('Archive')
 
   // One agent per breached file, each its own commit, so a bad relocation reverts alone.
-  // No retry loop: one pass; if still over budget, it says so and stops.
-  await pipeline(breached, (b) => agent(`
+  // No retry loop: one pass; whatever is still over goes to Split (keystone excepted).
+  await pipeline(toArchive, (b) => agent(`
     Working directory: <project root>
 
     Auto-archive: ${b.file} is ${b.size} bytes, budget ${b.budget}. Bring it under budget by
@@ -262,12 +256,50 @@ if (breached.length) {
     6. If nothing eligible exists: make NO edits (git checkout -- ${b.file} if you started) and
        report exactly "BUDGET_EXCEEDED: ${b.file} <size>B > ${b.budget}B — nothing archivable".
        If you relocated everything eligible and it is still over budget: keep and commit that
-       progress (step 5), then report "BUDGET_EXCEEDED: ${b.file} <size>B > ${b.budget}B — still
-       over after relocating <count> items". Either way do not try again; a human raises the
-       budget in .keel/meta.json or trims by hand.
+       progress (step 5), then report "STILL_OVER: ${b.file} <size>B > ${b.budget}B". Do not try
+       again — the Split stage takes it from here (keystone files are never split: for AGENTS.md /
+       CLAUDE.md report "BUDGET_EXCEEDED" and a human raises the budget or trims by hand).
 
     Report: items relocated by category, before/after sizes, commit sha — or the BUDGET_EXCEEDED line.
   `, { label: `archive:${b.file}`, phase: 'Archive' }))
+  size = await sizeCheck('size-recheck')
+}
+
+const toSplit = size.breaches.filter(b => b.action !== 'archive')
+if (toSplit.length) {
+  phase('Split')
+
+  // A doc still over budget is split into a sub-folder, never just warned about.
+  // Rules + exact shapes: references/keel-archive-guide.md "Splitting an oversize doc".
+  await pipeline(toSplit, (b) => agent(`
+    Working directory: <project root>
+
+    Split: ${b.file} is ${b.size} bytes, budget ${b.budget}. Split it per keel-archive-guide.md
+    "Splitting an oversize doc". Move, never delete or reword; IDs never change.
+    - Parent docs/NAME.md → folder docs/<name in lower-kebab>/ (DESIGN.md → docs/design/,
+      IMPLEMENTATION_PLAN.md → docs/implementation-plan/), parts NN-<section-slug>.md, one per
+      top-level "## " section in original order (merge adjacent small sections; a section still
+      over ${b.budget} bytes splits at "### "). Each part: H1 "<Doc title> — <section>", then
+      "> Part of [NAME.md](../NAME.md) · all parts listed there.", then the content verbatim.
+    - The parent becomes a slim index: H1, one-line purpose, the ID ranges it owns, and a
+      "## Parts" table (| Part | Covers | IDs |) linking EVERY part as (<name>/NN-slug.md).
+    - If ${b.file} is itself a part (inside a split folder): split it into more parts in the same
+      folder with the next free NN numbers, and add them to the parent's Parts table.
+    - Rewrite inbound anchor links repo-wide: grep -rn "NAME.md#" — point each at the part that
+      now holds that heading. Links to NAME.md without an anchor stay (the index).
+    - Check: node .keel/doc-size.mjs must show no LINK ERROR and no part over budget.
+    - Commit on its own:
+        git add -A <parent> <folder> && git add -u && \\
+        git commit -m "docs: split ${b.file} into <folder>/ (<n> parts) — ${b.size}B > ${b.budget}B"
+    Report: parts created (file · bytes), links rewritten, commit sha.
+  `, { label: `split:${b.file}`, phase: 'Split' }))
+  size = await sizeCheck('size-final')
+}
+
+// The split invariants are hard: a part the parent doesn't link, or a part with no link back,
+// fails doc-sync (and so blocks the merge that follows it).
+if (size.linkErrors.length) {
+  throw new Error('doc-size link check failed:\n' + size.linkErrors.join('\n'))
 }
 
 // Evidence retention (conventions "Evidence retention"). Deterministic script, one commit, no loop.
