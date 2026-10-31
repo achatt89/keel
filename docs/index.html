@@ -31,7 +31,7 @@
     </a>
 
     <div class="header-actions">
-      <span class="version-badge" aria-label="Version 2.4.2">v2.4.2</span>
+      <span class="version-badge" aria-label="Version 2.4.3">v2.4.3</span>
       <a
         href="https://github.com/achatt89/keel"
         class="github-link"
@@ -770,7 +770,7 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
           </li>
           <li>
             <span class="feature-key">Verdicts and waivers (2.4.2)</span>
-            <span class="feature-desc">Replaces the checker with the per-doc verdict version. Each old <code>budgetExceptions</code> entry is shown to you and, if you keep it, moved to <code>waivers</code> with today as its reviewed date. Docs already <code>ok</code> or <code>waived</code> get no proposal, so running the upgrade again changes nothing.</span>
+            <span class="feature-desc">Replaces the checker with the per-doc verdict version. Each old <code>budgetExceptions</code> entry is shown to you and, if you keep it, moved to <code>waivers</code> with today as its reviewed date. Docs already <code>ok</code> or <code>waived</code> get no proposal, so running the upgrade again changes nothing. From 2.4.3 the upgrade installs the checker first, whatever version it starts from.</span>
           </li>
           <li>
             <span class="feature-key">Update check hook</span>
@@ -886,7 +886,7 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
           </tbody>
         </table>
         </div>
-        <p>The ADR index's budget grows by 320&nbsp;bytes for each decision record, since it must list them all. A folder next to a doc counts as a split only when the doc has a <code>## Parts</code> heading, so <code>docs/ADR.md</code> beside <code>docs/adr/</code> is not mistaken for one. Links are recognised in inline, reference and repo-absolute (<code>/docs/x.md</code>) form.</p>
+        <p>The ADR index's budget grows by 320&nbsp;bytes for each decision record, since it must list them all. A folder next to a doc counts as a split only when the doc has a <code>## Parts</code> heading, and a redirect stub (<code># ADR.md → moved</code>) or the decision-record folder never does. Split docs nested deeper, such as <code>docs/adr/README.md</code>, are checked too, and every file is measured once. Links are recognised in inline, reference and repo-absolute (<code>/docs/x.md</code>) form.</p>
         <ul class="feature-list" role="list">
           <li>
             <span class="feature-key">Folder</span>
@@ -898,16 +898,19 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
           </li>
           <li>
             <span class="feature-key">Check</span>
-            <span class="feature-desc"><code>node .keel/doc-size.mjs --split &lt;doc&gt;</code> performs the split mechanically: text moved word for word, headings inside code blocks left alone, section links elsewhere repointed. It refuses archives, the keystone, waived and <code>manual</code> docs, and an index with nothing new, so running it twice changes nothing. <code>node .keel/doc-size.mjs</code> measures every file once: the index and each part against the parent's budget, with the family total reported. It fails if a part is not linked from the parent or has no link back, and doc-sync stops until that is fixed.</span>
+            <span class="feature-desc"><code>node .keel/doc-size.mjs --split &lt;doc&gt;</code> performs the split mechanically: text moved word for word, headings inside code blocks left alone, section links elsewhere repointed. It cuts at the shallowest heading level that gives enough pieces, or splits one big table by rows (repeating the header), and keeps cutting in the same run until every part fits. Pieces of a cut part become sub-parts named after it (<code>07</code> becomes <code>07a</code>, <code>07b</code>), so the order matches the original. It refuses archives, redirect stubs, the keystone, waived and <code>manual</code> docs, and an index with nothing new, so running it twice changes nothing. <code>node .keel/doc-size.mjs</code> measures every file once: the index and each part against the parent's budget, with the family total reported. It fails if a part is not linked from the parent or has no link back, and doc-sync stops until that is fixed.</span>
           </li>
           <li>
             <span class="feature-key">Keystone</span>
-            <span class="feature-desc"><code>AGENTS.md</code> and <code>CLAUDE.md</code> are never split and never compressed to fit. If archiving cannot bring them under budget, whole sections move out to <code>docs/agents/NN-&lt;slug&gt;.md</code>, listed in a Parts table in the keystone and each linking back. Hard rules stay in the keystone. Under 2% headroom the checker warns that the next addition needs content moved out first.</span>
+            <span class="feature-desc"><code>AGENTS.md</code> and <code>CLAUDE.md</code> are never split and never compressed to fit. If archiving cannot bring them under budget, whole sections move out to <code>docs/agents/NN-&lt;slug&gt;.md</code>, listed in a Parts table in the keystone and each linking back. Hard rules stay in the keystone. <code>node .keel/doc-size.mjs --move-out AGENTS.md "&lt;section&gt;"</code> does the move. Before an upgrade adds keystone text, it checks the headroom and proposes a move-out if the text won't fit. Under 2% headroom the checker warns that the next addition needs content moved out first.</span>
           </li>
         </ul>
         <h2>Writing to a split doc</h2>
         <p>
           After a split, the doc-sync role writes new content into the part that holds the section, never into the index. If a part is about to go over budget it adds a new part (linked both ways) or splits that part; if an edit would push a plain doc over budget, it splits the doc instead of piling on. The caller's review checks that every index stayed an index, every part is linked both ways and nothing is over budget, and the size and link check is the last step before the commit.
+        </p>
+        <p>
+          Every writer finds the right file the same way: <code>node .keel/doc-size.mjs --where docs/IMPLEMENTATION_PLAN.md "Deferred items"</code> prints the doc itself, or the part holding that section if the doc is split. The change and phase scripts and the <code>/keel phase new</code>, <code>change</code>, <code>closeout</code>, <code>archive</code> and <code>upgrade</code> modes all use it. Links that pointed at a moved section are repointed, whether written as a markdown link or as a backticked <code>`docs/NAME.md#anchor`</code>, except in decision records, which never change after acceptance. Those keep their old anchor, and the index lists every moved anchor under "Moved sections".
         </p>
         <p><code>/keel upgrade</code> proposes the split for existing projects, with the planned parts listed, and applies it only when you approve.</p>
 

@@ -36,6 +36,11 @@ Trigger: any HTML/CSS/JS/TS edit in docs/
 keel documents projects using the templates in references/templates/. The document it generates for this REPO (what you're reading) is itself a usage of the keel convention.
 
 ## Current status
+v2.4.3 — split mechanics finished for the cortextOS report: stubs/ADR dir never split parents,
+nested families checked, recursive ordered cuts (07→07a), tables split by rows, ADR files never
+rewritten ("Moved sections" instead), backticked anchors repointed, `--where` for writers,
+`--move-out` for the keystone, checker installed on every upgrade. Merged to main.
+
 v2.4.2 — one verdict per doc from `doc-size.mjs` (ok/waived/archive/split/manual + reason);
 archives never budgeted/split; ADR folder no longer mistaken for a split; ADR index budget scales;
 waivers in meta.json (reason + reviewed); keystone moves sections out, never compresses;

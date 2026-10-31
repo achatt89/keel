@@ -176,8 +176,19 @@ linked from its parent, or with no link back, fails the check. Mechanics:
 | Anything else | over → `split` |
 | Any doc with a waiver | over → `waived` (see below) |
 
-A folder beside a doc is a split only if the doc has a `## Parts` heading — `docs/ADR.md` next to
-`docs/adr/` is not a split. Links count inline and reference-style, file-relative and
+A folder beside a doc is a split only if the doc has a `## Parts` heading; a redirect stub
+(`# ADR.md → moved`) and the per-file ADR directory are never split parents. Nested docs are
+checked too (`docs/adr/README.md` → `docs/adr/readme/`). Each file is measured once.
+
+**Cutting (2.4.3).** `--split` cuts at the shallowest heading level that gives enough pieces
+(`##` down to `######`), else the biggest table by rows (header repeated in each part; new rows go
+to the last part). One run recurses until every new part — and a cut part's remainder — fits.
+A cut part's new pieces are sub-parts named after it (`07` → `07a`, `07b`; `07a` → `07aa`), so
+file order and the Parts table keep section order. Inbound `NAME.md#anchor` references are
+repointed — markdown links and backticked `` `docs/NAME.md#anchor` `` pointers alike — **except in
+ADR files, which are immutable after acceptance**: those keep their old anchor and the index gains
+a `## Moved sections` table (old anchor → new place). Writers find a section's file with
+`node .keel/doc-size.mjs --where <doc> "<section>"`. Links count inline and reference-style, file-relative and
 repo-absolute (`/docs/x.md`); external URLs are ignored.
 
 **Waivers.** A doc the user accepts over budget is recorded in `.keel/meta.json`:

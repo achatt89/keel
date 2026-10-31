@@ -380,6 +380,10 @@ Every project that will be built:
   reach, or that can't reach its index)
 - [ ] `.keel/doc-size.mjs` prints a verdict per doc (2.4.2: `ok`/`waived`/`archive`/`split`/`manual`)
   → else OUTDATED_CONVENTION (Important): replace verbatim with `doc-sync.js`
+- [ ] `.keel/doc-size.mjs` supports `--where` and `--move-out` (2.4.3) → else OUTDATED_CONVENTION (Important):
+  replace verbatim, with `doc-sync.js` and `change-template.js`; phase scripts' plan writes use `--where`
+- [ ] keystone headroom covers any keystone text this upgrade adds → else propose `--move-out` of a
+  named section (never compress)
 - [ ] `.keel/meta.json` has no `budgetExceptions` (moved to `waivers` with `reason` + `reviewed`)
   → OUTDATED_CONVENTION (Minor; ask the user per entry)
 - [ ] `.claude/hooks/keel-update-check.mjs` + SessionStart entry → MISSING_FEATURE (Optional, opt-in)

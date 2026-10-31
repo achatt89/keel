@@ -3,6 +3,37 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.4.3] — 2026-10-31
+
+Closes the remaining items of the cortextOS 2.4.1 upgrade report (12 issues; 1–4 were fixed in 2.4.2).
+
+### Fixed
+- **Redirect stubs and the ADR directory are never split parents** (`# ADR.md → moved`, even with a
+  `## Parts` heading), on top of 2.4.2's `## Parts` rule. (issue 1)
+- **Nested split docs are checked**: any `docs/**.md` with a `## Parts` heading and a sibling folder
+  (`docs/adr/README.md` → `docs/adr/readme/`); nested docs are measured, each file once. (2, 9)
+- **`--split` recurses in one run** — cutting at `##` down to `######` — until every new part and
+  the cut part's remainder fit. (6)
+- **Section order kept**: a cut part's pieces become sub-parts named after it (`02` → `02a`, `02b`),
+  listed right after it in the Parts table. (6)
+- **A single table over budget splits by rows** (header repeated, new rows go to the last part). (5)
+- **ADR files are never rewritten**: link repointing skips them; the index lists moved anchors under
+  "Moved sections". The rule is stated in conventions, doc-sync and every mode. (7)
+- **Backticked `` `docs/NAME.md#anchor` `` pointers are repointed** like markdown links. (8)
+- **Writers are split-aware**: `--where <doc> "<section>"` prints the file holding a section;
+  change-template, phase-template, doc-sync and the phase / change / closeout / archive / upgrade
+  modes write there, never into an index. (10)
+- **Keystone headroom**: `--move-out AGENTS.md "<section>"` moves a whole section to
+  `docs/agents/NN-<slug>.md` (linked both ways). Upgrade checks headroom before adding keystone
+  text and proposes a move-out, never compression. (11)
+- **`/keel upgrade` installs `.keel/doc-size.mjs` first, from any version.** (12)
+
+### Tested
+- Self-test fixtures for each issue. On a scratch clone of cortextOS `2c5e5a8`: exit 0, 27 files
+  each measured once, 0 link errors. Four docs split in one pass each with nothing left over budget
+  and `docs/adr/` untouched. With the plan's waiver removed, the plan splits too: the 71 KB deferred
+  table is cut by rows, and `--where` finds the right part.
+
 ## [2.4.2] — 2026-10-31
 
 Fixes the conflicts a real `/keel upgrade` to 2.4.1 hit on a large project (cortextOS), generically.
