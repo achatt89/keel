@@ -106,9 +106,7 @@ focused session — the interview is where the value is created.
   Plugin install requires a build with the `/plugin` command (run `/plugin` once to confirm it's
   available; if it isn't, update Claude Code or use the personal-skill method below).
 - **git** on your `PATH` (`git --version`).
-- For installing from this **private** repo: a GitHub account with access to it, authenticated
-  either via the [`gh` CLI](https://cli.github.com/) (`gh auth login`) or an SSH key / credential
-  helper that can clone `achatt89/keel`. *(Once the repo is made public, no auth is needed.)*
+- Network access to GitHub. The repo is public (MIT licence), so no GitHub login is needed.
 
 ### Method A — as a Claude Code plugin (recommended)
 
@@ -187,7 +185,7 @@ worktree workflow it documents, just say yes when it asks during the ways-of-wor
 
 | Symptom | Fix |
 |---|---|
-| `/plugin marketplace add` fails to fetch | Confirm repo access: `gh repo view achatt89/keel`. Authenticate with `gh auth login`, or use the SSH URL, or use **Method B**. |
+| `/plugin marketplace add` fails to fetch | Check you can reach GitHub (`git ls-remote https://github.com/achatt89/keel`), or use **Method B**. |
 | `/plugin` command not found | Your Claude Code build predates plugins — update it, or use **Method B**. |
 | `/keel` not recognized after install | Restart Claude Code / reload the window so skills re-register. For Method B, check the symlink resolves: `ls -l ~/.claude/skills/keel`. |
 | Skill loads but can't find its references/templates | Don't move files out of the skill folder — keep `references/` next to `SKILL.md`. Reinstall if the tree was altered. |
