@@ -14,6 +14,20 @@ may send you specific gaps to fix, at most 3 rounds in total.
 (gather context → classify phase/change → status table → ADRs → deferred items → CHANGELOG →
 other touched docs → evidence-ladder lint). Read it and follow it exactly.
 
+**Split docs — required, every edit:**
+1. Before editing `NAME.md`, check for a sibling folder `<name in lower-kebab>/` (`DESIGN.md` →
+   `design/`). If it exists, `NAME.md` is an **index**: write into the part that holds the section
+   (see its `## Parts` table). Never append content to the index.
+2. If a part would go over its budget, add a new part (next free `NN-<slug>.md`, with the
+   `> Part of [NAME.md](../NAME.md)` line) and its Parts row, or run
+   `node .keel/doc-size.mjs --split <part>`.
+3. If a plain doc would go over its budget after your edit, split it instead of piling on:
+   `node .keel/doc-size.mjs --split <doc>` (never `AGENTS.md` / `CLAUDE.md`).
+4. Your caller's review checks that every index stayed an index, every part is linked both ways,
+   and nothing you touched is over budget — expect feedback otherwise.
+5. Run `node .keel/doc-size.mjs` as your last step; no LINK ERROR, no BREACH on a doc you touched.
+   Put its summary under `checked:` in your Report.
+
 **Follow-up rounds:** fix exactly the gaps the caller listed, nothing else, and report again.
 
 **Never** commit, push, merge, or message anyone but your caller. Leave your edits in the working

@@ -36,6 +36,11 @@ Trigger: any HTML/CSS/JS/TS edit in docs/
 keel documents projects using the templates in references/templates/. The document it generates for this REPO (what you're reading) is itself a usage of the keel convention.
 
 ## Current status
+v2.4.1 — split-aware doc sync: `doc-size.mjs --split` (deterministic, verbatim, fence-safe, repoints
+anchored links; self-test appends to an over-limit doc and asserts the split); doc-sync rules +
+subagent write into parts not the index; caller review checks index/links/size; size+link check is
+the last step before commit. Docs site covers split layout everywhere. Merged to main.
+
 v2.4.0 — oversize docs are split, not just warned about: archive closed detail first, then split
 into `docs/<name>/NN-<slug>.md` behind a slim index (keystone never split). `keel-doc-size.mjs`
 measures each file once and fails on missing parent↔part links; wired into doc-sync (Split stage),

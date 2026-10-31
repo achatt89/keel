@@ -7,14 +7,14 @@
   },
   "metadata": {
     "description": "Keel — lay the foundational documentation suite for a greenfield software project through a guided, multi-persona interview.",
-    "version": "2.4.0"
+    "version": "2.4.1"
   },
   "plugins": [
     {
       "name": "keel",
       "source": "./plugins/keel",
-      "description": "Interview the founder about a new project idea, then generate the right set of foundational docs (CLAUDE.md, BRD, PRD, ARCHITECTURE, LLD, ADR, NFR, and more) ready to build from with Claude Code. Then keeps building on them: /keel phase new, /keel change, /keel closeout, /keel upgrade (incl. 1.x → 2.0 format migration), /keel archive, /keel version. v2.4: oversize docs auto-split into docs/<name>/ parts behind a slim index (size + link check); v2.3: doc-sync delegate-review loop (≤3 rounds) and report-back delegation; doc-sync/security/design roles (full-time agent or repo-local subagent); security-audit skill offer; evidence retention; update check. v2.0: evidence ladder, per-file table ADRs, DEPLOYMENT + CHANGELOG, byte-budgeted keystone with auto-archive.",
-      "version": "2.4.0",
+      "description": "Interview the founder about a new project idea, then generate the right set of foundational docs (CLAUDE.md, BRD, PRD, ARCHITECTURE, LLD, ADR, NFR, and more) ready to build from with Claude Code. Then keeps building on them: /keel phase new, /keel change, /keel closeout, /keel upgrade (incl. 1.x → 2.0 format migration), /keel archive, /keel version. v2.4.1: split-aware doc-sync + deterministic --split; v2.4: oversize docs auto-split into docs/<name>/ parts behind a slim index (size + link check); v2.3: doc-sync delegate-review loop (≤3 rounds) and report-back delegation; doc-sync/security/design roles (full-time agent or repo-local subagent); security-audit skill offer; evidence retention; update check. v2.0: evidence ladder, per-file table ADRs, DEPLOYMENT + CHANGELOG, byte-budgeted keystone with auto-archive.",
+      "version": "2.4.1",
       "author": { "name": "Abhijit Chatterjee" },
       "keywords": [
         "documentation",
