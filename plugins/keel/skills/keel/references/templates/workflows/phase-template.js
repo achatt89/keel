@@ -218,6 +218,10 @@ await agent(`
      you only have unit tests), status is "partial", not "met". Say what is missing in notes.
   4. UI phases: run the claude-in-chrome golden path + key edge cases against the local stack,
      and /impeccable audit <target> (zero P0/P1 is a gate). Save transcripts/outputs as artefacts.
+     If .keel/meta.json "agents" lists a design agent, hand it this audit.
+  4b. Security: if .keel/meta.json "agents" lists a security agent, hand it this branch's diff
+     (git diff main...HEAD). A confirmed high/critical finding is an unmet gate. Report path
+     goes in "security" below.
   5. Write .keel/evidence/phase-{{N}}.json with EXACTLY this shape:
      {
        "phase": "{{N}}",
@@ -237,7 +241,8 @@ await agent(`
        "suites": {
          "<suite name>": { "files": <int>, "passed": <int>, "failed": <int>, "skipped": ["<test name>", "..."] , "report": "<path>" }
        },
-       "impeccable": { "target": "<path or null>", "p0": <int>, "p1": <int>, "report": "<path or null>" }
+       "impeccable": { "target": "<path or null>", "p0": <int>, "p1": <int>, "report": "<path or null>" },
+       "security": { "confirmedHighOrCritical": <int>, "needsValidation": <int>, "report": "<path or null>" }
      }
      Every gate in the plan appears exactly once. Unknown = "unmet", never omitted.
   6. Commit: git add .keel/evidence && git commit -m "test(phase-{{N}}): verify — <met>/<total> gates met"

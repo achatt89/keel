@@ -347,6 +347,16 @@ If UI project:
 - [ ] `skills-lock.json` has both entries with real (non-`"latest"`) installed versions →
   MISSING_SKILL (Optional)
 - [ ] `.impeccable/config.json` exists → MISSING_SKILL (Optional)
+- [ ] Either FE skill installed → a permanent design agent exists (`.claude/agents/*.md` or the
+  orchestrator's roster) and `.keel/meta.json` `agents.design` points at it → MISSING_SKILL (Important)
+
+Every project that will be built:
+- [ ] security-audit skill resolves (`~/.claude/skills/`, `~/.agents/skills/` or `.claude/skills/`
+  `security-audit/SKILL.md`) → MISSING_SKILL (Important) unless `.keel/meta.json` `securitySkill`
+  is `"never"`. Fix only after an explicit yes (SKILL.md "Security skill": global, third-party).
+- [ ] Skill installed → a permanent security agent exists and `agents.security` points at it →
+  MISSING_SKILL (Important). One agent per role; hand the skill to an existing one.
+- [ ] `.claude/hooks/keel-update-check.mjs` + SessionStart entry → MISSING_FEATURE (Optional, opt-in)
 
 ---
 

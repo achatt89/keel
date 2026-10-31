@@ -82,6 +82,11 @@ Once a project is documented, the ongoing modes are `/keel phase new <slug>` (sc
 milestone), `/keel change <slug>` (a hotfix-weight unit), `/keel closeout` (sweep deferred items),
 `/keel archive`, `/keel upgrade` (including the 1.x → 2.0 format migration), and `/keel version`.
 
+Since 2.1, keel also offers Cloudflare's `security-audit` skill (global install, always asked
+first) and sets up one permanent **security** agent and one **design** agent (impeccable +
+modern-web-guidance) to run those skills after dev work. Every invocation prints one line when a
+newer keel is published (skip with `KEEL_NO_UPDATE_CHECK=1` or `"updateCheck": false`).
+
 Keel takes it from there: intake → interview → proposed doc set → generation → handoff. Set aside a
 focused session — the interview is where the value is created.
 

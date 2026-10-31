@@ -31,7 +31,7 @@
     </a>
 
     <div class="header-actions">
-      <span class="version-badge" aria-label="Version 2.0.0">v2.0.0</span>
+      <span class="version-badge" aria-label="Version 2.1.0">v2.1.0</span>
       <a
         href="https://github.com/achatt89/keel"
         class="github-link"
@@ -597,6 +597,19 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
         <div class="callout">
           <p>If your project's docs are behind the installed skill, <code>/keel version</code> tells you and points you straight at <code>/keel upgrade</code>.</p>
         </div>
+
+        <h2>Automatic update check</h2>
+        <p>
+          From 2.1, every <code>/keel</code> invocation in a documented project prints at most one line when keel is out of date: <em>docs on X, installed Y, run <code>/keel upgrade</code></em>, or <em>keel Z available</em>. The version stamp is <code>.keel/meta.json</code>'s <code>keelVersion</code>. The only network call is one read of keel's published <code>plugin.json</code>; nothing is sent and nothing is written. Offline, it says nothing.
+        </p>
+        <p>
+          Projects can also opt in to a session-start hook (<code>.claude/hooks/keel-update-check.mjs</code>) that does the same check without invoking keel. Turn both off with <code>KEEL_NO_UPDATE_CHECK=1</code> or <code>"updateCheck": false</code> in <code>.keel/meta.json</code>.
+        </p>
+
+        <h2>Security and design agents</h2>
+        <p>
+          Keel 2.1 offers Cloudflare's <code>security-audit</code> skill (a global, third-party install, always asked first with the source and commit shown) and gives each installed skill one permanent owner: a <strong>security</strong> agent that audits every branch's diff after dev work, and a <strong>design</strong> agent that drives impeccable and modern-web-guidance. An existing agent for the role is handed the skill; otherwise keel asks your agent orchestrator to create one, or writes <code>.claude/agents/&lt;role&gt;.md</code>. <code>/keel upgrade</code> offers both to existing projects.
+        </p>
 
         <footer class="content-footer">
           <a href="#upgrade">Upgrading Existing Projects &rarr;</a>
