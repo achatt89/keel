@@ -36,6 +36,11 @@ Trigger: any HTML/CSS/JS/TS edit in docs/
 keel documents projects using the templates in references/templates/. The document it generates for this REPO (what you're reading) is itself a usage of the keel convention.
 
 ## Current status
+v2.2.0 — review roles are repo-local subagents (`.claude/agents/security.md`, `design.md`) unless a
+full-time agent for the role exists (then it gets the skill); no orchestrator hire/spawn requests.
+AGENTS.md step 9 "Review before done", evidence retention (`keel-evidence-prune.mjs`, doc-sync Prune),
+`/keel upgrade` migrates 2.1 agent requests. Merged to main.
+
 v2.1.0 — security-audit skill offer (global, ask-first, source + sha shown), permanent security and
 design agents (hand to an existing one, else orchestrator request or `.claude/agents/<role>.md`),
 Verify stage calls them, per-invocation update check + opt-in SessionStart hook. Merged to main.

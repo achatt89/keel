@@ -101,8 +101,8 @@ await agent(`
      standing gates: lint clean · typecheck clean · unit+integration green · audit clean.
   2. Run the suites once; save raw reports under .keel/evidence/${CHG.toLowerCase()}/ ; record
      skipped tests BY NAME. UI change → claude-in-chrome pass on the local stack, transcript saved
-     as an artefact; /impeccable audit output saved (by the design agent if .keel/meta.json
-     "agents" lists one). Security agent listed there → hand it git diff main...HEAD; a confirmed
+     as an artefact; /impeccable audit output saved (by the "design" owner in .keel/meta.json
+     "agents" if set). A "security" owner there audits git diff main...HEAD; a confirmed
      high/critical finding is an unmet gate.
   3. Levels: code-read | unit | integration | local-browser | staging. NEVER "prod-live" (only a
      deploy may). A gate whose wording demands a level you did not reach is "partial".

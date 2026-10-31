@@ -85,6 +85,7 @@ relevant one *before* touching code.
 6. **Merge to `main`** only after gates pass and the doc-sync commit is present. **Deploy** per `{{DEPLOYMENT}}`; the deploy step stamps CHANGELOG + the deploy log (`deployed vNN` → `live-verified` after the post-deploy checklist). Deploy state is written there and nowhere else.
 7. **Decisions captured without fail.** Any decision made during work — including "we chose X over Y because Z" — becomes a `docs/adr/ADR-xxx-<slug>.md` before merge (ID reserved at scope or taken at Integrate, never in a worktree). ADRs get no addenda: one `Build deviation` row, else a superseding ADR. Incidents → RUNBOOK postmortems. `[NEEDS DECISION]` markers resolved during work are removed and converted to ADRs; open ones are one row per question in `docs/adr/README.md`.
 8. **Claims carry evidence.** Nothing is `✅` without an evidence level (`code-read` < `unit` < `integration` < `local-browser` < `staging` < `prod-live`) and an artefact. Overclaiming is a defect.
+9. **Review before done.** After finishing any task that changed code (feature, refactor, bug fix, dependency bump), run the **security** reviewer ({{SECURITY_REVIEWER — `security` subagent, or the full-time agent named in .keel/meta.json "agents"}}) on the branch diff *before* reporting done; a task that touched UI also runs the **design** reviewer ({{DESIGN_REVIEWER}}). A confirmed high/critical security finding or a design P0/P1 means not done. Remove this step only if neither role is set up.
 
 ## Current status
 
@@ -120,6 +121,7 @@ relevant one *before* touching code.
 - [ ] tests ship with the code; security/isolation behaviour proven by a test
 - [ ] new decision → `docs/adr/`; new punt → deferred items (with owner + revisit trigger)
 - [ ] `{{COMMANDS}}` / `{{DEPLOYMENT}}` / `{{RUNBOOK}}` updated if a command, env var, or procedure changed
+- [ ] security reviewer run on the diff (and design reviewer for UI); no confirmed high/critical, no P0/P1
 - [ ] doc-sync commit present; this file under 12 KB
 
 <!-- Claude-only sections (Active skills, Workflow-tool notes) live in CLAUDE.md, which starts with `@AGENTS.md`. -->

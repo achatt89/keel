@@ -31,7 +31,7 @@
     </a>
 
     <div class="header-actions">
-      <span class="version-badge" aria-label="Version 2.1.0">v2.1.0</span>
+      <span class="version-badge" aria-label="Version 2.2.0">v2.2.0</span>
       <a
         href="https://github.com/achatt89/keel"
         class="github-link"
@@ -606,9 +606,12 @@ ln -s ~/code/keel/plugins/keel/skills/keel .claude/skills/keel</code></pre>
           Projects can also opt in to a session-start hook (<code>.claude/hooks/keel-update-check.mjs</code>) that does the same check without invoking keel. Turn both off with <code>KEEL_NO_UPDATE_CHECK=1</code> or <code>"updateCheck": false</code> in <code>.keel/meta.json</code>.
         </p>
 
-        <h2>Security and design agents</h2>
+        <h2>Security and design reviewers</h2>
         <p>
-          Keel 2.1 offers Cloudflare's <code>security-audit</code> skill (a global, third-party install, always asked first with the source and commit shown) and gives each installed skill one permanent owner: a <strong>security</strong> agent that audits every branch's diff after dev work, and a <strong>design</strong> agent that drives impeccable and modern-web-guidance. An existing agent for the role is handed the skill; otherwise keel asks your agent orchestrator to create one, or writes <code>.claude/agents/&lt;role&gt;.md</code>. <code>/keel upgrade</code> offers both to existing projects.
+          Keel offers Cloudflare's <code>security-audit</code> skill (a global, third-party install, always asked first with the source and commit shown) and gives each installed skill one owner: a <strong>security</strong> reviewer that audits every branch's diff after dev work, and a <strong>design</strong> reviewer that drives impeccable and modern-web-guidance. If the project already has a full-time agent for the role, that agent gets the skill. Otherwise keel writes a repo-local subagent, <code>.claude/agents/security.md</code> or <code>design.md</code>, which Claude Code calls on its own. <code>AGENTS.md</code> carries the hard rule: no task is done until the reviewers have run on its diff.
+        </p>
+        <p>
+          Review runs land in <code>.keel/evidence/&lt;role&gt;/&lt;branch&gt;/</code>. A retention script keeps the newest three runs per branch and drops a merged branch's runs after 30 days; it never touches gate records or the security ledger. <code>/keel upgrade</code> offers all of this to existing projects, and replaces any agent request a 2.1 upgrade recorded.
         </p>
 
         <footer class="content-footer">

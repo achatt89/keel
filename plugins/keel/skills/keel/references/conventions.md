@@ -154,6 +154,23 @@ generation, editable per project. Doc-sync's last step measures each budgeted fi
 the `/keel archive` rules automatically and commits separately (`docs: auto-archive — …`). If
 nothing is archivable, doc-sync reports `BUDGET_EXCEEDED` rather than forcing it.
 
+## Evidence retention
+
+Review runs (security, design) are the only part of `.keel/evidence/` that grows without bound.
+Layout: `.keel/evidence/<role>/<branch with / as __>/<YYYY-MM-DD-HHMM>/`; the security coverage
+ledger lives at `.keel/evidence/security/ledger/`.
+
+- **Keep** the newest `keepRunsPerBranch` runs per branch (default 3).
+- **Prune** a branch's whole run folder once the branch is merged into `main` (or deleted) and its
+  newest run is older than `pruneMergedAfterDays` (default 30).
+- **Never delete** the gate records (`.keel/evidence/*.json`), the `phase-N/` / `chg-xxx/` artefact
+  folders the exit gates cite, or any `ledger/` (the next security run reuses it).
+- Tune both numbers in `.keel/meta.json` `evidenceRetention`. Mechanism:
+  `node .keel/prune-evidence.mjs` (dry run) → `--apply` → commit `chore: prune review evidence`.
+- **Owner:** the project's doc/architect agent, as the last step of doc-sync at phase close-out;
+  if the project has none, whoever runs doc-sync on merge (the dev agent). Git history keeps
+  everything pruned.
+
 ## Negative results are recorded
 
 "Confirmed not a bug", "re-benchmarked, still deferred", "investigated, no change needed" each get

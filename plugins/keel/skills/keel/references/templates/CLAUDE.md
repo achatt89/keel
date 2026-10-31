@@ -21,14 +21,14 @@
 - Keel modes: `/keel phase new <slug>` · `/keel change <slug>` · `/keel closeout` · `/keel archive` · `/keel upgrade` · `/keel version`.
 - Browser verification for UI work is `claude-in-chrome`; its transcript path is the artefact cited in the evidence file.
 
-## Permanent agents *(remove rows for agents not set up)*
+## Review subagents *(remove rows for roles not set up)*
 
-| Agent | Owns | Runs |
-|---|---|---|
-| `security` | security-audit skill (cloudflare/security-audit-skill @ {{SECURITY_SKILL_REF}}, global) | after any dev work, on the branch diff; Verify stage of every phase/change |
-| `design` | impeccable + modern-web-guidance | before UI work (shape), after UI edits (critique/audit), Verify stage |
+| Role | Who (`.keel/meta.json` `agents`) | Owns | Runs |
+|---|---|---|---|
+| security | {{`security` subagent (.claude/agents/security.md) or the full-time agent's name}} | security-audit skill (cloudflare/security-audit-skill @ {{SECURITY_SKILL_REF}}, global) | after any task that changed code, on the branch diff, before "done"; Verify stage |
+| design | {{`design` subagent (.claude/agents/design.md) or the full-time agent's name}} | impeccable + modern-web-guidance | before UI work (shape), after UI edits (critique/audit), Verify stage |
 
-Hand these agents the work; don't run their skills ad hoc from a build agent.
+The hard rule is AGENTS.md workflow step 9. Hand these roles the work; don't run their skills ad hoc.
 
 ## Active skills *(UI projects — remove this section if no UI or skills integration was skipped)*
 
