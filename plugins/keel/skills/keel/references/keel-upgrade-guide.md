@@ -386,6 +386,7 @@ Every project that will be built:
   named section (never compress)
 - [ ] `.keel/meta.json` has no `budgetExceptions` (moved to `waivers` with `reason` + `reviewed`)
   → OUTDATED_CONVENTION (Minor; ask the user per entry)
+- [ ] an installed `.claude/hooks/keel-update-check.mjs` reads `release.json` (2.5.3: user-facing releases only) → else OUTDATED_CONVENTION (Minor): replace verbatim
 - [ ] `.claude/hooks/keel-update-check.mjs` + SessionStart entry → MISSING_FEATURE (Optional, opt-in)
 
 ---

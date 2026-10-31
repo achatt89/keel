@@ -106,6 +106,12 @@ The state has **one home**: `CHANGELOG.md` (per change/phase) and `DEPLOYMENT.md
 writes state-neutral wording (`gates green on phase-N-x`) so nothing needs a "now merged" flip
 commit later.
 
+**Release audience (optional).** A CHANGELOG release entry may start with
+`<!-- audience: internal -->` on the line under its heading: the release changes nothing a user
+of the product sees (CI, internal tooling, docs-source moves). Default is `user`. Anything that
+publishes release notes to users (a release feed, a docs badge, an update notice) shows the newest
+**user** release and hides or collapses internal ones; the full CHANGELOG still lists them.
+
 ## ADR lifecycle
 
 `Proposed` (written at phase scope, before build) → `Accepted` → `Built` (build confirmed, with

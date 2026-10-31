@@ -34,10 +34,13 @@ Trigger: any HTML/CSS/JS/TS edit in docs/
 - After each significant change: update CHANGELOG.md
 
 ## Release (every version)
-1. Bump the version in all six stamps: plugin.json, marketplace.json (metadata + plugin entry +
+1. Bump the version stamps (SKILL.md `userVersion` + docs badge = newest user-facing release): plugin.json, marketplace.json (metadata + plugin entry +
    description line), SKILL.md `metadata.version`, `templates/keel-meta.json` `keelVersion`,
    the `docs/index.html` badge.
 2. Add the CHANGELOG entry `## [X.Y.Z] — YYYY-MM-DD` (lead paragraph = summary; `- **Highlight** …` bullets).
+   If nothing a keel user sees changes (CI, release tooling, docs-source moves), put
+   `<!-- audience: internal -->` on the line under the heading. Internal releases keep SKILL.md
+   `userVersion` and the docs badge on the newest user-facing release; `--check` enforces both.
 3. `node scripts/release.mjs` regenerates `release.json` + `RELEASE.md` (never edit them by hand);
    `node scripts/release.mjs --check` must pass before committing.
 4. Branch `feat/keel-X` → `git merge --no-ff` → annotated tag `keel--vX.Y.Z` → push main + tag.
@@ -49,6 +52,8 @@ Feed schema: `schemas/release-v1.schema.json` (additive changes only within v1).
 keel documents projects using the templates in references/templates/. The document it generates for this REPO (what you're reading) is itself a usage of the keel convention.
 
 ## Current status
+v2.5.3 — release audience: CHANGELOG `<!-- audience: internal -->`; release.json `latest` + per-version `audience`; RELEASE.md/badge/update notices show user-facing releases only; 2.5.0–2.5.2 marked internal. Merged to main.
+
 v2.5.2 — release.json `install.tools` (per-tool install methods; Claude Code only — Codex/Antigravity untested). Merged to main.
 
 v2.5.1 — docs source `docs/site/*.md` (18 pages, frontmatter spec in docs/site/README.md) for keel.thelogicatelier.com; Pages unchanged until cutover. Merged to main.

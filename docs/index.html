@@ -31,7 +31,7 @@
     </a>
 
     <div class="header-actions">
-      <span class="version-badge" aria-label="Version 2.5.2">v2.5.2</span>
+      <span class="version-badge" aria-label="Version 2.5.3">v2.5.3</span>
       <a
         href="https://github.com/achatt89/keel"
         class="github-link"
@@ -721,6 +721,9 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
         </ul>
         <p>
           <code>node scripts/release.mjs --check</code> fails if either file is out of date or if any version stamp (plugin manifest, marketplace, skill, project template, this site's badge) disagrees with the changelog. A CI workflow runs it on every push, pull request and release tag, and also checks that the tag matches the version.
+        </p>
+        <p>
+          Some releases change nothing a keel user sees, such as release tooling or moving the docs source. Their changelog entry is marked <code>&lt;!-- audience: internal --&gt;</code>. <code>release.json</code> still lists them, flagged with <code>"audience": "internal"</code>. Its <code>latest</code> field, the release notes in <code>RELEASE.md</code>, this site's version badge and keel's update notices all point to the newest user-facing release. Internal releases appear in <code>RELEASE.md</code> as one collapsed line, and you are never prompted to update for one. <code>version</code> always names what an install gives you.
         </p>
 
         <footer class="content-footer">
