@@ -3,17 +3,15 @@
   "schemaVersion": 1,
   "name": "keel",
   "repository": "https://github.com/achatt89/keel",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "date": "2026-10-31",
-  "summary": "The docs now have a Markdown source, `docs/site/*.md`, for the new keel.thelogicatelier.com site.",
+  "summary": "The release feed now lists install methods per tool, so a site can show one tab per tool.",
   "highlights": [
-    "docs/site/*.md",
-    "Release hook",
-    "README"
+    "release.json install.tools"
   ],
-  "tag": "keel--v2.5.1",
-  "tagUrl": "https://github.com/achatt89/keel/tree/keel--v2.5.1",
-  "compareUrl": "https://github.com/achatt89/keel/compare/keel--v2.5.0...keel--v2.5.1",
+  "tag": "keel--v2.5.2",
+  "tagUrl": "https://github.com/achatt89/keel/tree/keel--v2.5.2",
+  "compareUrl": "https://github.com/achatt89/keel/compare/keel--v2.5.1...keel--v2.5.2",
   "install": {
     "commands": [
       "/plugin marketplace add achatt89/keel",
@@ -23,7 +21,46 @@
       "/plugin marketplace update thelogicatelier",
       "/plugin install keel@thelogicatelier"
     ],
-    "note": "Restart Claude Code after installing or updating, then run /keel upgrade in an existing keel project."
+    "note": "Restart Claude Code after installing or updating, then run /keel upgrade in an existing keel project.",
+    "tools": [
+      {
+        "id": "claude-code",
+        "name": "Claude Code",
+        "start": "/keel",
+        "docs": "docs/site/05-plugin-install.md",
+        "methods": [
+          {
+            "id": "plugin",
+            "label": "Plugin (recommended)",
+            "shell": false,
+            "commands": [
+              "/plugin marketplace add achatt89/keel",
+              "/plugin install keel@thelogicatelier"
+            ]
+          },
+          {
+            "id": "personal-skill",
+            "label": "Personal skill (no plugin system)",
+            "shell": true,
+            "commands": [
+              "git clone https://github.com/achatt89/keel.git ~/code/keel",
+              "mkdir -p ~/.claude/skills",
+              "ln -s ~/code/keel/plugins/keel/skills/keel ~/.claude/skills/keel"
+            ]
+          },
+          {
+            "id": "project-skill",
+            "label": "Project skill (one repo, shared with the team)",
+            "shell": true,
+            "commands": [
+              "git clone https://github.com/achatt89/keel.git ~/code/keel",
+              "mkdir -p .claude/skills",
+              "cp -R ~/code/keel/plugins/keel/skills/keel .claude/skills/keel"
+            ]
+          }
+        ]
+      }
+    ]
   },
   "requirements": {
     "claudeCode": "a build with the /plugin command (else install as a personal skill; see README)",
@@ -31,6 +68,18 @@
     "node": ">=18, for the .keel/*.mjs helper scripts keel installs in a project"
   },
   "versions": [
+    {
+      "version": "2.5.2",
+      "date": "2026-10-31",
+      "summary": "The release feed now lists install methods per tool, so a site can show one tab per tool.",
+      "highlights": [
+        "release.json install.tools"
+      ],
+      "notes": "The release feed now lists install methods per tool, so a site can show one tab per tool.\n\n### Added\n- **release.json `install.tools`**: one entry per tool keel is documented and tested in, with how to\n  start it, a docs page, and each install method's commands (terminal or in-tool). Today that is\n  Claude Code only, with three methods: plugin, personal skill and project skill. Codex and\n  Antigravity are not listed: keel has not been tested in them, and phase scripts rely on Claude Code\n  features (the Workflow tool, `.claude/agents` subagents, `/goal`). Additive within schema v1.",
+      "tag": "keel--v2.5.2",
+      "tagUrl": "https://github.com/achatt89/keel/tree/keel--v2.5.2",
+      "compareUrl": "https://github.com/achatt89/keel/compare/keel--v2.5.1...keel--v2.5.2"
+    },
     {
       "version": "2.5.1",
       "date": "2026-10-31",

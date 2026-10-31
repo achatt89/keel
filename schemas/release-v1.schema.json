@@ -23,7 +23,25 @@
       "properties": {
         "commands": { "type": "array", "items": { "type": "string" }, "description": "Claude Code slash commands, run in order, for a first install." },
         "update": { "type": "array", "items": { "type": "string" } },
-        "note": { "type": "string" }
+        "note": { "type": "string" },
+        "tools": {
+          "type": "array",
+          "description": "Added in v1 (2.5.2). One entry per tool keel is documented and tested in, in display order. commands/update above stay the Claude Code plugin method for older readers.",
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "start", "methods"],
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "start": { "type": "string", "description": "How to start keel once installed." },
+              "docs": { "type": "string", "description": "Repo path of the docs page for this tool." },
+              "methods": { "type": "array", "items": { "type": "object", "required": ["id", "label", "shell", "commands"],
+                "properties": { "id": { "type": "string" }, "label": { "type": "string" },
+                  "shell": { "type": "boolean", "description": "true: run in a terminal; false: type into the tool's prompt." },
+                  "commands": { "type": "array", "items": { "type": "string" } } } } }
+            }
+          }
+        }
       }
     },
     "requirements": {
