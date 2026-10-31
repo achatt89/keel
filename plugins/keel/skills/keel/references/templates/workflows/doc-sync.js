@@ -2,8 +2,8 @@
 // Copy verbatim to .claude/workflows/doc-sync.js.
 // Run: claude --workflow .claude/workflows/doc-sync.js   (or via the Workflow tool)
 //
-// Used standalone for Changes (hotfixes) and by hand; phase scripts embed the same rules in
-// their own Doc Sync step. Stages: Sync → Budget → (Archive, only if a budget is breached) → Prune.
+// Used standalone, by change scripts and by hand; phase scripts call
+// this workflow from their Doc Sync step. Stages: Sync (delegate ⇄ review, ≤3 rounds) → Budget → (Archive, only if a budget is breached) → Prune.
 // Sync writes tables, not prose, and every claim carries an evidence level + artefact.
 // Budget is a deterministic byte check against .keel/meta.json "budgets"; Archive relocates
 // (never deletes) per keel-archive-guide until the doc is back under budget, or reports that
@@ -13,7 +13,7 @@ export const meta = {
   name: 'doc-sync',
   description: 'Mandatory pre-merge doc sync: status tables, exit-gate evidence, ADRs, deferred items, CHANGELOG; then byte-budget check + auto-archive',
   phases: [
-    { title: 'Sync', detail: 'Update AGENTS.md/CLAUDE.md status table, IMPLEMENTATION_PLAN, docs/adr, deferred items, CHANGELOG' },
+    { title: 'Sync', detail: 'Delegate to the doc-sync role, review its report, feedback ≤3 rounds, then commit (gaps → deferred items)' },
     { title: 'Budget', detail: 'wc -c every living doc against .keel/meta.json budgets' },
     { title: 'Archive', detail: 'Only if breached: relocate closed detail to PHASE_ARCHIVE.md, one commit per doc' },
     { title: 'Prune', detail: 'Evidence retention: drop old review runs (never gate records or the ledger)' },
@@ -29,14 +29,12 @@ const DEFAULT_BUDGETS = {
   'docs/adr/README.md': 16384,
 }
 
-phase('Sync')
-
-await agent(`
-  Working directory: <project root>
-
-  Mandatory doc sync — MUST run before every merge to trunk.
-  A merge without this commit is incomplete. Docs never lag code.
-  Tables, not prose. Every ✅ / "verified" carries an evidence LEVEL and an ARTEFACT.
+// The doc rules live HERE, once. The doc-sync subagent (.claude/agents/doc-sync.md) and any
+// full-time doc agent follow them; phase and change scripts call this workflow, never a copy.
+const SYNC_RULES = `
+  Mandatory doc sync — MUST run before the commit that completes a piece of work.
+  Docs never lag code. Tables, not prose. Every ✅ / "verified" carries an evidence LEVEL and
+  an ARTEFACT.
 
   Wording rule: write deploy state as "on \`<current branch>\`" — never "not yet merged" /
   "pending merge" / "will be merged". The merge step flips it to [merged] mechanically, so
@@ -47,7 +45,8 @@ await agent(`
   - Read AGENTS.md (or CLAUDE.md if no AGENTS.md) Current status table.
   - Read docs/IMPLEMENTATION_PLAN.md: phase status table, Changes table, deferred items table.
   - Evidence: ls .keel/evidence/ — find the record for this work (phase-N.json or chg-NNN.json).
-    If there is none, you may cite ONLY what the commits themselves prove (level "code-read")
+    Phase branch with no phase-N.json → STOP and report status "blocked" (Verify must run first).
+    Change with none: you may cite ONLY what the commits themselves prove (level "code-read")
     or tests you can point at by path (level "unit"/"integration"). You do NOT run suites here.
   - grep -rn "NEEDS DECISION" --include="*.md" docs/ AGENTS.md CLAUDE.md
 
@@ -55,6 +54,7 @@ await agent(`
   - Part of a Phase (branch phase-N-*)? → update that phase's exit-gate table from its evidence
     JSON (| Gate | Evidence level | Artefact | Verified by | Status |), phase row status
     (✅ only if every gate met; else 🔄 "N/M gates met"), Deploy state "on \`<branch>\`".
+    Next phase → 🔄 only if this one is ✅.
   - Otherwise it is a Change → IMPLEMENTATION_PLAN "## Changes" table gets/keeps one row:
     | CHG-NNN | date | branch | one-line summary | ADR (or —) | evidence (level · artefact) | deploy state |
     Allocate CHG-NNN = highest existing + 1 (zero-padded, 3 digits) if the row does not exist.
@@ -97,14 +97,81 @@ await agent(`
   row/line that names a level (code-read | unit | integration | local-browser | staging |
   prod-live) and an artefact (sha, report path, CI URL, transcript path). Fix or downgrade any
   that don't. Never write "prod-live" from this step — only DEPLOYMENT.md's deploy procedure may.
+`
 
-  Step 9 — Commit:
+const REPORT_FORMAT = `
+  End with EXACTLY this block (the caller parses it; one item per line, "none" if empty):
+  ## Report
+  role: doc-sync
+  caller: <who delegated this>
+  scope: <branch> · <main..HEAD range>
+  status: done | partial | blocked
+  changed:
+  - <file> — <what changed>
+  checked: <what you compared against: commits, diff, evidence record>
+  findings:
+  - <anything the work did that you could NOT document, and why>
+  evidence: <evidence record path cited, or none>
+  not verified: <claims you left at a lower level or unmarked>
+  needs from caller: <questions/decisions, or none>
+`
+
+phase('Sync')
+
+// Delegate → review → feedback loop. The script is the caller; it never loops past MAX_ROUNDS.
+// The doc-sync role edits files but never commits; the caller commits once, after the loop.
+const MAX_ROUNDS = 3
+let feedback = ''
+let review = { complete: false, missing: [] }
+for (let round = 1; round <= MAX_ROUNDS; round++) {
+  const report = await agent(`
+  Working directory: <project root>
+  You are the doc-sync role for this project: follow .claude/agents/doc-sync.md, or the brief of
+  the full-time doc agent named in .keel/meta.json "agents"."doc-sync". Round ${round} of ${MAX_ROUNDS}.
+  ${feedback ? 'Your caller reviewed your last report. Fix exactly these gaps, nothing else:\n' + feedback : ''}
+  ${SYNC_RULES}
+  Do NOT commit, push, or message anyone. Leave edits in the working tree.
+  ${REPORT_FORMAT}
+`, { label: `doc-sync-r${round}` })
+
+  review = await agent(`
+  Working directory: <project root>
+  You are the CALLER (supervisor) of the doc-sync role. Check its work; do not edit docs yourself.
+  Its report:
+  ${report}
+
+  1. What the work did: git log --oneline main..HEAD ; git diff main --name-only (code, config,
+     migrations, commands, env vars) ; the evidence record under .keel/evidence/ for this branch.
+  2. What the docs now say: git diff (uncommitted doc edits) + the report's "changed" list.
+  3. List every thing the work did that the docs do not capture, specifically (file, what is
+     missing, which doc should hold it). Also any ✅ / "verified" without a level + artefact.
+  complete = true only if that list is empty.
+`, {
+    label: `doc-sync-review-r${round}`,
+    schema: {
+      type: 'object',
+      properties: {
+        complete: { type: 'boolean' },
+        missing: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['complete', 'missing'],
+    },
+  })
+  if (review.complete) break
+  feedback = review.missing.map(m => '  - ' + m).join('\n')
+}
+
+await agent(`
+  Working directory: <project root>
+  Close the doc sync. ${review.complete ? 'The caller accepted the docs.' : `After ${MAX_ROUNDS} rounds these gaps remain:\n` + review.missing.map(m => '  - ' + m).join('\n') + `
+  Add one row per gap to IMPLEMENTATION_PLAN.md's Deferred items table:
+  | Doc sync incomplete: <gap> | <branch> | doc-sync hit its ${MAX_ROUNDS}-round cap | engineering | next doc-sync on this area | — | ⬜ |
+  Do not attempt the gaps yourself.`}
+  Commit:
     git add AGENTS.md CLAUDE.md docs/IMPLEMENTATION_PLAN.md docs/adr CHANGELOG.md 2>/dev/null; git add -u
     git commit -m "docs: sync — <what> | <n> ADRs | <n> deferred | evidence: <level>"
-
-  Report: files updated, ADRs accepted / unclassified, deferred rows, and the evidence level
-  cited for the headline claim.
-`, { label: 'sync' })
+  Report the commit sha, files updated, and any deferred doc gaps.
+`, { label: 'doc-sync-commit' })
 
 phase('Budget')
 

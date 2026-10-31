@@ -82,11 +82,13 @@ Once a project is documented, the ongoing modes are `/keel phase new <slug>` (sc
 milestone), `/keel change <slug>` (a hotfix-weight unit), `/keel closeout` (sweep deferred items),
 `/keel archive`, `/keel upgrade` (including the 1.x → 2.0 format migration), and `/keel version`.
 
-Keel also offers Cloudflare's `security-audit` skill (global install, always asked first) and gives
-the **security** and **design** (impeccable + modern-web-guidance) roles one owner each: the
-project's full-time agent for that role if it has one, else a repo-local subagent in
-`.claude/agents/`. AGENTS.md makes running them on the branch diff part of "done"; old review runs
-are pruned by a retention rule. Every invocation prints one line when a
+Keel gives three roles one owner each: **doc-sync** (every project), **security** (Cloudflare's
+`security-audit` skill, a global install keel always asks about first) and **design** (impeccable +
+modern-web-guidance). The owner is the project's full-time agent for that role if it has one,
+else a repo-local subagent in `.claude/agents/`. The agent doing the work is the caller: it
+delegates, reads each subagent's fixed `## Report`, and decides what happens next. Doc sync runs
+before every completing commit with up to 3 feedback rounds (leftovers become deferred items);
+security and design reviews are part of "done". Old review runs are pruned by a retention rule. Every invocation prints one line when a
 newer keel is published (skip with `KEEL_NO_UPDATE_CHECK=1` or `"updateCheck": false`).
 
 Keel takes it from there: intake → interview → proposed doc set → generation → handoff. Set aside a

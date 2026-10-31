@@ -3,6 +3,32 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.3.0] — 2026-10-31
+
+### Added
+- **Doc-sync role and loop.** Every project gets a `doc-sync` owner: the full-time doc/architect
+  agent if one exists (no subagent written), else the repo-local subagent
+  `.claude/agents/doc-sync.md`. After each piece of work and before its commit, the caller
+  delegates doc sync, reviews the returned Report against `git log` / `git diff main` / the evidence
+  record, and sends specific gaps back. **Hard cap: 3 rounds**; remaining gaps become Deferred items
+  rows (`Doc sync incomplete: …`) and the caller proceeds and commits. AGENTS.md workflow step 5 and
+  a Pre-PR line carry the rule.
+- **Report-back delegation model.** AGENTS.md "Delegation": the agent doing the work is the caller
+  and supervises its role subagents. The doc-sync, security and design templates end with a fixed
+  `## Report` block (role · caller · scope · status · changed · checked · findings · evidence · not
+  verified · needs from caller). Subagents never commit, push or message anyone but their caller;
+  a caller with its own supervisor keeps reporting upward as before.
+
+### Changed
+- `doc-sync.js` holds the doc rules once (`SYNC_RULES`); its Sync stage is the delegate → review →
+  feedback loop, then one commit. The phase template's Doc Sync stage now calls `doc-sync.js`
+  instead of carrying a second copy of the rules (so phase close-out also gets budget, archive and
+  prune). Merge checks accept archive/prune commits after the `docs: sync` commit.
+- `/keel upgrade`: "Migrating to keel 2.3" sets up the doc-sync role, replaces `doc-sync.js` and
+  non-✅ phase Doc Sync stages, adds the Report block to existing subagents, AGENTS.md step 5 +
+  Delegation + Pre-PR line, and the CLAUDE.md row.
+- Docs site fully updated for 2.1–2.3.
+
 ## [2.2.0] — 2026-10-31
 
 ### Changed

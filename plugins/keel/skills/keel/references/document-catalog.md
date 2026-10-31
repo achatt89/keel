@@ -147,6 +147,14 @@ a one-line justification per inclusion and per omission, and adjust.
 - **Include:** Whenever skills integration is active. Pair with entries in `skills-lock.json`.
 - **Owns:** Nothing.
 
+### `.claude/agents/{doc-sync,security,design}.md` — role subagents *(only for roles with no full-time agent)*
+- **Purpose:** Repo-local Claude Code subagents that own a role: `doc-sync` (every project),
+  `security` (security-audit installed), `design` (impeccable / modern-web-guidance installed).
+  Each ends with the fixed `## Report` block it returns to its caller.
+- **Include:** Per role, only when the project has no full-time agent for it (then that agent gets
+  the role and no file is written). Recorded in `.keel/meta.json` `agents`.
+- **Owns:** Nothing. Rules: doc-sync → `.claude/workflows/doc-sync.js`; delegation → AGENTS.md.
+
 ### `COMPLIANCE.md` — data protection & compliance *(regulated / PII)*
 - **Purpose:** Data inventory (keyed to the data classification), data-minimization stance, data-
   subject rights implementation, consent, retention schedule, subprocessors, breach response,

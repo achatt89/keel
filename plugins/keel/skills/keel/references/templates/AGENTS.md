@@ -81,11 +81,24 @@ relevant one *before* touching code.
    Or invoke via the Workflow tool inside a Claude Code session. The script reserves this phase's ADR IDs, checks out the phase branch, then fans out divisible tasks as parallel agents in separate `git worktree`s branched off it — one worktree per task, agents never share a working copy. Each task agent opens with `/goal` (code, tests, lint, `verify`, and a manual `claude-in-chrome` pass for UI work — it won't stop early); exit-strategy-when-stuck policy is in IMPLEMENTATION_PLAN "Standing rules". Task branches merge back into the phase branch, never straight to `main`. A **Verify** stage then writes `.keel/evidence/phase-N.json` (gate → evidence level → artefact) — only the phase branch, carrying every task plus the evidence file plus the doc-sync commit, ever merges to `main`.
 3. **Write tests with the code, never after.** Unit tests for logic/edge paths; integration tests for cross-module behaviour; smoke tests for wiring. Security- and isolation-critical behaviour is *proven by a test*. "No test needed" is a stated judgement, not a default.
 4. **Definition of done per change:** {{DOD_GATES}} (details: IMPLEMENTATION_PLAN "Standing rules").
-5. **Doc sync before every merge to `main`** — run `.claude/workflows/doc-sync.js` on the branch (phase scripts do this automatically, after Verify). It updates: this file's status table · IMPLEMENTATION_PLAN tables · `docs/adr/` · CHANGELOG `[Unreleased]` — citing the evidence file, never re-deriving it — and auto-archives if this file breaches its 12 KB budget. Wording is state-neutral (no "merged"/"deployed" pre-written). A branch without the doc-sync commit is not done, whatever its tests say.
+5. **Doc sync before the commit that completes any piece of work** (and so before every merge to `main`). Delegate it to the **doc-sync** role ({{DOC_SYNC_OWNER — `doc-sync` subagent (.claude/agents/doc-sync.md), or the full-time doc agent named in .keel/meta.json "agents"}}): it updates this file's status table · IMPLEMENTATION_PLAN tables · `docs/adr/` · CHANGELOG `[Unreleased]` · any doc the work touched — citing the evidence file, never re-deriving it — and returns a Report. You check the Report against what you actually did (`git log`, `git diff main --name-only`, the evidence file); anything missing goes back as specific feedback. **Hard cap: 3 rounds.** After round 3, record each remaining gap as a Deferred items row (`Doc sync incomplete: …`) and proceed — never loop further. Then commit. `.claude/workflows/doc-sync.js` runs exactly this loop (phase and change scripts call it), then auto-archives if this file breaches its 12 KB budget and prunes old review evidence. Wording is state-neutral (no "merged"/"deployed" pre-written). A branch without the doc-sync commit is not done, whatever its tests say.
 6. **Merge to `main`** only after gates pass and the doc-sync commit is present. **Deploy** per `{{DEPLOYMENT}}`; the deploy step stamps CHANGELOG + the deploy log (`deployed vNN` → `live-verified` after the post-deploy checklist). Deploy state is written there and nowhere else.
 7. **Decisions captured without fail.** Any decision made during work — including "we chose X over Y because Z" — becomes a `docs/adr/ADR-xxx-<slug>.md` before merge (ID reserved at scope or taken at Integrate, never in a worktree). ADRs get no addenda: one `Build deviation` row, else a superseding ADR. Incidents → RUNBOOK postmortems. `[NEEDS DECISION]` markers resolved during work are removed and converted to ADRs; open ones are one row per question in `docs/adr/README.md`.
 8. **Claims carry evidence.** Nothing is `✅` without an evidence level (`code-read` < `unit` < `integration` < `local-browser` < `staging` < `prod-live`) and an artefact. Overclaiming is a defect.
 9. **Review before done.** After finishing any task that changed code (feature, refactor, bug fix, dependency bump), run the **security** reviewer ({{SECURITY_REVIEWER — `security` subagent, or the full-time agent named in .keel/meta.json "agents"}}) on the branch diff *before* reporting done; a task that touched UI also runs the **design** reviewer ({{DESIGN_REVIEWER}}). A confirmed high/critical security finding or a design P0/P1 means not done. Remove this step only if neither role is set up.
+
+## Delegation (callers supervise their subagents)
+
+The agent doing a piece of work is the **caller**; the role subagents it delegates to (doc-sync,
+security, design — or the full-time agents that own those roles) work for it.
+
+- A subagent returns a **Report** to its caller (fixed format in each `.claude/agents/<role>.md`:
+  role · caller · scope · status · changed · checked · findings · evidence · not verified · needs
+  from caller). It never commits, pushes, merges, or messages anyone but its caller.
+- The caller reads the Report and decides the next step: accept, send specific follow-up (doc-sync:
+  max 3 rounds, then deferred items), fix and re-review, or escalate. The caller commits.
+- If the caller has its own supervisor or orchestrator, that relationship is unchanged: the caller
+  reports upward as before, including what its subagents found.
 
 ## Current status
 
@@ -122,6 +135,7 @@ relevant one *before* touching code.
 - [ ] new decision → `docs/adr/`; new punt → deferred items (with owner + revisit trigger)
 - [ ] `{{COMMANDS}}` / `{{DEPLOYMENT}}` / `{{RUNBOOK}}` updated if a command, env var, or procedure changed
 - [ ] security reviewer run on the diff (and design reviewer for UI); no confirmed high/critical, no P0/P1
+- [ ] doc-sync Report reviewed against the work; gaps fixed or (after 3 rounds) logged as deferred items
 - [ ] doc-sync commit present; this file under 12 KB
 
 <!-- Claude-only sections (Active skills, Workflow-tool notes) live in CLAUDE.md, which starts with `@AGENTS.md`. -->

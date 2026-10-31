@@ -27,8 +27,11 @@
 |---|---|---|---|
 | security | {{`security` subagent (.claude/agents/security.md) or the full-time agent's name}} | security-audit skill (cloudflare/security-audit-skill @ {{SECURITY_SKILL_REF}}, global) | after any task that changed code, on the branch diff, before "done"; Verify stage |
 | design | {{`design` subagent (.claude/agents/design.md) or the full-time agent's name}} | impeccable + modern-web-guidance | before UI work (shape), after UI edits (critique/audit), Verify stage |
+| doc-sync | {{`doc-sync` subagent (.claude/agents/doc-sync.md) or the full-time doc agent's name}} | the doc rules in `.claude/workflows/doc-sync.js` | after any piece of work, before its commit; ≤3 feedback rounds |
 
-The hard rule is AGENTS.md workflow step 9. Hand these roles the work; don't run their skills ad hoc.
+The hard rules are AGENTS.md workflow steps 5 and 9; the caller/subagent contract is AGENTS.md
+"Delegation". Delegate with the Agent tool (`subagent_type: <role>`), read the `## Report` block,
+decide the next step. Hand these roles the work; don't run their skills ad hoc.
 
 ## Active skills *(UI projects — remove this section if no UI or skills integration was skipped)*
 

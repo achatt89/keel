@@ -168,7 +168,8 @@ ledger lives at `.keel/evidence/security/ledger/`.
 - Tune both numbers in `.keel/meta.json` `evidenceRetention`. Mechanism:
   `node .keel/prune-evidence.mjs` (dry run) → `--apply` → commit `chore: prune review evidence`.
 - **Owner:** the project's doc/architect agent, as the last step of doc-sync at phase close-out;
-  if the project has none, whoever runs doc-sync on merge (the dev agent). Git history keeps
+  if the project has none, whoever runs doc-sync on merge (the dev agent, as caller of the
+  doc-sync subagent — doc-sync.js's Prune stage). Git history keeps
   everything pruned.
 
 ## Negative results are recorded
