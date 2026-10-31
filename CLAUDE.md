@@ -36,6 +36,11 @@ Trigger: any HTML/CSS/JS/TS edit in docs/
 keel documents projects using the templates in references/templates/. The document it generates for this REPO (what you're reading) is itself a usage of the keel convention.
 
 ## Current status
+v2.4.0 — oversize docs are split, not just warned about: archive closed detail first, then split
+into `docs/<name>/NN-<slug>.md` behind a slim index (keystone never split). `keel-doc-size.mjs`
+measures each file once and fails on missing parent↔part links; wired into doc-sync (Split stage),
+generation, `/keel version`, upgrade (propose, apply on approval) and archive. Merged to main.
+
 v2.3.0 — doc-sync role (`.claude/agents/doc-sync.md` unless a full-time doc agent exists): the
 caller delegates doc sync before the completing commit, reviews the `## Report`, ≤3 feedback rounds,
 leftovers → deferred items (`doc-sync.js` Sync stage; phase scripts call it). Report-back delegation

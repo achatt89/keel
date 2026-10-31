@@ -3,6 +3,30 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.4.0] — 2026-10-31
+
+### Added
+- **Auto-split oversize docs.** A doc over its budget is no longer just reported. Archivable docs
+  (IMPLEMENTATION_PLAN, CHANGELOG, RUNBOOK, DEPLOYMENT, ADR index) relocate closed detail first;
+  anything still over is split into a sibling folder (`docs/DESIGN.md` → `docs/design/NN-<slug>.md`,
+  one part per top-level section, content verbatim, IDs unchanged). The parent becomes a slim index
+  whose Parts table links every part; each part links back; inbound anchor links are repointed.
+  The keystone (AGENTS.md, CLAUDE.md) is never split — archive only, else `BUDGET_EXCEEDED`.
+- **`keel-doc-size.mjs`** (`.keel/doc-size.mjs` in projects): measures every doc once — a split
+  doc's index and each part separately against the parent's budget, family total reported, no
+  double-counting — names the action per breach, and **fails** (exit 1) when a part is not linked
+  from its parent or has no link back. `--self-test` included.
+- `defaultBudget` (32 KB) in `.keel/meta.json` for every doc not listed in `budgets`.
+
+### Changed
+- `doc-sync.js`: Budget stage runs the script; Archive only for archivable docs; new **Split**
+  stage for whatever is still over; a split-link error throws, so the merge after doc-sync stops.
+- Generation (Phase 5) splits any doc generated over budget; `/keel version` reports families and
+  link errors; `/keel upgrade` proposes the split (parts table) as `BUDGET_EXCEEDED` and applies it
+  in U4 only on approval; `/keel archive` offers the split when archiving cannot get a doc under.
+- Split mechanics: `keel-archive-guide.md` "Splitting an oversize doc"; conventions "Byte budgets,
+  auto-archive & auto-split". Docs site Archive and Upgrade pages updated.
+
 ## [2.3.0] — 2026-10-31
 
 ### Added

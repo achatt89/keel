@@ -24,25 +24,27 @@ the key is absent (also in `references/templates/keel-meta.json`):
 | `docs/IMPLEMENTATION_PLAN.md` | 65536 | read at the start of every phase; the current phase block + tables fit comfortably |
 | `docs/adr/README.md` | 16384 | the index is read; individual ADR files are opened on demand and are unbudgeted |
 
-`CHANGELOG.md` and `RUNBOOK.md` are unbudgeted by default but archivable (categories below); a
-project may add them to `budgets`.
+Every other top-level `docs/*.md` (RUNBOOK, DESIGN, ARCHITECTURE, PRD, …) gets `defaultBudget`
+(32768) unless listed. Root `CHANGELOG.md` and individual ADR files are unbudgeted unless listed.
+A split doc's parts each get the parent's budget.
 
 **How the automatic trigger works** — no hook, no daemon, no pre-commit guard:
 
-1. `doc-sync.js` finishes its writes, then runs a deterministic Budget step: `wc -c` on every
-   budgeted path.
-2. Any breach → the script's conditional Archive phase runs Phase X2 + X4 of Archive Mode with
+1. `doc-sync.js` finishes its writes, then runs a deterministic Budget step:
+   `node .keel/doc-size.mjs --json` (each file once; split parents and parts separately).
+2. A breach on the keystone or an archivable doc → the script's conditional Archive phase runs Phase X2 + X4 of Archive Mode with
    "everything eligible", using exactly the mechanics in this guide, and commits on its own:
    `docs: auto-archive — <file> <bytes> > <budget>`. Separate commit, so it reverts alone.
-3. Still over budget after archiving, or nothing eligible → the step reports
-   `BUDGET_EXCEEDED: nothing archivable — <file> <bytes> > <budget>` in the doc-sync summary and
-   stops. It never loops, never lowers eligibility, never touches the never-archive list, and
+3. Still over budget after archiving, or a doc with nothing archivable → the Split phase splits
+   it ("Splitting an oversize doc" below) and re-runs the check; a split-link error fails
+   doc-sync. Only the keystone, which is never split, ends as `BUDGET_EXCEEDED: <file> <bytes> >
+   <budget>`. It never loops, never lowers eligibility, never touches the never-archive list, and
    never edits the budget.
 4. `/keel version` reports size vs budget read-only, so a breach is visible before the doc-sync
    that would act on it. Manual edits that breach a budget are caught at the next doc-sync,
    which every merge requires.
 
-When `BUDGET_EXCEEDED` persists, the cause is nearly always an in-progress phase block or the
+When `BUDGET_EXCEEDED` persists on the keystone, the cause is nearly always an in-progress phase block or the
 open deferred rows — work that only *closing* shrinks (`/keel closeout` exists for the second).
 Raising a budget is a legitimate project decision, recorded in meta.json, but it is not the first
 answer.
@@ -193,6 +195,62 @@ Same pattern as `KEYSTONE_DRIFT`: trim in place, leave a one-line summary + link
 text to a new heading under "Archived Notes" naming its source doc and section.
 
 ---
+
+## Splitting an oversize doc
+
+Archive moves *closed* detail out. When a doc is over budget and has nothing (more) closed to
+move — DESIGN, ARCHITECTURE, PRD, LLD, NFR … are mostly live content — it is **split**, never just
+warned about. Doc-sync's Split stage does this automatically; `/keel upgrade` proposes it.
+
+**Which docs:** every doc except the keystone (`AGENTS.md`, `CLAUDE.md` — they are already
+indexes; archive only, else `BUDGET_EXCEEDED`). Archivable docs (IMPLEMENTATION_PLAN, CHANGELOG,
+RUNBOOK, DEPLOYMENT, `docs/adr/README.md`) are archived first and split only if still over.
+
+**Layout** — the folder sits next to its parent, named in lower-kebab case:
+
+| Parent | Folder | Parts |
+|---|---|---|
+| `docs/DESIGN.md` | `docs/design/` | `01-foundations.md`, `02-components.md`, … |
+| `docs/IMPLEMENTATION_PLAN.md` | `docs/implementation-plan/` | `01-standing-rules.md`, `02-phases-0-4.md`, … |
+
+- One part per top-level `## ` section, in original order, `NN-<section-slug>.md`. Merge adjacent
+  small sections (a part under ~2 KB is noise); a single section over budget splits at `### `.
+- Content moves **verbatim**. IDs never change. No rewording, no summarising.
+- A part that later breaches splits into more parts with the next free `NN` (never renumber —
+  numbers are link targets).
+
+**Parent = slim index** (shape):
+
+```markdown
+# DESIGN — {{project}}
+
+{{One-line purpose.}} Owns: `TOK-*`, `CMP-*`. Split {{date}} at {{size}} B > {{budget}} B.
+
+## Parts
+
+| Part | Covers | IDs |
+|---|---|---|
+| [01 Foundations](design/01-foundations.md) | Principles, tokens, type, colour | TOK-001…040 |
+| [02 Components](design/02-components.md) | Component specs | CMP-001…025 |
+```
+
+**Each part** starts with:
+
+```markdown
+# DESIGN — Components
+> Part of [DESIGN.md](../DESIGN.md) · all parts listed there.
+```
+
+**Inbound links:** `grep -rn "DESIGN.md#"` across the repo; repoint each anchored link at the part
+that now holds the heading. Bare `DESIGN.md` links stay valid (they reach the index). The
+keystone's Document map keeps one row for the parent.
+
+**Check (hard):** `node .keel/doc-size.mjs` — each file is measured once (the index and every part
+against the parent's budget; the family total is reported, not judged). It **fails** if any part
+is not linked from the parent's Parts table or has no link back to the parent. Doc-sync stops on
+that failure; fix the link, never delete the part.
+
+**Commit:** one per doc — `docs: split DESIGN.md into design/ (N parts) — <size>B > <budget>B`.
 
 ## Severity / eligibility reference
 

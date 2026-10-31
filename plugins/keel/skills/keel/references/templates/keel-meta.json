@@ -1,5 +1,5 @@
 {
-  "keelVersion": "2.3.0",
+  "keelVersion": "2.4.0",
   "docFormat": 2,
   "generatedAt": "{{YYYY-MM-DD}}",
   "lastUpgraded": null,
@@ -13,6 +13,7 @@
     "docs/IMPLEMENTATION_PLAN.md": 65536,
     "docs/adr/README.md": 16384
   },
+  "defaultBudget": 32768,
   "evidenceDir": ".keel/evidence",
   "closeout": {
     "maxOpenDeferred": 8,
