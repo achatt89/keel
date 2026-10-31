@@ -157,9 +157,35 @@ On a breach doc-sync acts, it does not just warn: archivable docs relocate close
 `PHASE_ARCHIVE.md` first (`docs: auto-archive — …`); anything still over is **split** into a
 sibling folder (`docs/DESIGN.md` → `docs/design/NN-<slug>.md`) behind a slim index that links every
 part, each part linking back (`docs: split …`). The keystone is never split — if archiving cannot
-bring it under, doc-sync reports `BUDGET_EXCEEDED`. A part not linked from its parent, or with no
-link back, fails the check. Mechanics: `references/keel-archive-guide.md` "Splitting an oversize
-doc".
+bring it under, doc-sync **moves whole sections out** to `docs/agents/NN-<slug>.md` (linked from a
+`## Parts` table in the keystone, each linking back) — never compresses wording to fit. A part not
+linked from its parent, or with no link back, fails the check. Mechanics:
+`references/keel-archive-guide.md` "Splitting an oversize doc".
+
+**One verdict per doc (2.4.2).** The checker prints `ok` / `waived` / `archive` / `split` /
+`manual` with the reason for every doc it measures:
+
+| Doc kind | Rule |
+|---|---|
+| Archive (`*ARCHIVE*`, `LEGACY_*`, anything under `archive/`, or listed in meta `"archives"`) | `ok` always — append-only history, never budgeted, `--split` refuses it |
+| Keystone (`AGENTS.md`, `CLAUDE.md`) | never split; over → `archive`, then move sections out (above). Under 2% headroom → `ok` with "tight" |
+| ADR index (`docs/adr/README.md`) | budget grows 320 B per `ADR-*.md` file (an index must list every ADR); still over → `manual`, never split |
+| Plan / changelog / runbook / deployment | over → `archive` first; `split` only on the re-check after archiving (`--after-archive`) |
+| Generated file (header says auto-generated / do not edit) | over → `manual` (a split would be overwritten) |
+| No `##`/`###` headings, or an index whose Parts table alone is too big | over → `manual` |
+| Anything else | over → `split` |
+| Any doc with a waiver | over → `waived` (see below) |
+
+A folder beside a doc is a split only if the doc has a `## Parts` heading — `docs/ADR.md` next to
+`docs/adr/` is not a split. Links count inline and reference-style, file-relative and
+repo-absolute (`/docs/x.md`); external URLs are ignored.
+
+**Waivers.** A doc the user accepts over budget is recorded in `.keel/meta.json`:
+`"waivers": { "docs/X.md": { "reason": "…", "reviewed": "YYYY-MM-DD", "max": 196608 } }` (`max`
+optional: past it the waiver stops applying). A waiver older than `"waiverReviewDays"` (default 90)
+still waives but prints "review due". Only the user grants a waiver — never doc-sync or a
+subagent. The 2.0–2.4.1 `"budgetExceptions"` strings are read as unreviewed waivers until
+`/keel upgrade` moves them.
 
 ## Evidence retention
 

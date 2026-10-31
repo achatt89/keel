@@ -37,8 +37,10 @@ A split doc's parts each get the parent's budget.
    `docs: auto-archive — <file> <bytes> > <budget>`. Separate commit, so it reverts alone.
 3. Still over budget after archiving, or a doc with nothing archivable → the Split phase splits
    it ("Splitting an oversize doc" below) and re-runs the check; a split-link error fails
-   doc-sync. Only the keystone, which is never split, ends as `BUDGET_EXCEEDED: <file> <bytes> >
-   <budget>`. It never loops, never lowers eligibility, never touches the never-archive list, and
+   doc-sync. The keystone is never split and never compressed: still over after archiving, whole
+   sections move out to `docs/agents/NN-<slug>.md` behind a `## Parts` table (each part links back);
+   only if nothing can move does it end as `BUDGET_EXCEEDED: <file> <bytes> > <budget>`. Docs the
+   checker calls `ok` (archives), `waived` or `manual` are never archived or split by doc-sync. It never loops, never lowers eligibility, never touches the never-archive list, and
    never edits the budget.
 4. `/keel version` reports size vs budget read-only, so a breach is visible before the doc-sync
    that would act on it. Manual edits that breach a budget are caught at the next doc-sync,
@@ -202,9 +204,12 @@ Archive moves *closed* detail out. When a doc is over budget and has nothing (mo
 move — DESIGN, ARCHITECTURE, PRD, LLD, NFR … are mostly live content — it is **split**, never just
 warned about. Doc-sync's Split stage does this automatically; `/keel upgrade` proposes it.
 
-**Which docs:** every doc except the keystone (`AGENTS.md`, `CLAUDE.md` — they are already
-indexes; archive only, else `BUDGET_EXCEEDED`). Archivable docs (IMPLEMENTATION_PLAN, CHANGELOG,
-RUNBOOK, DEPLOYMENT, `docs/adr/README.md`) are archived first and split only if still over.
+**Which docs:** only those the checker gives the verdict `split` (conventions "One verdict per
+doc"). Never: the keystone (archive, then move sections out), archives (`PHASE_ARCHIVE.md`,
+`LEGACY_*`, `archive/` — append-only, never budgeted), the ADR index (its budget scales with the
+ADR count), generated files, waived docs, or docs with no headings (`manual`). Archivable docs
+(IMPLEMENTATION_PLAN, CHANGELOG, RUNBOOK, DEPLOYMENT) are archived first and split only if the
+re-check after archiving (`--after-archive`) still says `split`.
 
 **Layout** — the folder sits next to its parent, named in lower-kebab case:
 
@@ -252,7 +257,9 @@ that failure; fix the link, never delete the part.
 
 **Tool:** `node .keel/doc-size.mjs --split <doc>` does all of the above deterministically (plain
 doc or an oversize part; verbatim; skips headings inside code fences; repoints inbound anchored
-links) and refuses the keystone. Then add the IDs column and purpose line to the index by hand.
+links) and refuses (exit 2, with the reason) the keystone, archives, waived and `manual` docs.
+Re-running it on an index with nothing new refuses and changes nothing; if new sections were
+written into the index, only those move and the existing Parts table gains rows. Then add the IDs column and purpose line to the index by hand.
 
 **Writing to a split doc later** (doc-sync and any role that edits docs): new content goes into
 the part that holds its section, never the index; a part about to breach gets a new part (or

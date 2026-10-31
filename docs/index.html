@@ -31,7 +31,7 @@
     </a>
 
     <div class="header-actions">
-      <span class="version-badge" aria-label="Version 2.4.1">v2.4.1</span>
+      <span class="version-badge" aria-label="Version 2.4.2">v2.4.2</span>
       <a
         href="https://github.com/achatt89/keel"
         class="github-link"
@@ -687,7 +687,7 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
               </tr>
               <tr>
                 <td>Budgets</td>
-                <td><code>node .keel/doc-size.mjs</code>: size against budget for every doc, each split doc shown as its index plus parts (each file counted once), any breach with the action doc-sync will take, and any broken link between an index and its parts.</td>
+                <td><code>node .keel/doc-size.mjs</code>: one verdict per doc with its reason (<code>ok</code>, <code>waived</code>, <code>archive</code>, <code>split</code> or <code>manual</code>), each split doc shown as its index plus parts (each file counted once), and any broken link between an index and its parts.</td>
               </tr>
             </tbody>
           </table>
@@ -769,6 +769,10 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
             <span class="feature-desc">Installs <code>.keel/doc-size.mjs</code> and a 32&nbsp;KB default budget for every doc, and proposes splitting any doc that is over budget.</span>
           </li>
           <li>
+            <span class="feature-key">Verdicts and waivers (2.4.2)</span>
+            <span class="feature-desc">Replaces the checker with the per-doc verdict version. Each old <code>budgetExceptions</code> entry is shown to you and, if you keep it, moved to <code>waivers</code> with today as its reviewed date. Docs already <code>ok</code> or <code>waived</code> get no proposal, so running the upgrade again changes nothing.</span>
+          </li>
+          <li>
             <span class="feature-key">Update check hook</span>
             <span class="feature-desc">Offers the optional session-start hook that says when a newer keel is published.</span>
           </li>
@@ -791,7 +795,7 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
           </li>
           <li>
             <span class="feature-key">BUDGET_EXCEEDED</span>
-            <span class="feature-desc">A doc is over its byte budget. The report proposes archiving what is closed, then a split into a sub-folder with the planned parts listed; nothing moves until you approve.</span>
+            <span class="feature-desc">A doc is over its byte budget. The report uses the checker's verdict: <code>archive</code> or <code>split</code> is proposed with the planned parts listed, and <code>manual</code> is reported with its reason. Nothing moves until you approve.</span>
           </li>
           <li>
             <span class="feature-key">MISSING_DOC</span>
@@ -868,6 +872,21 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
         <p>
           Most docs are mostly live content, so archiving cannot shrink them. When <code>DESIGN.md</code>, <code>ARCHITECTURE.md</code>, <code>PRD.md</code>, <code>LLD.md</code> or any other doc goes over its budget (32&nbsp;KB by default, set per file in <code>.keel/meta.json</code>), doc-sync splits it instead of warning. Docs with closed detail, such as the implementation plan, are archived first and split only if still over.
         </p>
+        <h3>One verdict per doc</h3>
+        <p>The checker gives every doc one verdict and says why:</p>
+        <div class="table-wrapper">
+          <table>
+          <thead><tr><th>Verdict</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><code>ok</code></td><td>Within budget. Archives (<code>PHASE_ARCHIVE.md</code>, <code>LEGACY_*</code>, anything under <code>archive/</code>) are always <code>ok</code>: they are append-only history, never budgeted and never split.</td></tr>
+            <tr><td><code>waived</code></td><td>Over budget, and you recorded why in <code>.keel/meta.json</code> <code>"waivers"</code> (reason, reviewed date, optional maximum). After 90 days it shows "review due".</td></tr>
+            <tr><td><code>archive</code></td><td>Move closed detail out first. Applies to the implementation plan, changelog, runbook and deployment docs, and to the keystone.</td></tr>
+            <tr><td><code>split</code></td><td>Split into its folder behind a slim index.</td></tr>
+            <tr><td><code>manual</code></td><td>No safe automatic fix: a generated file, a doc with no headings, an index whose Parts table alone is too big, or an ADR index over its budget. You decide.</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p>The ADR index's budget grows by 320&nbsp;bytes for each decision record, since it must list them all. A folder next to a doc counts as a split only when the doc has a <code>## Parts</code> heading, so <code>docs/ADR.md</code> beside <code>docs/adr/</code> is not mistaken for one. Links are recognised in inline, reference and repo-absolute (<code>/docs/x.md</code>) form.</p>
         <ul class="feature-list" role="list">
           <li>
             <span class="feature-key">Folder</span>
@@ -879,11 +898,11 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
           </li>
           <li>
             <span class="feature-key">Check</span>
-            <span class="feature-desc"><code>node .keel/doc-size.mjs --split &lt;doc&gt;</code> performs the split mechanically: text moved word for word, headings inside code blocks left alone, section links elsewhere repointed. <code>node .keel/doc-size.mjs</code> measures every file once: the index and each part against the parent's budget, with the family total reported. It fails if a part is not linked from the parent or has no link back, and doc-sync stops until that is fixed.</span>
+            <span class="feature-desc"><code>node .keel/doc-size.mjs --split &lt;doc&gt;</code> performs the split mechanically: text moved word for word, headings inside code blocks left alone, section links elsewhere repointed. It refuses archives, the keystone, waived and <code>manual</code> docs, and an index with nothing new, so running it twice changes nothing. <code>node .keel/doc-size.mjs</code> measures every file once: the index and each part against the parent's budget, with the family total reported. It fails if a part is not linked from the parent or has no link back, and doc-sync stops until that is fixed.</span>
           </li>
           <li>
             <span class="feature-key">Keystone</span>
-            <span class="feature-desc"><code>AGENTS.md</code> and <code>CLAUDE.md</code> are never split; they are already indexes. If archiving cannot bring them under budget, doc-sync reports <code>BUDGET_EXCEEDED</code>.</span>
+            <span class="feature-desc"><code>AGENTS.md</code> and <code>CLAUDE.md</code> are never split and never compressed to fit. If archiving cannot bring them under budget, whole sections move out to <code>docs/agents/NN-&lt;slug&gt;.md</code>, listed in a Parts table in the keystone and each linking back. Hard rules stay in the keystone. Under 2% headroom the checker warns that the next addition needs content moved out first.</span>
           </li>
         </ul>
         <h2>Writing to a split doc</h2>
