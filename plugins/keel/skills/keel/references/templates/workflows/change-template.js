@@ -29,13 +29,13 @@ const setup = await agent(`
 
   1. git fetch origin main --quiet 2>/dev/null || true
   2. If chg/{{SLUG}} exists: git checkout chg/{{SLUG}}   else: git checkout -b chg/{{SLUG}} main
-  3. Allocate CHG-NNN: in docs/IMPLEMENTATION_PLAN.md "## Changes" table, highest existing
+  3. Allocate CHG-NNN: in docs/IMPLEMENTATION_PLAN.md "## Changes" table (split docs: write to the file \`node .keel/doc-size.mjs --where docs/IMPLEMENTATION_PLAN.md "<section>"\` prints — never the index), highest existing
      CHG number + 1 (zero-padded, 3 digits; CHG-001 if the table is empty or missing — create the
      table from references/templates/IMPLEMENTATION_PLAN.md's shape if missing). If a row for
      chg/{{SLUG}} already exists (resuming), reuse its number.
      Add the row now so parallel changes cannot take the same number:
        | CHG-NNN | <date +%F> | chg/{{SLUG}} | {{CHANGE_ONE_SENTENCE}} | — | — | on \`chg/{{SLUG}}\` |
-     git add docs/IMPLEMENTATION_PLAN.md && git commit -m "docs: open CHG-NNN — {{SLUG}}"
+     git add -A docs/IMPLEMENTATION_PLAN.md docs/implementation-plan 2>/dev/null; git commit -m "docs: open CHG-NNN — {{SLUG}}"
   4. Report the allocated id.
 `, {
   label: 'change-setup',
@@ -139,7 +139,7 @@ await agent(`
   3. git merge --no-ff chg/{{SLUG}} -m "merge(${CHG.toLowerCase()}): {{CHANGE_ONE_SENTENCE}}"
   4. Flip state — mechanical substitutions only:
      - CHANGELOG.md [Unreleased] lines referencing ${CHG}: [on-branch] → [merged <merge sha>]
-     - IMPLEMENTATION_PLAN.md Changes table, ${CHG} row, deploy state: "on \`chg/{{SLUG}}\`" → "merged <sha>"
+     - IMPLEMENTATION_PLAN.md Changes table (split docs: write to the file \`node .keel/doc-size.mjs --where docs/IMPLEMENTATION_PLAN.md "<section>"\` prints — never the index), ${CHG} row, deploy state: "on \`chg/{{SLUG}}\`" → "merged <sha>"
      - AGENTS.md / CLAUDE.md status table Last completed cell: same substitution.
      git add -u && git commit -m "docs: ${CHG.toLowerCase()} merged"
   5. git branch -d chg/{{SLUG}} ; git log --oneline -6

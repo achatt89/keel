@@ -25,7 +25,7 @@ description: >
   "what version of keel is this", "check keel version", "is my keel up to date", "which keel
   version generated these docs", "check for keel updates").
 metadata:
-  version: 2.4.2
+  version: 2.4.3
 license: MIT
 ---
 
@@ -670,6 +670,15 @@ Latest published: v{{Z}} — {{update available, see below | you're on it | coul
 Budgets: AGENTS.md {{9.8KB}}/12KB ✅ · CLAUDE.md {{1.2KB}}/12KB ✅ · docs/IMPLEMENTATION_PLAN.md {{71KB}}/64KB ⚠️ over — next doc-sync will auto-archive
 ```
 
+**Writing into split docs (every mode below: phase new, change, closeout, archive, upgrade).**
+Any edit to a section of a keel doc first asks where that section lives:
+`node .keel/doc-size.mjs --where docs/IMPLEMENTATION_PLAN.md "Changes"` (or "Deferred items",
+"phase status", a phase block heading …) prints the parent itself, or — if the doc is split — the
+part that holds it (the last one for a row-split table). Write there, never into an index. New
+content that fits no part: add a part (next free NN) and its Parts row. Then run
+`node .keel/doc-size.mjs` before committing. ADR files are immutable after acceptance — no mode
+rewrites one, not even a link.
+
 ---
 
 ## Phase Mode — `/keel phase new <slug> [--after N | --split N]`
@@ -820,6 +829,16 @@ CLAUDE.md *or* AGENTS.md with keel-standard headings. If not detected, respond:
 ---
 
 ### Phase U1 — Discover
+
+0. **Install the checker first, from any version.** Copy this skill's
+   `references/templates/keel-doc-size.mjs` to `.keel/doc-size.mjs` verbatim on **every** upgrade
+   (whatever `keelVersion` says, even 1.x or 2.0 with no copy yet) and use it for every size and
+   link measurement below. It is read-only until `--split` / `--move-out` is called.
+   **Keystone headroom:** before adding any keystone text this release brings (a Pre-PR line, a
+   workflow step), compare its byte cost with `AGENTS.md`'s headroom in the checker output. If it
+   does not fit, propose in U3 which whole `## ` section to move out first
+   (`node .keel/doc-size.mjs --move-out AGENTS.md "<section>"` → `docs/agents/NN-<slug>.md`, linked
+   both ways) — never compress existing wording to make room.
 
 1. **Inventory existing docs.** Check for presence of each item (note present/absent):
 
@@ -1024,6 +1043,12 @@ detail, then split per keel-archive-guide.md "Splitting an oversize doc", one co
 `node .keel/doc-size.mjs` after each and fix any LINK ERROR before moving on. Use
 `node .keel/doc-size.mjs --split <doc>` for the split itself (deterministic, verbatim, repoints
 inbound anchor links); split by hand to the same shape only where it refuses.
+
+*Split mechanics (2.4.3)* — replace `.keel/doc-size.mjs`, `doc-sync.js`, `change-template.js`
+verbatim and patch phase scripts' status-table / deferred-row lines with the `--where` rule (above
+"Phase Mode"). An earlier trial split (any version) is re-checked, not redone: `--split` on a doc
+or part with nothing new refuses; a part still over budget is cut further with sub-parts
+(`07` → `07a`, `07b`) that keep section order; a one-table part is cut by rows.
 
 *Doc verdicts and waivers (2.4.2)* — replace `.keel/doc-size.mjs` and `doc-sync.js` verbatim (both
 carry no project content). Move each `"budgetExceptions"` entry into `"waivers"` as

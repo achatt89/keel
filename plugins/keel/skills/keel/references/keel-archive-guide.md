@@ -258,6 +258,9 @@ that failure; fix the link, never delete the part.
 **Tool:** `node .keel/doc-size.mjs --split <doc>` does all of the above deterministically (plain
 doc or an oversize part; verbatim; skips headings inside code fences; repoints inbound anchored
 links) and refuses (exit 2, with the reason) the keystone, archives, waived and `manual` docs.
+It cuts recursively in one run (sub-parts `07a`, `07b` keep order; a table splits by rows) and never
+rewrites an ADR file (conventions "Cutting"). Archives are never split, so archive appends always
+land in the archive file itself; if a pre-2.4.2 trial split an archive, write via `--where`.
 Re-running it on an index with nothing new refuses and changes nothing; if new sections were
 written into the index, only those move and the existing Parts table gains rows. Then add the IDs column and purpose line to the index by hand.
 

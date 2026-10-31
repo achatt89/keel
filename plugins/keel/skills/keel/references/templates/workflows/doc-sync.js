@@ -93,8 +93,10 @@ const SYNC_RULES = `
   Split-aware writing (applies to EVERY doc edit below — budgets: .keel/meta.json):
   - Before editing a doc NAME.md, check for a sibling folder <name in lower-kebab>/ (DESIGN.md →
     design/). If it exists, NAME.md is an INDEX: write the new content into the part that holds
-    that section (its "## Parts" table says which). Never append content to the index; the index
-    only gains a Parts row.
+    that section — node .keel/doc-size.mjs --where <NAME.md> "<section>" prints it. Never append
+    content to the index; the index only gains a Parts row.
+  - ADR files are immutable after acceptance: never rewrite one, not even a link (--split skips
+    them and lists moved anchors under the index's "Moved sections").
   - New content that fits no existing part, or would push a part over its budget: add a new part
     (next free NN-<slug>.md, header "# <Doc title> — <section>" + "> Part of [NAME.md](../NAME.md)
     · all parts listed there.") and its row in the index's Parts table — or, if a part ends up
@@ -188,7 +190,8 @@ for (let round = 1; round <= MAX_ROUNDS; round++) {
 await agent(`
   Working directory: <project root>
   Close the doc sync. ${review.complete ? 'The caller accepted the docs.' : `After ${MAX_ROUNDS} rounds these gaps remain:\n` + review.missing.map(m => '  - ' + m).join('\n') + `
-  Add one row per gap to IMPLEMENTATION_PLAN.md's Deferred items table:
+  Add one row per gap to IMPLEMENTATION_PLAN.md's Deferred items table (if the plan is split: the
+  file node .keel/doc-size.mjs --where docs/IMPLEMENTATION_PLAN.md "Deferred" prints):
   | Doc sync incomplete: <gap> | <branch> | doc-sync hit its ${MAX_ROUNDS}-round cap | engineering | next doc-sync on this area | — | ⬜ |
   Do not attempt the gaps yourself.`}
   Last step before the commit — size + link check: node .keel/doc-size.mjs

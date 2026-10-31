@@ -138,7 +138,7 @@ const buildResults = await parallel(TASKS.map((task, i) => () => agent(`
   {{GOAL_EXIT_STRATEGY_BLOCK — filled from IMPLEMENTATION_PLAN's Standing rules choice. Example
     (bounded-retries-then-escalate, the default): "Retry budget: up to 3 fix-and-retest cycles.
     If the goal still isn't met after 3 attempts, stop — run /goal clear, commit whatever is
-    working, and add a row to IMPLEMENTATION_PLAN's deferred-items table stating exactly what's
+    working, and add a row to IMPLEMENTATION_PLAN's deferred-items table (in the part \`node .keel/doc-size.mjs --where docs/IMPLEMENTATION_PLAN.md "Deferred"\` prints if the plan is split) stating exactly what's
     blocking and why, for human review."}}
 
   7. Stage and commit all changes: git add -A && git commit -m "feat(${task.slice(0,40)}): ..."
@@ -277,7 +277,7 @@ await agent(`
   4. Flip state — mechanical text edits only, no re-wording:
      - CHANGELOG.md: every [Unreleased] line tagged [on-branch] that references Phase {{N}} →
        [merged <short sha of the merge commit>]
-     - IMPLEMENTATION_PLAN.md phase status table, Phase {{N}} row, Deploy state column:
+     - IMPLEMENTATION_PLAN.md phase status table (split docs: write to the file \`node .keel/doc-size.mjs --where docs/IMPLEMENTATION_PLAN.md "<section>"\` prints — never the index), Phase {{N}} row, Deploy state column:
        "on \`phase-{{N}}-{{SLUG}}\`" → "merged <sha>"
      - AGENTS.md / CLAUDE.md status table, Last completed cell: same substitution.
      git add -u && git commit -m "docs: phase {{N}} merged"
