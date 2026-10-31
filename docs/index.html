@@ -31,7 +31,7 @@
     </a>
 
     <div class="header-actions">
-      <span class="version-badge" aria-label="Version 2.4.3">v2.4.3</span>
+      <span class="version-badge" aria-label="Version 2.5.0">v2.5.0</span>
       <a
         href="https://github.com/achatt89/keel"
         class="github-link"
@@ -703,6 +703,24 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
         </p>
         <p>
           Projects can also opt in to a session-start hook (<code>.claude/hooks/keel-update-check.mjs</code>) that does the same check without invoking keel. Turn both off with <code>KEEL_NO_UPDATE_CHECK=1</code> or <code>"updateCheck": false</code> in <code>.keel/meta.json</code>.
+        </p>
+
+        <h2>Release notes and the release feed</h2>
+        <p>
+          Every release publishes two generated files at the root of the keel repo, both built from <code>CHANGELOG.md</code>:
+        </p>
+        <ul class="feature-list" role="list">
+          <li>
+            <span class="feature-key">RELEASE.md</span>
+            <span class="feature-desc">The latest release notes for people: version, date, summary, install and update commands, and the full entry.</span>
+          </li>
+          <li>
+            <span class="feature-key">release.json</span>
+            <span class="feature-desc">The same for machines: version, date, summary, highlights, tag and compare links, install commands, minimum requirements, and every past version with its notes in Markdown. Its format is <code>schemas/release-v1.schema.json</code> (schema version 1). Within version 1, fields are only ever added, so readers should ignore fields they don't know.</span>
+          </li>
+        </ul>
+        <p>
+          <code>node scripts/release.mjs --check</code> fails if either file is out of date or if any version stamp (plugin manifest, marketplace, skill, project template, this site's badge) disagrees with the changelog. A CI workflow runs it on every push, pull request and release tag, and also checks that the tag matches the version.
         </p>
 
         <footer class="content-footer">

@@ -3,6 +3,22 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.5.0] — 2026-10-31
+
+Every release now publishes machine-readable release notes, generated from this changelog so they cannot drift.
+
+### Added
+- **release.json** at the repo root: version, date, summary, highlights, tag and compare URLs,
+  install and update commands, minimum requirements, and every version with its notes in Markdown.
+  Format: `schemas/release-v1.schema.json` (schema version 1; additive changes only).
+- **RELEASE.md**: the latest release notes for people.
+- **`scripts/release.mjs`** regenerates both from CHANGELOG.md; `--check` fails if either is stale or
+  any of the six version stamps differs from the changelog; `--self-test` covers the parser, URLs and drift.
+- **Release workflow** (`.github/workflows/release.yml`): runs the self-test and the check on every
+  push, pull request and `keel--v*` tag, and checks the tag matches the version. A
+  repository_dispatch to the TLA-owned site is written but commented out until the founder enables it.
+- **Release convention** in CLAUDE.md: bump, changelog, regenerate, check, merge, tag, push.
+
 ## [2.4.3] — 2026-10-31
 
 Closes the remaining items of the cortextOS 2.4.1 upgrade report (12 issues; 1–4 were fixed in 2.4.2).
