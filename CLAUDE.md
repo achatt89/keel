@@ -52,6 +52,8 @@ Feed schema: `schemas/release-v1.schema.json` (additive changes only within v1).
 keel documents projects using the templates in references/templates/. The document it generates for this REPO (what you're reading) is itself a usage of the keel convention.
 
 ## Current status
+v2.5.4 — ADR index budget: the verdict reason says when 320 B × ADRs overrides an explicit `budgets` entry (the entry is a floor). Merged to main.
+
 v2.5.3 — release audience: CHANGELOG `<!-- audience: internal -->`; release.json `latest` + per-version `audience`; RELEASE.md/badge/update notices show user-facing releases only; 2.5.0–2.5.2 marked internal. Merged to main.
 
 v2.5.2 — release.json `install.tools` (per-tool install methods; Claude Code only — Codex/Antigravity untested). Merged to main.

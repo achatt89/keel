@@ -7,14 +7,14 @@
   },
   "metadata": {
     "description": "Keel — lay the foundational documentation suite for a greenfield software project through a guided, multi-persona interview.",
-    "version": "2.5.3"
+    "version": "2.5.4"
   },
   "plugins": [
     {
       "name": "keel",
       "source": "./plugins/keel",
-      "description": "Interview the founder about a new project idea, then generate the right set of foundational docs (CLAUDE.md, BRD, PRD, ARCHITECTURE, LLD, ADR, NFR, and more) ready to build from with Claude Code. Then keeps building on them: /keel phase new, /keel change, /keel closeout, /keel upgrade (incl. 1.x → 2.0 format migration), /keel archive, /keel version. v2.5.3: update notices only for user-facing releases.",
-      "version": "2.5.3",
+      "description": "Interview the founder about a new project idea, then generate the right set of foundational docs (CLAUDE.md, BRD, PRD, ARCHITECTURE, LLD, ADR, NFR, and more) ready to build from with Claude Code. Then keeps building on them: /keel phase new, /keel change, /keel closeout, /keel upgrade (incl. 1.x → 2.0 format migration), /keel archive, /keel version. v2.5.4: the ADR index budget says when the ADR count overrides its budgets entry.",
+      "version": "2.5.4",
       "author": { "name": "Abhijit Chatterjee" },
       "keywords": [
         "documentation",
