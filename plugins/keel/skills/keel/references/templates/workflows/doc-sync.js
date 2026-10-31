@@ -3,7 +3,7 @@
 // Run: claude --workflow .claude/workflows/doc-sync.js   (or via the Workflow tool)
 //
 // Used standalone for Changes (hotfixes) and by hand; phase scripts embed the same rules in
-// their own Doc Sync step. Stages: Sync → Budget → (Archive, only if a budget is breached).
+// their own Doc Sync step. Stages: Sync → Budget → (Archive, only if a budget is breached) → Prune.
 // Sync writes tables, not prose, and every claim carries an evidence level + artefact.
 // Budget is a deterministic byte check against .keel/meta.json "budgets"; Archive relocates
 // (never deletes) per keel-archive-guide until the doc is back under budget, or reports that
@@ -16,6 +16,7 @@ export const meta = {
     { title: 'Sync', detail: 'Update AGENTS.md/CLAUDE.md status table, IMPLEMENTATION_PLAN, docs/adr, deferred items, CHANGELOG' },
     { title: 'Budget', detail: 'wc -c every living doc against .keel/meta.json budgets' },
     { title: 'Archive', detail: 'Only if breached: relocate closed detail to PHASE_ARCHIVE.md, one commit per doc' },
+    { title: 'Prune', detail: 'Evidence retention: drop old review runs (never gate records or the ledger)' },
   ],
 }
 
@@ -201,3 +202,15 @@ if (breached.length) {
     Report: items relocated by category, before/after sizes, commit sha — or the BUDGET_EXCEEDED line.
   `, { label: `archive:${b.file}`, phase: 'Archive' }))
 }
+
+// Evidence retention (conventions "Evidence retention"). Deterministic script, one commit, no loop.
+phase('Prune')
+await agent(`
+  Working directory: <project root>
+  If .keel/prune-evidence.mjs does not exist, report "no prune script" and stop.
+  1. node .keel/prune-evidence.mjs            (dry run — read the list)
+  2. If it lists anything: node .keel/prune-evidence.mjs --apply
+     git add -A .keel/evidence && git commit -m "chore: prune review evidence (<count> folders)"
+  Never delete anything by hand; the script never touches gate records, phase-N/ / chg-xxx/
+  folders, or ledger/. Report the folders removed (or "nothing to prune").
+`, { label: 'prune' })

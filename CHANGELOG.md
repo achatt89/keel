@@ -3,6 +3,36 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.2.0] — 2026-10-31
+
+### Changed
+- **Review roles are repo-local subagents, not hired agents.** Keel no longer asks an orchestrator
+  to create an agent (an orchestrator cannot create lasting agents; one-shot temps are never
+  auto-invoked). If the project already has a full-time agent for the role (security/QA, design),
+  that agent is handed the skill and recorded in `.keel/meta.json` `agents` as `type: "full-time"`;
+  no subagent is written. Otherwise keel writes `.claude/agents/security.md` / `design.md` and
+  records `type: "subagent"`.
+- Subagent descriptions now say *MUST BE USED PROACTIVELY* after any task that changed code.
+- CLAUDE.md template: "Permanent agents" table → "Review subagents" (role · owner · skill · when).
+
+### Added
+- **AGENTS.md workflow step 9 "Review before done"** + Pre-PR line: after any feature, refactor,
+  bug fix or dependency bump, run the security reviewer on the branch diff before reporting done;
+  UI work also runs the design reviewer. Verify stages still call both.
+- **Evidence retention** (conventions "Evidence retention"): review runs live in
+  `.keel/evidence/<role>/<branch>/<run>/`; keep the newest 3 per branch, prune a merged/deleted
+  branch's runs after 30 days (`evidenceRetention` in meta.json); never delete gate records,
+  `phase-N/`/`chg-xxx/` artefacts or the security `ledger/`. Script
+  `templates/keel-evidence-prune.mjs` (dry run by default, `--self-test`). Owner: the doc/architect
+  agent at phase close-out (phase Doc Sync step 10), else whoever runs doc-sync on merge (new
+  `Prune` stage).
+- **`/keel upgrade` migrates 2.1 agent requests**: an `agents` entry recorded as an orchestrator
+  request becomes the full-time agent (if one really exists) or the repo-local subagent, plus step 9,
+  the Pre-PR line and the prune script.
+
+Unchanged from 2.1.0: ask-first security-skill install with source + sha shown (Yes / Not now /
+Never), update check.
+
 ## [2.1.0] — 2026-10-31
 
 ### Added

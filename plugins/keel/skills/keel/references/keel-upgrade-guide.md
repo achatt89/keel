@@ -347,15 +347,23 @@ If UI project:
 - [ ] `skills-lock.json` has both entries with real (non-`"latest"`) installed versions →
   MISSING_SKILL (Optional)
 - [ ] `.impeccable/config.json` exists → MISSING_SKILL (Optional)
-- [ ] Either FE skill installed → a permanent design agent exists (`.claude/agents/*.md` or the
-  orchestrator's roster) and `.keel/meta.json` `agents.design` points at it → MISSING_SKILL (Important)
+- [ ] Either FE skill installed → the design role has an owner (a full-time design agent, else
+  `.claude/agents/design.md`) recorded in `.keel/meta.json` `agents.design` → MISSING_SKILL (Important)
 
 Every project that will be built:
 - [ ] security-audit skill resolves (`~/.claude/skills/`, `~/.agents/skills/` or `.claude/skills/`
   `security-audit/SKILL.md`) → MISSING_SKILL (Important) unless `.keel/meta.json` `securitySkill`
   is `"never"`. Fix only after an explicit yes (SKILL.md "Security skill": global, third-party).
-- [ ] Skill installed → a permanent security agent exists and `agents.security` points at it →
-  MISSING_SKILL (Important). One agent per role; hand the skill to an existing one.
+- [ ] Skill installed → the security role has an owner (full-time security/QA agent, else
+  `.claude/agents/security.md`) recorded in `agents.security` → MISSING_SKILL (Important). Never
+  both: a full-time agent gets the skill and no subagent is written.
+- [ ] `agents` entry written by keel 2.1 as an orchestrator request (not a `.claude/agents/` path,
+  not `type: full-time` for an agent that exists) → OUTDATED_CONVENTION (Important): replace per
+  SKILL.md "Migrating keel 2.1 agent requests".
+- [ ] A role is set up → AGENTS.md workflow step 9 *Review before done* + its Pre-PR line present →
+  MISSING_FEATURE (Important)
+- [ ] A role is set up → `.keel/prune-evidence.mjs` + `evidenceRetention` in meta.json →
+  MISSING_FEATURE (Optional)
 - [ ] `.claude/hooks/keel-update-check.mjs` + SessionStart entry → MISSING_FEATURE (Optional, opt-in)
 
 ---

@@ -81,7 +81,8 @@ answer.
 - `CHANGELOG.md`'s `[Unreleased]` section and its two newest versions.
 - A `PM-xxx` row whose prevention column names something that does not yet exist on disk.
 - `.keel/evidence/*.json` — evidence files are never archived or deleted; they are what the exit-gate
-  tables cite.
+  tables cite. (Review-run folders under `.keel/evidence/{security,design}/` are pruned by their own
+  rule — conventions "Evidence retention" — never by archive.)
 
 ---
 

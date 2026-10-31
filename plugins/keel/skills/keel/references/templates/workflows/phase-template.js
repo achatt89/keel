@@ -218,8 +218,8 @@ await agent(`
      you only have unit tests), status is "partial", not "met". Say what is missing in notes.
   4. UI phases: run the claude-in-chrome golden path + key edge cases against the local stack,
      and /impeccable audit <target> (zero P0/P1 is a gate). Save transcripts/outputs as artefacts.
-     If .keel/meta.json "agents" lists a design agent, hand it this audit.
-  4b. Security: if .keel/meta.json "agents" lists a security agent, hand it this branch's diff
+     If .keel/meta.json "agents" has a "design" owner (subagent or full-time agent), it runs this audit.
+  4b. Security: if .keel/meta.json "agents" has a "security" owner, it audits this branch's diff
      (git diff main...HEAD). A confirmed high/critical finding is an unmet gate. Report path
      goes in "security" below.
   5. Write .keel/evidence/phase-{{N}}.json with EXACTLY this shape:
@@ -304,6 +304,9 @@ await agent(`
   9. Commit on phase-{{N}}-{{SLUG}}:
        git add AGENTS.md CLAUDE.md docs/IMPLEMENTATION_PLAN.md docs/adr CHANGELOG.md && git add -u
        git commit -m "docs: phase {{N}} — <met>/<total> gates met | <n> ADRs accepted | <n> deferred"
+  10. Evidence retention (you are the phase close-out owner): if .keel/prune-evidence.mjs exists,
+     run it dry, then with --apply if it lists anything, and commit
+     "chore: prune review evidence (<count> folders)". Never delete evidence by hand.
 
   Report: gates met/partial/unmet, ADRs accepted / unclassified, deferred rows added.
 `, { label: 'doc-sync' })
