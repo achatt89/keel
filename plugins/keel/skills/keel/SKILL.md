@@ -25,7 +25,7 @@ description: >
   "what version of keel is this", "check keel version", "is my keel up to date", "which keel
   version generated these docs", "check for keel updates").
 metadata:
-  version: 2.0.0
+  version: 2.1.0
 license: MIT
 ---
 
@@ -83,6 +83,25 @@ The output is optimized to be handed to Claude Code as the source of truth for t
    no addenda; bigger changes are a new, superseding ADR.
 
 ---
+
+## Update check (every invocation, every mode)
+
+Before anything else, when run inside a project that has `.keel/meta.json`, print **at most one
+line** if keel is out of date, then carry on with the requested mode:
+
+1. **Skip entirely** if the env var `KEEL_NO_UPDATE_CHECK` is set or `.keel/meta.json` has
+   `"updateCheck": false`.
+2. **Local (always, offline):** project `keelVersion` older than this SKILL.md's
+   `metadata.version` → *"This project's docs are on keel X; installed is Y — run `/keel upgrade`."*
+3. **Published (best-effort, once per session):** if a fetch tool is available, GET
+   `https://raw.githubusercontent.com/achatt89/keel/main/plugins/keel/.claude-plugin/plugin.json`
+   (its `version` is the only thing read; nothing is sent). Newer than the installed skill →
+   *"keel Z available — run `/plugin marketplace update thelogicatelier`, then `/keel upgrade`."*
+   Offline, slow, or failed → say nothing.
+
+Read-only: never write a file for this check. The opt-in session hook
+(`references/templates/keel-update-check.mjs`, offered in Phase 3 and U3) does the published
+check at session start without invoking keel.
 
 ## The workflow
 
@@ -221,6 +240,9 @@ shape, and its risks without guessing), stop and propose the doc suite.
    the proposed set alongside `DESIGN.md`. Group them in the proposal table as a block labelled
    **"FE skill integration"** with the rationale: *impeccable for visual quality gates,
    modern-web-guidance for modern web platform patterns — both fire as PostToolUse hooks*.
+   If the user accepted the security skill (Security round), list **"Security agent"**
+   (`security-audit` skill, global install, + the permanent security agent) the same way. Any
+   skill accepted adds its permanent agent row (see "Permanent agents" below).
 
 ### Phase 3 — Generate
 
@@ -321,6 +343,65 @@ is yes).
    in the CLAUDE.md "Active skills" section and in the Phase 3 handoff summary:
    > "Activate impeccable hook: run `/impeccable hooks on` once in Claude Code after the skill
    > is installed. The modern-web-guidance hook is active immediately."
+
+6. **Design agent** — if either skill was installed, set up the permanent design agent per
+   "Permanent agents" below (template `references/templates/agents/design.md`).
+
+### Security skill (offer for every project that will be built)
+
+Asked in the Security round (or, if that round was skipped, once here). Never install silently.
+
+1. **Check first:** `ls ~/.claude/skills/security-audit/SKILL.md ~/.agents/skills/security-audit/SKILL.md
+   .claude/skills/security-audit/SKILL.md 2>/dev/null` (and `npx skills list -g` if available).
+   Present → skip the install, go to step 4.
+2. **Resolve and show the exact source** before asking:
+   `git ls-remote https://github.com/cloudflare/security-audit-skill HEAD` → the commit sha.
+3. **Ask** with `AskUserQuestion`, stating source, ref and scope verbatim:
+   *"Install Cloudflare's security-audit skill? Source: github.com/cloudflare/security-audit-skill
+   @ <sha>. This is a **global** install (your user-level skills, all projects), third-party code.
+   It powers a permanent security agent that audits each branch's diff after dev work."*
+   Options: **Yes, install globally** / Not now (ask again on the next `/keel upgrade`) / Never
+   for this project. On yes, run exactly:
+   ```bash
+   npx skills add https://github.com/cloudflare/security-audit-skill --skill security-audit --global
+   ```
+   Then verify with the step-1 check. Empty → stop and say so; do not set up the agent.
+4. **Record** in `skills-lock.json`: `{ "source": "cloudflare/security-audit-skill", "sourceType":
+   "github", "skillPath": "skills/security-audit/SKILL.md", "ref": "<sha>", "scope": "global" }`,
+   and in `.keel/meta.json`: `skillsInstalled` += `"security-audit"`. Declined → `"securitySkill":
+   "declined"` (Not now) or `"never"`; `/keel upgrade` re-asks only on `"declined"`.
+5. **Security agent** — set up per "Permanent agents" (template `references/templates/agents/security.md`).
+
+### Permanent agents (security, design)
+
+A skill only helps if something runs it at the right moment. Each installed skill gets **one
+permanent agent** that owns it: `security` (security-audit) and `design` (impeccable +
+modern-web-guidance). Same steps for both:
+
+1. **Find an existing one first.** Look in `.claude/agents/*.md` and `~/.claude/agents/*.md` for a
+   `name`/`description` covering the role (security / design / UI). If the session runs under an
+   agent orchestrator that manages lasting agents (its instructions name one, e.g. a hive with an
+   orchestrator address), also ask whether it already has that agent. Found → **hand it the
+   skill**: add the skill and the "when you run" rules from the template to that agent's
+   definition (or, for an orchestrator's agent, in the request below). Never create a second one.
+2. **None exists — create it.**
+   - Under an orchestrator: send it one request, through *its* messaging protocol, to create a
+     permanent `<role>` agent for this repo, with the template body as the agent's brief. Do not
+     write the orchestrator's config yourself.
+   - Otherwise: write `.claude/agents/<role>.md` from the template (fill `{{PROJECT_NAME}}`,
+     `{{SECURITY_SKILL_REF}}`).
+3. **Wire the trigger.** The phase/change workflow scripts' Verify stage already calls both agents
+   when `.keel/meta.json` `agents` lists them; add `"agents": { "<role>": "<path or orchestrator
+   agent id>" }` to `.keel/meta.json`, and list the agent in CLAUDE.md "Active skills".
+
+### Update-check hook (opt-in, every project)
+
+Offer once with `AskUserQuestion`: *"Show one line at session start when a newer keel is
+published? It reads `.keel/meta.json`, makes one request to raw.githubusercontent.com for keel's
+version, writes nothing, and stays silent offline."* Yes → copy
+`references/templates/keel-update-check.mjs` to `.claude/hooks/` verbatim and merge a
+`SessionStart` entry (`node .claude/hooks/keel-update-check.mjs`) into `.claude/settings.json`.
+No → `"updateCheck": false` is **not** set (that disables the per-invocation line too); just skip.
 
 ### Phase workflow generation (always)
 
@@ -454,7 +535,9 @@ platform handling sensitive data gets the full fan-out with adversarial verifica
      },
      "closeout": { "maxOpenDeferred": 8, "everyNPhases": 5 },
      "documentsGenerated": ["list of all docs generated"],
-     "skillsInstalled": ["impeccable", "modern-web-guidance"]
+     "skillsInstalled": ["impeccable", "modern-web-guidance", "security-audit"],
+     "agents": { "security": ".claude/agents/security.md", "design": ".claude/agents/design.md" },
+     "updateCheck": true
    }
    ```
    `budgets` values are bytes; adjust from the Delivery/Ops answers. `docFormat: 2` is what
@@ -482,6 +565,8 @@ Load these as needed; you do not need all of them in context at once.
 | `references/almanac-guide.md` | Deciding on / building an almanac knowledge base |
 | `references/templates/*.md`, `templates/adr/*.md` | Generating a specific document — its structural skeleton |
 | `references/templates/workflows/*.js` | Generating phase / change / doc-sync scripts; `/keel phase new`, `/keel change` |
+| `references/templates/agents/*.md` | Setting up the permanent security / design agent |
+| `references/templates/keel-update-check.mjs` | The opt-in SessionStart update-check hook |
 | `references/templates/keel-meta.json` | Writing or migrating `.keel/meta.json` (budgets, docFormat, adrLayout) |
 | `references/keel-upgrade-guide.md` | Running Phase U2 — the upgrade audit checklist, format-1 detection, the addenda classifier |
 | `references/keel-archive-guide.md` | Running Phase X2/X4 (and doc-sync's auto-archive) — what's archivable and how to move it |
@@ -721,7 +806,12 @@ CLAUDE.md *or* AGENTS.md with keel-standard headings. If not detected, respond:
    *Workflow scripts:* .claude/workflows/doc-sync.js · .claude/workflows/change-template.js ·
    .claude/workflows/phase-*.js · .keel/evidence/
 
-   *Hook config:* .claude/settings.json · .claude/hooks/modern-web-guidance-hook.mjs
+   *Hook config:* .claude/settings.json · .claude/hooks/modern-web-guidance-hook.mjs ·
+   .claude/hooks/keel-update-check.mjs
+
+   *Security & agents:* the security-audit skill (global or project — see "Security skill" step 1)
+   · `.claude/agents/*.md` (or the orchestrator's roster) for a security and a design agent ·
+   `.keel/meta.json` `securitySkill` / `agents`
 
    *Keel metadata:* .keel/meta.json (written at generation from v1.3+; earlier projects only have
    it if a prior `/keel upgrade` created it — its absence is expected for older, un-upgraded
@@ -753,7 +843,8 @@ check for every absent doc. Produce a structured gap list.
 - `OUTDATED_CONVENTION` — section exists but uses old structure (e.g. old 4-bullet standing rules without workflow-first)
 - `MISSING_FEATURE` — a new keel feature not yet in the doc (DESIGN.md §12 lifecycle table, workflow scripts in IMPLEMENTATION_PLAN, active skills in CLAUDE.md)
 - `UNFILLED_PLACEHOLDER` — a `{{PLACEHOLDER}}` or `[NEEDS DECISION]` that should have been filled
-- `MISSING_SKILL` — impeccable or modern-web-guidance not installed in a UI project
+- `MISSING_SKILL` — impeccable or modern-web-guidance not installed in a UI project; security-audit
+  not installed (unless `securitySkill` is `"never"`); an installed skill with no permanent agent
 - `FORMAT_MIGRATION` — the doc is in the keel ≤1.x *shape* (not merely missing a section) and
   needs the lossless reformat of the Format Migration sequence: single `ADR.md` → `docs/adr/`
   table-based files; prose status → two-row table; bullet exit gates → evidence table; ADR
@@ -794,8 +885,17 @@ check for every absent doc. Produce a structured gap list.
 3. **If UI project and new skills are available but not installed** (separate AskUserQuestion):
    - "Install impeccable (FE quality, 23 lifecycle commands) + modern-web-guidance (search/retrieve/list)?"
    - Yes (recommended) / impeccable only / modern-web-guidance only / Skip
+   - Either installed (now or before) → set up the design agent ("Permanent agents"), handing the
+     skills to an existing design agent if there is one.
 
-4. **If Standing rules predate the goal-directed-tasks bullet** (separate AskUserQuestion — same
+4. **Security skill** — unless already installed or `securitySkill` is `"never"`: run the
+   "Security skill" steps 2–3 (show source + sha, say it is a global install, ask). Yes → install,
+   verify, then set up the security agent per "Permanent agents" (only if none exists).
+
+5. **Update-check hook** — if `.claude/hooks/keel-update-check.mjs` is absent, offer it (same
+   wording as Phase 3's "Update-check hook").
+
+6. **If Standing rules predate the goal-directed-tasks bullet** (separate AskUserQuestion — same
    options and defaults as the "Goal-directed task execution & exit strategy" question in the
    Delivery/Ops interview round):
    - "Bounded retries, then escalate" (recommended) / "Persistent until met" / "Escalate on first
@@ -873,7 +973,10 @@ If phase scripts already exist:
 
 *Skill installation* (if approved in Phase U3) — follow the "FE skill integration" steps from
 the main keel Phase 3 generation. Check existing setup first; merge hooks into existing settings.json
-rather than overwriting; update skills-lock.json.
+rather than overwriting; update skills-lock.json. Security skill, permanent agents and the
+update-check hook (if approved in U3): the "Security skill", "Permanent agents" and "Update-check
+hook" steps from Phase 3. Workflow scripts whose Verify stage lacks the agents step: patch it in
+from the current `phase-template.js` / `change-template.js` (non-✅ phases only).
 
 **After all edits:** grep for any `{{PLACEHOLDER}}` introduced by the new content and fill them
 from project context already established during this session. Report any that couldn't be filled.
@@ -889,7 +992,8 @@ literal string "current":
   "budgets": { "AGENTS.md": 12288, "CLAUDE.md": 12288, "docs/IMPLEMENTATION_PLAN.md": 65536, "docs/adr/README.md": 16384 },
   "lastUpgraded": "{{ISO_DATE}}",
   "documentsGenerated": ["list of all docs present after upgrade"],
-  "skillsInstalled": ["impeccable", "modern-web-guidance"],
+  "skillsInstalled": ["impeccable", "modern-web-guidance", "security-audit"],
+  "agents": { "security": ".claude/agents/security.md", "design": ".claude/agents/design.md" },
   "upgradedGaps": ["list of gap IDs fixed"]
 }
 ```
@@ -967,7 +1071,9 @@ fabricate one). Commit: `docs(keel-2.0): U5 AGENTS.md canonical, CLAUDE.md impor
 
 **U6 — Scripts.** Replace `doc-sync.js`; add `change-template.js`; patch every non-✅ phase
 script with the Verify stage + ADR reservation; create `.keel/evidence/`. ✅ phases' scripts are
-left untouched (they are history). Commit: `docs(keel-2.0): U6 workflow scripts`.
+left untouched (they are history). Commit: `docs(keel-2.0): U6 workflow scripts`. Then apply
+whatever U3 approved for skills, the security skill, permanent agents and the update-check hook
+(U4 "Skill installation" — same steps).
 
 **U7 — Meta & report.** Write `.keel/meta.json` with `docFormat: 2`, `adrLayout: "per-file"`,
 `budgets` (defaults unless the user set them in U3), `lastUpgraded`, `upgradedGaps`, and

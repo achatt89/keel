@@ -131,6 +131,11 @@ ENGINEERING_DESIGN, ARCHITECTURE, HLD, LLD, ADR, parts of NFR.
   speaking to an AI"), and retention need explicit answers.
 - **Trust boundaries:** Where does untrusted input enter (user uploads, URLs, webhooks, LLM
   output)? What validation guards each boundary?
+- **Security skill (ask for anything that will be built):** Install Cloudflare's
+  **security-audit** skill and a permanent security agent that audits each branch's diff after dev
+  work? Follow SKILL.md "Security skill": show the source repo + commit sha, say plainly it is a
+  **global**, third-party install, and use `AskUserQuestion`: **Yes, install globally** / Not now /
+  Never for this project. Never install without a yes.
 - **Threats:** What's the attacker's prize? Top threats — data exfiltration, injection (incl.
   prompt injection), SSRF, abuse/cost-bombing, account takeover? What's currently unmitigated?
 - **Retention & deletion:** How long is data kept? How is it deleted on request? Any append-only /

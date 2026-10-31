@@ -3,6 +3,26 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.1.0] — 2026-10-31
+
+### Added
+- **Security skill offer.** New projects (Security round) and `/keel upgrade` (U3) offer Cloudflare's
+  `security-audit` skill: `npx skills add https://github.com/cloudflare/security-audit-skill --skill
+  security-audit --global`. Always asked first, with the source repo and commit sha shown and the
+  global, third-party scope stated; "Not now" is re-asked on the next upgrade, "Never" is recorded
+  (`securitySkill` in `.keel/meta.json`). Recorded in `skills-lock.json` with its ref.
+- **Permanent agents.** Each installed skill gets one owner: a `security` agent (audits each
+  branch's diff after dev work; a confirmed high/critical finding is an unmet gate) and a `design`
+  agent (impeccable + modern-web-guidance). An existing agent for the role is handed the skill;
+  otherwise keel asks the agent orchestrator to create one, or writes `.claude/agents/<role>.md`
+  from `templates/agents/`. The phase and change Verify stages call them when `.keel/meta.json`
+  `agents` lists them; evidence records gain a `security` block.
+- **Update check.** Every invocation compares `.keel/meta.json` `keelVersion` with the installed
+  skill (offline) and, best-effort once per session, with the published `plugin.json`; prints at
+  most one line. Read-only, no telemetry beyond that one GET. Skip with `KEEL_NO_UPDATE_CHECK=1`
+  or `"updateCheck": false`. Opt-in SessionStart hook `templates/keel-update-check.mjs` does the
+  same at session start (`--self-test` checks its version compare).
+
 ## [2.0.0] — 2026-09-20
 
 Shaped by a retrospective across four keel-documented production projects (mysha, interview-strategist,

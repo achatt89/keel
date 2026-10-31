@@ -36,7 +36,11 @@ Trigger: any HTML/CSS/JS/TS edit in docs/
 keel documents projects using the templates in references/templates/. The document it generates for this REPO (what you're reading) is itself a usage of the keel convention.
 
 ## Current status
-v2.0.0 — doc format 2, on branch `feat/keel-2.0` (not yet merged). Evidence ladder + deploy-state
+v2.1.0 — security-audit skill offer (global, ask-first, source + sha shown), permanent security and
+design agents (hand to an existing one, else orchestrator request or `.claude/agents/<role>.md`),
+Verify stage calls them, per-invocation update check + opt-in SessionStart hook. Merged to main.
+
+v2.0.0 — doc format 2 (merged). Evidence ladder + deploy-state
 ladder, per-file table-based ADRs (no addenda), AGENTS.md canonical keystone with byte budgets and
 doc-sync auto-archive, Verify stage writing `.keel/evidence/`, ADR reservation at scope, two work
 units (`/keel phase new`, `/keel change`) + `/keel closeout`, new DEPLOYMENT / CHANGELOG / SPIKE /

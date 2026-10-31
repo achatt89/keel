@@ -1,5 +1,5 @@
 {
-  "keelVersion": "2.0.0",
+  "keelVersion": "2.1.0",
   "docFormat": 2,
   "generatedAt": "{{YYYY-MM-DD}}",
   "lastUpgraded": null,
@@ -18,5 +18,8 @@
   "deployLogKeep": 10,
   "lastArchiveTrigger": null,
   "documentsGenerated": [],
-  "skillsInstalled": []
+  "skillsInstalled": [],
+  "securitySkill": null,
+  "agents": {},
+  "updateCheck": true
 }
