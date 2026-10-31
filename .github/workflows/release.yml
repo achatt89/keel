@@ -1,0 +1,48 @@
+name: Release feed
+
+# Keeps release.json / RELEASE.md in step with CHANGELOG.md and every version stamp.
+# On a keel--v* tag it also checks the tag matches the CHANGELOG version and (once enabled)
+# notifies the TLA-owned site repo with repository_dispatch.
+on:
+  push:
+    branches: [main]
+    tags: ['keel--v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-feed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # tags are needed for compareUrl
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Generator self-test
+        run: node scripts/release.mjs --self-test
+      - name: release.json, RELEASE.md and version stamps agree with CHANGELOG (and the tag)
+        run: node scripts/release.mjs --check
+
+      # DISABLED until the founder provides a token and says go. To enable:
+      #   1. add a fine-grained token with "Contents: read & write" (repository_dispatch) on the
+      #      site repo as the secret TLA_SITE_DISPATCH_TOKEN in this repo;
+      #   2. set TLA_SITE_REPO below to "<owner>/<repo>" (agreed with the site owner);
+      #   3. uncomment the step.
+      # Payload: event_type "keel-release"; client_payload = { version, tag, releaseJsonUrl }.
+      # The site fetches release.json at that tag (pinned, not main) and rebuilds.
+      #
+      # - name: Notify the TLA site
+      #   if: startsWith(github.ref, 'refs/tags/keel--v')
+      #   env:
+      #     TLA_SITE_REPO: OWNER/REPO
+      #     TOKEN: ${{ secrets.TLA_SITE_DISPATCH_TOKEN }}
+      #   run: |
+      #     VERSION=$(node -p "require('./release.json').version")
+      #     curl -fsS -X POST "https://api.github.com/repos/$TLA_SITE_REPO/dispatches" \
+      #       -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
+      #       -d "{\"event_type\":\"keel-release\",\"client_payload\":{\"version\":\"$VERSION\",\"tag\":\"$GITHUB_REF_NAME\",\"releaseJsonUrl\":\"https://raw.githubusercontent.com/$GITHUB_REPOSITORY/$GITHUB_REF_NAME/release.json\"}}"
