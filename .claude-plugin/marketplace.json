@@ -7,14 +7,14 @@
   },
   "metadata": {
     "description": "Keel — lay the foundational documentation suite for a greenfield software project through a guided, multi-persona interview.",
-    "version": "2.5.0"
+    "version": "2.5.1"
   },
   "plugins": [
     {
       "name": "keel",
       "source": "./plugins/keel",
-      "description": "Interview the founder about a new project idea, then generate the right set of foundational docs (CLAUDE.md, BRD, PRD, ARCHITECTURE, LLD, ADR, NFR, and more) ready to build from with Claude Code. Then keeps building on them: /keel phase new, /keel change, /keel closeout, /keel upgrade (incl. 1.x → 2.0 format migration), /keel archive, /keel version. v2.5.0: release.json + RELEASE.md generated from CHANGELOG on every release (schema v1), with a drift check across all version stamps.",
-      "version": "2.5.0",
+      "description": "Interview the founder about a new project idea, then generate the right set of foundational docs (CLAUDE.md, BRD, PRD, ARCHITECTURE, LLD, ADR, NFR, and more) ready to build from with Claude Code. Then keeps building on them: /keel phase new, /keel change, /keel closeout, /keel upgrade (incl. 1.x → 2.0 format migration), /keel archive, /keel version. v2.5.1: docs source in docs/site/*.md (18 pages with frontmatter) for keel.thelogicatelier.com; release feed from CHANGELOG with a drift check.",
+      "version": "2.5.1",
       "author": { "name": "Abhijit Chatterjee" },
       "keywords": [
         "documentation",

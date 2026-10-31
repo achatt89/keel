@@ -18,9 +18,14 @@ lead: Audit and bring older keel docs up to the current standard.   # one-line i
 group: Using keel                      # sidebar heading
 order: 15                              # position across the whole site (same as NN)
 slug: upgrade                          # URL /docs/<slug>/; default: file name without NN-
-anchor: upgrade                        # the old docs/index.html #section id, for the cutover redirect map
+anchor: upgrade                        # the hash in old URLs (achatt89.github.io/keel/#upgrade), without '#'
 ---
 ```
+
+Old URLs also use four group hashes with no page of their own — `#introduction`,
+`#getting-started`, `#how-it-works`, `#document-reference` — which go to the first page of that group.
+
+**Until cutover both are live:** a docs change edits the page here AND `docs/index.html`.
 
 Release notes are not pages here: the site reads `release.json` (schema
 `schemas/release-v1.schema.json`).
