@@ -3,6 +3,17 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.5.4] — 2026-10-31
+
+The doc-size checker no longer overrides an explicit ADR index budget silently.
+
+### Fixed
+- **ADR index budget explained.** The budget for `docs/adr/README.md` is the larger of its
+  `.keel/meta.json` `budgets` entry and 320 B per ADR, since the index must list every ADR. When
+  the ADR count wins, the verdict reason now says so: `ADR index, budget 320 B × 129 ADRs
+  (overrides budgets["docs/adr/README.md"] = 16384 B, which is only a floor)`. Found on cortextOS
+  (16384 listed, 41280 used). The 16 KB default is documented as a floor; self-test fixture added.
+
 ## [2.5.3] — 2026-10-31
 
 Update notices now appear only for releases that change something you use.

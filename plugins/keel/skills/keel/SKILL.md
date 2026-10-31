@@ -25,8 +25,8 @@ description: >
   "what version of keel is this", "check keel version", "is my keel up to date", "which keel
   version generated these docs", "check for keel updates").
 metadata:
-  version: 2.5.3
-  userVersion: 2.5.3
+  version: 2.5.4
+  userVersion: 2.5.4
 license: MIT
 ---
 
@@ -208,7 +208,7 @@ needs** — the environment matrix (local / dev / staging / prod: host, region, 
 the promotion path and the gate at each hop, which config is build-time vs runtime (the class of
 failure this prevents: a test payment key baked into a production build), who may deploy to
 production, and the concrete post-deploy checks that make "live-verified" a checklist. Ask for
-byte budgets too (defaults: keystone 12KB, IMPLEMENTATION_PLAN 64KB, ADR index 16KB, every other
+byte budgets too (defaults: keystone 12KB, IMPLEMENTATION_PLAN 64KB, ADR index 16KB as a floor that grows 320 B per ADR, every other
 doc 32KB) — they go in `.keel/meta.json` and doc-sync enforces them (archive, then split).
 
 ### Phase 2 — Propose the document set

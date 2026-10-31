@@ -16,7 +16,7 @@
 // A SPLIT doc is any NAME.md with a "## Parts" heading AND a sibling folder name/ (nested too:
 // docs/adr/README.md → docs/adr/readme/). A redirect stub ("# X → moved") and the per-file ADR
 // directory are never split parents. Budget = budgets[path] ?? defaultBudget ?? 32768; the ADR index
-// grows 320 B per ADR. Exit 1 only on link errors (part not linked from parent / no link back).
+// grows 320 B per ADR (a budgets entry is a floor; the checker says when the ADR count overrides it). Exit 1 only on link errors (part not linked from parent / no link back).
 // Links count inline, reference-style, file-relative and repo-absolute (/docs/x.md).
 // ADR files are immutable: --split never rewrites them; anchors they cite stay findable via the
 // index's "Moved sections" list.
@@ -140,6 +140,9 @@ export function check(root, { afterArchive = false, now = Date.now() } = {}) {
     seen.add(f)
     const text = read(root, f), size = bytes(text)
     const isAdrIndex = f === `${adrDir}/README.md`
+    // ADR index budget = max(budgets entry, 320 B × ADRs): the entry is a floor; say when the ADR count overrides it
+    const stale = isAdrIndex && budgets[f] != null && budgets[f] < adrCount * ADR_ROW
+      ? ` (overrides budgets["${f}"] = ${budgets[f]} B, which is only a floor)` : ''
     if (isAdrIndex) budget = Math.max(budget, adrCount * ADR_ROW)
     const r = { file: f, size, budget, part: part || null }
     const w = waivers[f]
@@ -147,14 +150,14 @@ export function check(root, { afterArchive = false, now = Date.now() } = {}) {
     else if (isStub(text)) Object.assign(r, { verdict: 'ok', reason: 'redirect stub: never split, never a split parent' })
     else if (size <= budget) {
       const left = budget - size
-      Object.assign(r, { verdict: 'ok', reason: isAdrIndex && adrCount ? `ADR index, budget ${ADR_ROW} B × ${adrCount} ADRs` :
+      Object.assign(r, { verdict: 'ok', reason: isAdrIndex && adrCount ? `ADR index, budget ${ADR_ROW} B × ${adrCount} ADRs${stale}` :
         left < Math.max(256, budget * 0.02) ? `tight: ${left} B left — move content out before adding` : '' })
     } else if (w && !(w.max && size > w.max)) {
       const due = !w.reviewed || now - Date.parse(w.reviewed) > reviewDays * day
       Object.assign(r, { verdict: 'waived', reason: `${w.reason}${due ? ` — review due${w.legacy ? ' (legacy budgetExceptions entry: move to "waivers" with a reviewed date)' : ''}` : ` (reviewed ${w.reviewed})`}` })
     } else if (KEYSTONE.has(f)) Object.assign(r, { verdict: 'archive', reason: `keystone, never split: archive closed detail, then move whole sections out (node .keel/doc-size.mjs --move-out ${f} "<section>") — do not compress wording` })
     else if (isGenerated(text)) Object.assign(r, { verdict: 'manual', reason: 'generated file: shrink its generator or add a waiver — a split would be overwritten' })
-    else if (isAdrIndex) Object.assign(r, { verdict: 'manual', reason: `ADR index over ${ADR_ROW} B per ADR: shorten row titles or add a waiver — never split an index` })
+    else if (isAdrIndex) Object.assign(r, { verdict: 'manual', reason: `ADR index over ${ADR_ROW} B per ADR: shorten row titles or add a waiver — never split an index${stale}` })
     else if (ARCHIVABLE.has(f) && !afterArchive) Object.assign(r, { verdict: 'archive', reason:
       (f.endsWith('IMPLEMENTATION_PLAN.md') ? 'move done phases to PHASE_ARCHIVE; if open deferred rows dominate run /keel closeout' : 'move closed entries to its archive') + '; split only if still over after that' })
     else if (plan(text, !!part) && !(hasParts(text) && !part && plan(text, false)?.secs?.length === 0))
@@ -398,7 +401,7 @@ if (process.argv.includes('--self-test')) {
   if (bad.length || !k.ok || k.families.length !== 2 || Object.keys(kv).some(f => ADR_FILE.test(f)) ||
     !/tight/.test(kv['AGENTS.md'].reason) || !/review due.*legacy/.test(kv['docs/IMPLEMENTATION_PLAN.md'].reason) ||
     !/redirect stub/.test(kv['docs/ADR.md'].reason) || !/reviewed 2026-10-01/.test(kv['docs/SOC2_CONTROLS.md'].reason) ||
-    !/320 B × 60/.test(kv['docs/adr/README.md'].reason) ||
+    !/320 B × 60 ADRs \(overrides budgets\["docs\/adr\/README\.md"\] = 2000 B, which is only a floor/.test(kv['docs/adr/README.md'].reason) ||
     k.files.length !== new Set(k.files.map(f => f.file)).size) fail('upgrade cases', { bad, k })
   // issue 11: keystone over budget → move whole sections out, never compress; --move-out does it
   wq('AGENTS.md', '# A\n\nIntro.\n\n## Rules\n\nkeep\n\n## Delegation\n\n' + 'd'.repeat(1100) + '\n')

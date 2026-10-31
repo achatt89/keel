@@ -175,7 +175,7 @@ linked from its parent, or with no link back, fails the check. Mechanics:
 |---|---|
 | Archive (`*ARCHIVE*`, `LEGACY_*`, anything under `archive/`, or listed in meta `"archives"`) | `ok` always — append-only history, never budgeted, `--split` refuses it |
 | Keystone (`AGENTS.md`, `CLAUDE.md`) | never split; over → `archive`, then move sections out (above). Under 2% headroom → `ok` with "tight" |
-| ADR index (`docs/adr/README.md`) | budget grows 320 B per `ADR-*.md` file (an index must list every ADR); still over → `manual`, never split |
+| ADR index (`docs/adr/README.md`) | budget = the larger of its `budgets` entry and 320 B per `ADR-*.md` file (an index must list every ADR; the reason says when the count overrides the entry); still over → `manual`, never split |
 | Plan / changelog / runbook / deployment | over → `archive` first; `split` only on the re-check after archiving (`--after-archive`) |
 | Generated file (header says auto-generated / do not edit) | over → `manual` (a split would be overwritten) |
 | No `##`/`###` headings, or an index whose Parts table alone is too big | over → `manual` |

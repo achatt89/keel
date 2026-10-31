@@ -31,7 +31,7 @@
     </a>
 
     <div class="header-actions">
-      <span class="version-badge" aria-label="Version 2.5.3">v2.5.3</span>
+      <span class="version-badge" aria-label="Version 2.5.4">v2.5.4</span>
       <a
         href="https://github.com/achatt89/keel"
         class="github-link"
@@ -907,7 +907,7 @@ needs from caller: &lt;decisions, or none&gt;</code></pre>
           </tbody>
         </table>
         </div>
-        <p>The ADR index's budget grows by 320&nbsp;bytes for each decision record, since it must list them all. A folder next to a doc counts as a split only when the doc has a <code>## Parts</code> heading, and a redirect stub (<code># ADR.md → moved</code>) or the decision-record folder never does. Split docs nested deeper, such as <code>docs/adr/README.md</code>, are checked too, and every file is measured once. Links are recognised in inline, reference and repo-absolute (<code>/docs/x.md</code>) form.</p>
+        <p>The ADR index's budget is the larger of its <code>budgets</code> entry and 320&nbsp;bytes for each decision record, since it must list them all; when the count wins, the reason says it overrides the entry, so a smaller number in <code>.keel/meta.json</code> is never ignored silently. A folder next to a doc counts as a split only when the doc has a <code>## Parts</code> heading, and a redirect stub (<code># ADR.md → moved</code>) or the decision-record folder never does. Split docs nested deeper, such as <code>docs/adr/README.md</code>, are checked too, and every file is measured once. Links are recognised in inline, reference and repo-absolute (<code>/docs/x.md</code>) form.</p>
         <ul class="feature-list" role="list">
           <li>
             <span class="feature-key">Folder</span>
