@@ -25,7 +25,7 @@ if ((app.match(/skill\.description/g) || []).length !== (raw.match(/skill\.descr
   bad.push('App.jsx: skill.description rendered outside <details className="kd-raw">');
 
 // 2. House style in Keel's own prose (docs pages, Skills summary, Commands): no em or en dashes, no contractions,
-// no '&' in titles. Code (fenced or `inline`) is exempt; so is a phrase a user says aloud ("let's lay the foundations").
+// no ' & ' in prose (titles included). Code (fenced or `inline`) is exempt; so is a phrase a user says aloud ("let's lay the foundations").
 // Not prose: release.json notes (the changelog) and the ADR example/templates (Keel's output format, kept verbatim).
 const prose = (t) => t.replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '');
 const CONTRACTION = /\b(\w+n't|\w+'(re|ll|ve|m|d)|(it|that|what|there|here|who|where)'s)\b/gi;
@@ -33,11 +33,11 @@ for (const f of [...docs.map((d) => `docs/site/${d}`), 'docs/site/skill.md', 'do
   const t = prose(read(f));
   for (const m of t.matchAll(/—|–|&mdash;|&ndash;/g)) bad.push(`${f}: dash "${t.slice(Math.max(0, m.index - 25), m.index + 10).replace(/\n/g, ' ')}"`);
   for (const m of t.matchAll(CONTRACTION)) bad.push(`${f}: contraction "${m[0]}"`);
-  const title = t.match(/^title:\s*(.*)$/m)?.[1];
-  if (title?.includes('&')) bad.push(`${f}: '&' in title ${title}`);
+  for (const m of t.matchAll(/ & /g)) bad.push(`${f}: '&' in prose "${t.slice(Math.max(0, m.index - 25), m.index + 10).replace(/\n/g, ' ')}"`);
 }
 
-// 3. Leads and internal links.
+// 3. Leads and internal links. A ./NN-page.md link is valid only because App.jsx pageLinks rewrites it to /docs/<slug>/.
+if (!/const pageLinks = [\s\S]*?pageLinks\(marked\.parse/.test(app)) bad.push('App.jsx: pageLinks no longer rewrites ./NN-page.md links');
 const slugs = new Map(); // file -> slug
 for (const f of docs) {
   const fm = read(`docs/site/${f}`).match(/^---\n([\s\S]*?)\n---/)?.[1] ?? '';

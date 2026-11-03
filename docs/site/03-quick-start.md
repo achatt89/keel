@@ -22,4 +22,4 @@ Restart Claude Code after installation. Then, in any project folder, tell Claude
 
 Keel will run an intake to understand your idea and ask how far the project goes: Prototype, MVP or Platform. That choice decides how many documents you get. Then it moves through a staged panel of expert personas, each one building on what was said before. At the end, it proposes a doc set, generates everything with cross-references wired in, and optionally runs a threat-modeling pass.
 
-Set aside a focused session.
+Set aside a focused session for the interview.

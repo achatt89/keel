@@ -19,7 +19,7 @@ Claude Code will route this to Keel automatically.
 
 Open your target project folder (or an empty folder for a new project) in Claude Code, then describe your idea. Keel will run through its full flow:
 
-1. **Intake:** reflect the idea back, establish ambition tier
+1. **Intake:** reflect the idea back, and agree how far the project goes
 2. **Interview:** six staged persona interviews (see [The Interview](./08-the-interview.md))
 3. **Proposed doc set:** tailored to your project's complexity
 4. **Generation:** documents written with cross-references wired in

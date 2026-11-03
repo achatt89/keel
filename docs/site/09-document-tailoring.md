@@ -7,7 +7,7 @@ slug: document-tailoring
 anchor: document-tailoring
 ---
 
-## By ambition tier
+## By how far the project goes
 
 - **Prototype:** `CLAUDE.md` + `README`, possibly a lightweight PRD if the idea needs clarifying before building.
 - **MVP:** full requirements suite (`BRD`, `PRD`), architecture, engineering design, and an implementation plan with concrete exit gates.

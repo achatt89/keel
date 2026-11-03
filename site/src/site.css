@@ -52,3 +52,5 @@ body { background: var(--tla-bg); color: var(--tla-ink); font-family: var(--tla-
 .kd-file code { font: 400 0.9em var(--tla-font-mono); color: var(--tla-ink-muted); }
 .kd-raw { margin-top: var(--tla-space-6); border-top: var(--tla-dim-1) solid var(--tla-rule); padding-top: var(--tla-space-4); }
 .kd-raw p { color: var(--tla-ink-muted); font-size: 0.95em; }
+/* Install commands wrap at phone width instead of hiding behind a sideways scroll; copying still gives one line each. */
+.kd-code.kd-wrap { white-space: pre-wrap; overflow-wrap: anywhere; }

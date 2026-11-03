@@ -145,7 +145,7 @@ const Install = () => {
     <>
       {methods.map((m) => (
         <TLAPanel key={m.id} bar={`${tool?.name ?? 'Claude Code'} · ${m.label}`} barRight={m.shell ? 'terminal' : 'in Claude Code'}>
-          <pre className="kd-code">{m.commands.join('\n')}</pre>
+          <pre className="kd-code kd-wrap">{m.commands.join('\n')}</pre>
         </TLAPanel>
       ))}
       {tool?.start && <p className="kd-muted">Then run <code>{tool.start}</code>. {release.install.note}</p>}

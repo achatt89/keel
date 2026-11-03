@@ -59,4 +59,4 @@ Every writer finds the right file the same way: `node .keel/doc-size.mjs --where
 - **Merged changes**: Changes-table rows already merged or deployed, beyond the most recent ten.
 - **Superseded decisions**: An ADR marked superseded keeps its ID and index row; its body moves.
 - **Keystone drift**: Anything in AGENTS.md beyond the keystone-index job: stacked status history, sections duplicating a doc they point at.
-- **Old releases & closed postmortems**: CHANGELOG sections older than the last three releases; postmortems whose prevention has landed and are older than 90 days.
+- **Old releases and closed postmortems**: CHANGELOG sections older than the last three releases; postmortems whose prevention has landed and are older than 90 days.
