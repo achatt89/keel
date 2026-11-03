@@ -3,7 +3,7 @@ import { marked } from 'marked';
 import {
   TLABadge, TLAContainer, TLAHeader, TLALogo, TLAModeToggle, TLAPanel, TLASection, useTLAViewMode,
 } from '@thelogicatelier/ui';
-import { adr, adrExample, anchorToSlug, commands, groups, pages, release, skill } from './content.js';
+import { adr, adrExample, anchorToSlug, commands, groups, pages, release, skill, skillSummary } from './content.js';
 
 const BASE = import.meta.env.BASE_URL; // '/keel/' or '/'
 const href = (p = '') => BASE + p;
@@ -110,6 +110,8 @@ const pageLinks = (html) => html.replace(/href="\.\/(\d+-[\w-]+\.md)(#[^"]*)?"/g
   const p = pages.find((x) => x.file === f);
   return p ? `href="${href(`docs/${p.slug}/`)}${hash}"` : m;
 });
+// Leads come from frontmatter and may hold entities (&mdash;) or `code`: render them, never print them as text.
+const Lead = ({ text }) => <p className="kd-lead" dangerouslySetInnerHTML={{ __html: marked.parseInline(text || '') }} />;
 const Md = ({ text, fills, file }) => {
   const html = useMemo(() => {
     let h = pageLinks(marked.parse(text));
@@ -154,7 +156,7 @@ const Install = () => {
 const Home = () => (
   <>
     <h1>Keel</h1>
-    <p className="kd-lead">{pages[0].lead}</p>
+    <Lead text={pages[0].lead} />
     <p><TLABadge>v{release.latest}</TLABadge> <span className="kd-muted">{release.summary}</span></p>
     <Install />
     <h2>Start here</h2>
@@ -170,7 +172,7 @@ const Doc = ({ page }) => {
     <article>
       <p className="kd-muted">{page.group}</p>
       <h1>{page.title}</h1>
-      <p className="kd-lead">{page.lead}</p>
+      <Lead text={page.lead} />
       <Md text={page.body} />
       <nav className="kd-pager" aria-label="Previous and next page">
         {pages[i - 1] ? <a href={href(`docs/${pages[i - 1].slug}/`)}>← {pages[i - 1].title}</a> : <span />}
@@ -197,10 +199,15 @@ const Commands = () => (
 const Skills = () => (
   <>
     <h1>Skills</h1>
-    <p className="kd-lead">Keel ships one skill.</p>
+    <p className="kd-lead">Keel ships one skill. This is what it does, and every mode it has.</p>
     <section className="kd-card">
       <h2>{skill.name} <TLABadge>v{skill.userVersion || skill.version}</TLABadge></h2>
-      <p>{skill.description}</p>
+      <Md text={skillSummary} />
+      <details className="kd-raw">
+        <summary>Exactly what Claude reads</summary>
+        <p>The text below is the skill's own description: the words Claude Code matches your request against when it decides to run keel. It is written for the machine, which is why it reads like a list of phrases.</p>
+        <p>{skill.description}</p>
+      </details>
     </section>
   </>
 );
@@ -208,7 +215,7 @@ const Skills = () => (
 const Adr = () => (
   <>
     <h1>Architecture decision records</h1>
-    <p className="kd-lead">The ADR format keel writes into a project: the index, and one record.</p>
+    <p className="kd-lead">The decision record Keel writes into a project: a worked example first, then the blank it starts from.</p>
     <h2>Example: Larder</h2>
     <p>What keel writes for Larder, a made-up meal-planning app.</p>
     <p className="kd-file">The index · <code>docs/adr/README.md</code></p>
@@ -217,7 +224,7 @@ const Adr = () => (
     <Md text={adrExample.record} file />
     <section className="kd-template" aria-labelledby="adr-template">
       <h2 id="adr-template">Template</h2>
-      <p>The files keel starts from. Each <mark className="kd-fill">{'{{fill-in}}'}</mark> is a blank keel completes from your interview answers.</p>
+      <p>This is the file before your answers go in. Each highlighted blank is filled from your interview.</p>
       <p className="kd-file">The index · <code>docs/adr/README.md</code></p>
       <Md text={adr.index} file fills />
       <p className="kd-file">One record · <code>docs/adr/ADR-NNN-slug.md</code></p>

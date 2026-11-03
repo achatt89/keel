@@ -1,6 +1,6 @@
 ---
 title: "Verify & First Run"
-lead: ""
+lead: "Two ways to check the skill is installed, and what the first run does from start to handoff."
 group: "Getting Started"
 order: 7
 slug: verify-first-run

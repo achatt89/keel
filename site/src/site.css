@@ -50,3 +50,5 @@ body { background: var(--tla-bg); color: var(--tla-ink); font-family: var(--tla-
   border-radius: var(--tla-dim-2, 2px); padding: 0 0.2em; font: 0.9em var(--tla-font-mono); box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .kd-file { margin: var(--tla-space-8) 0 0; padding-top: var(--tla-space-4); border-top: var(--tla-dim-1) solid var(--tla-rule); font-weight: 600; }
 .kd-file code { font: 400 0.9em var(--tla-font-mono); color: var(--tla-ink-muted); }
+.kd-raw { margin-top: var(--tla-space-6); border-top: var(--tla-dim-1) solid var(--tla-rule); padding-top: var(--tla-space-4); }
+.kd-raw p { color: var(--tla-ink-muted); font-size: 0.95em; }

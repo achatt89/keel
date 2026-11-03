@@ -62,6 +62,10 @@ export const skill = {
 import commandsFile from '../../docs/site/commands.json';
 export const commands = commandsFile.commands;
 
+// Skills page prose, written for visitors (docs/site/skill.md). SKILL.md's description is for Claude to match against.
+import skillSummary from '../../docs/site/skill.md?raw';
+export { skillSummary };
+
 // The record template's guidance quotes '<!-- Keel guidance -->' inside its own comment; drop that first.
 const stripGuidance = (t) => t.replace(/<!-- Keel guidance -->/g, '').replace(/<!--[\s\S]*?-->\n*/g, '');
 export const adr = { index: stripGuidance(adrIndexRaw), record: stripGuidance(adrRecordRaw) };
