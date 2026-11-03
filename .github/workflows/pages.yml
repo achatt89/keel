@@ -1,41 +1,24 @@
-name: Deploy GitHub Pages
-
+# Keel docs site (site/) -> GitHub Pages at keel.thelogicatelier.com (base /, CNAME written by the build).
+# Replaced the old docs/ upload at cutover (founder OK 3 Nov). DNS: CNAME keel -> achatt89.github.io.
+name: Docs site
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'docs/**'
-      - '.github/workflows/pages.yml'
+  push: { branches: [main], paths: ['site/**', 'docs/site/**', 'release.json', 'plugins/keel/skills/keel/**', '.github/workflows/pages.yml'] }
   workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
+permissions: { contents: read, pages: write, id-token: write, packages: read }
+concurrency: { group: pages, cancel-in-progress: true }
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    environment: { name: github-pages, url: '${{ steps.d.outputs.page_url }}' }
+    defaults: { run: { working-directory: site } }
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs
-
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, registry-url: 'https://npm.pkg.github.com', scope: '@achatt89' }
+      - run: npm ci
+        env: { NODE_AUTH_TOKEN: '${{ secrets.GITHUB_TOKEN }}' } # the package must grant achatt89/keel read access
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: site/dist }
+      - id: d
         uses: actions/deploy-pages@v4
