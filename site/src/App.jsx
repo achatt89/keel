@@ -47,6 +47,8 @@ const wrapTables = (html) => {
     box.append(table);
     // Below 600px each row stacks as a card; every cell carries its column name for that layout.
     const heads = [...table.querySelectorAll('thead th')].map((th) => th.textContent.trim());
+    const firsts = [...table.querySelectorAll('tr > :first-child')].map((c) => c.textContent.trim().length);
+    if (Math.max(...firsts) <= 24) table.classList.add('kd-short-first');
     for (const tr of table.querySelectorAll('tbody tr')) [...tr.children].forEach((td, i) => {
       if (heads[i]) td.setAttribute('data-label', heads[i]);
       const cell = document.createElement('span'); // one grid item per cell in the card layout

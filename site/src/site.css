@@ -23,7 +23,7 @@ body { background: var(--tla-bg); color: var(--tla-ink); font-family: var(--tla-
 .kd-prose th, .kd-prose td { border-bottom: var(--tla-dim-1) solid var(--tla-rule); padding: 0.5rem; text-align: left; vertical-align: top;
   overflow-wrap: normal; word-break: normal; hyphens: manual; }
 .kd-prose td:last-child { min-width: 18ch; }
-.kd-prose th:first-child, .kd-prose td:first-child { white-space: nowrap; } /* short label column: one line */
+.kd-prose .kd-short-first :is(th, td):first-child { white-space: nowrap; } /* a short label column stays on one line */
 .kd-nobr { white-space: nowrap; }
 @media (max-width: 600px) {
   .kd-prose .kd-table thead { display: none; }
