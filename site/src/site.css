@@ -24,6 +24,13 @@ body { background: var(--tla-bg); color: var(--tla-ink); font-family: var(--tla-
   overflow-wrap: normal; word-break: normal; hyphens: manual; }
 .kd-prose td:last-child { min-width: 18ch; }
 .kd-nobr { white-space: nowrap; }
+@media (max-width: 600px) {
+  .kd-prose .kd-table thead { display: none; }
+  .kd-prose .kd-table table, .kd-prose .kd-table tbody, .kd-prose .kd-table tr { display: block; }
+  .kd-prose .kd-table tr { border-bottom: var(--tla-dim-1) solid var(--tla-rule); padding: var(--tla-space-2) 0; }
+  .kd-prose .kd-table td { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: var(--tla-space-3); border: 0; padding: 0.25rem 0; min-width: 0; }
+  .kd-prose .kd-table td::before { content: attr(data-label); font-weight: 600; color: var(--tla-ink-muted); }
+}
 .kd-card { border-top: var(--tla-dim-1) solid var(--tla-rule); padding: var(--tla-space-6) 0; }
 .kd-card h2 { margin-top: 0; }
 .kd-card summary { cursor: pointer; font-weight: 600; }

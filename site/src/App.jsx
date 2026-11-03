@@ -45,6 +45,14 @@ const wrapTables = (html) => {
     box.className = 'kd-table';
     table.replaceWith(box);
     box.append(table);
+    // Below 600px each row stacks as a card; every cell carries its column name for that layout.
+    const heads = [...table.querySelectorAll('thead th')].map((th) => th.textContent.trim());
+    for (const tr of table.querySelectorAll('tbody tr')) [...tr.children].forEach((td, i) => {
+      if (heads[i]) td.setAttribute('data-label', heads[i]);
+      const cell = document.createElement('span'); // one grid item per cell in the card layout
+      cell.append(...td.childNodes);
+      td.append(cell);
+    });
     const walk = document.createTreeWalker(table, NodeFilter.SHOW_TEXT);
     const nodes = [];
     while (walk.nextNode()) if (/\S-\S/.test(walk.currentNode.data)) nodes.push(walk.currentNode);
