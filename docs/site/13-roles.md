@@ -1,5 +1,5 @@
 ---
-title: "Roles & Delegation"
+title: "Roles and Delegation"
 lead: "Three jobs must happen after every piece of work: the docs get updated, the change gets a security review, and UI work gets a design review. Keel gives each job one owner and makes the agent doing the work responsible for checking the result."
 group: "How It Works"
 order: 13
@@ -21,7 +21,7 @@ If the project already has a full-time agent for a role (a doc or architect agen
 
 The agent doing the work is the **caller**. It delegates to a role, reads the report that comes back, and decides what happens next: accept, ask for a specific fix, or escalate. Subagents never commit, push, merge, or message anyone but their caller; the caller commits. If the caller has its own supervisor or orchestrator, it keeps reporting upward exactly as before.
 
-Every role ends its reply with the same fixed block, so callers can read it reliably:
+Every role ends its reply with the same block, so the caller can read it without guessing.
 
 ```
 ## Report

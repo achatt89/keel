@@ -1,14 +1,14 @@
 ---
 title: "What is Keel?"
-lead: "In shipbuilding, the keel is the first structural member laid down; every other part of the vessel attaches to it. These documents are that keel for a software project: the load-bearing spec that you (working with Claude Code) construct the actual product from."
+lead: "Keel is a Claude Code skill. It interviews you about a new project, then writes the documents you build it from: only the ones your project needs, each fact in one place, weaknesses already fixed in the design."
 group: "Introduction"
 order: 1
 slug: what-is-keel
 anchor: what-is-keel
 ---
 
-Keel is a Claude Code skill that interviews you about a greenfield idea through a rotating panel of expert personas, then generates a tailored, cross-referenced suite of foundational documents you can build from.
+You describe the idea. Keel asks questions, taking one seat at a time: Business Analyst, Product Manager, Architect, Security and Compliance, Designer, Delivery and Operations. Every follow-up depends on your last answer, and a weak assumption gets challenged rather than written down.
 
-Instead of asking you to fill in a template or write a brief before you code, Keel shows up as a conversation partner, one that challenges weak assumptions and synthesises your answers into a coherent spec before a single line of code is written.
+In shipbuilding, the keel is the first part laid down, and every other part of the vessel attaches to it. These documents are the keel of a software project: the load-bearing spec that you, working with Claude Code, build the product from.
 
-> Keel is optimised for use with Claude Code as the primary build agent. The documentation it generates is structured to serve as a durable source of truth for AI-assisted development.
+The documents are written to be read by the build agent. AGENTS.md is the keystone index and CLAUDE.md imports it. Every other document hangs off it by a stable reference, so the spec stays the source of truth while the code is written.

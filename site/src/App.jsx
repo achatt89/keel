@@ -157,7 +157,7 @@ const Home = () => (
   <>
     <h1>Keel</h1>
     <Lead text={pages[0].lead} />
-    <p><TLABadge>v{release.latest}</TLABadge> <span className="kd-muted">{release.summary}</span></p>
+    <p><TLABadge>v{release.latest}</TLABadge> <span className="kd-muted">Latest release, {new Date(release.date + 'T00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}. {release.headline || release.summary}</span></p>
     <Install />
     <h2>Start here</h2>
     <ul className="kd-links">

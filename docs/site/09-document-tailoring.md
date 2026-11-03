@@ -9,9 +9,9 @@ anchor: document-tailoring
 
 ## By ambition tier
 
-- **Weekend prototype:** `CLAUDE.md` + `README`, possibly a lightweight PRD if the idea needs clarifying before building.
-- **Product / MVP:** full requirements suite (`BRD`, `PRD`), architecture, engineering design, and an implementation plan with concrete exit gates.
-- **Platform / regulated:** everything above plus `NFR`, `COMPLIANCE`, `THREAT_MODEL`, `RUNBOOK`, and optionally an `almanac/` knowledge base.
+- **Prototype:** `CLAUDE.md` + `README`, possibly a lightweight PRD if the idea needs clarifying before building.
+- **MVP:** full requirements suite (`BRD`, `PRD`), architecture, engineering design, and an implementation plan with concrete exit gates.
+- **Platform:** everything above plus `NFR`, `COMPLIANCE`, `THREAT_MODEL`, `RUNBOOK`, and optionally an `almanac/` knowledge base.
 
 ## Cross-references and stable IDs
 

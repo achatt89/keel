@@ -1,5 +1,5 @@
 ---
-title: "Verify & First Run"
+title: "Verify and First Run"
 lead: "Two ways to check the skill is installed, and what the first run does from start to handoff."
 group: "Getting Started"
 order: 7
@@ -26,4 +26,4 @@ Open your target project folder (or an empty folder for a new project) in Claude
 5. **Threat-model pass** (optional)
 6. **Handoff:** reading order, open decisions, first build step
 
-> **Note:** The interview is where the value is created. A focused 30 to 60 minute session will produce a far stronger spec than rushing through the questions.
+> **Note:** A focused 30 to 60 minute session will produce a far stronger spec than rushing through the questions.

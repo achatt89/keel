@@ -14,7 +14,7 @@ plugins/keel/
 ├── .claude-plugin/
 │   └── plugin.json          # plugin manifest (name, version, author)
 └── skills/keel/
-    ├── SKILL.md              # the skill definition (the agent's brain)
+    ├── SKILL.md              # the instructions the agent follows
     └── references/
         ├── personas.md        # interview persona definitions
         ├── catalog.md         # document catalog and selection rules
