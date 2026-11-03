@@ -6,7 +6,7 @@ import { DOMAIN, routes } from './route-list.mjs';
 
 const dist = 'dist';
 const shell = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
-const esc = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+const esc = (s) => s.replace(/&(?![a-z]+;|#\d+;)/gi, '&amp;') // keep entities already in frontmatter (&mdash;).replace(/"/g, '&quot;').replace(/</g, '&lt;');
 const url = (p) => `https://${DOMAIN}/${p ? p + '/' : ''}`;
 const page = (r) => {
   if (!DOMAIN) return shell;
