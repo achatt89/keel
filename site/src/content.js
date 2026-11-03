@@ -59,5 +59,6 @@ export const skill = {
 import commandsFile from '../../docs/site/commands.json';
 export const commands = commandsFile.commands;
 
-const stripGuidance = (t) => t.replace(/<!--[\s\S]*?-->\n*/g, '');
+// The record template's guidance quotes '<!-- Keel guidance -->' inside its own comment; drop that first.
+const stripGuidance = (t) => t.replace(/<!-- Keel guidance -->/g, '').replace(/<!--[\s\S]*?-->\n*/g, '');
 export const adr = { index: stripGuidance(adrIndexRaw), record: stripGuidance(adrRecordRaw) };

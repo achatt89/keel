@@ -34,7 +34,38 @@ const useRoute = () => {
   return path;
 };
 
-const Md = ({ text }) => <div className="kd-prose" dangerouslySetInnerHTML={{ __html: useMemo(() => marked.parse(text), [text]) }} />;
+// Wide tables scroll inside their own box; the page never scrolls sideways. In cells a hyphenated word
+// ('doc-sync') stays whole: CSS can forbid breaks inside a word but not at its hyphen.
+const wrapTables = (html) => {
+  if (!html.includes('<table>')) return html;
+  const t = document.createElement('template');
+  t.innerHTML = html;
+  for (const table of t.content.querySelectorAll('table')) {
+    const box = document.createElement('div');
+    box.className = 'kd-table';
+    table.replaceWith(box);
+    box.append(table);
+    // Below 600px each row stacks as a card; every cell carries its column name for that layout.
+    const heads = [...table.querySelectorAll('thead th')].map((th) => th.textContent.trim());
+    const firsts = [...table.querySelectorAll('tr > :first-child')].map((c) => c.textContent.trim().length);
+    if (Math.max(...firsts) <= 24) table.classList.add('kd-short-first');
+    for (const tr of table.querySelectorAll('tbody tr')) [...tr.children].forEach((td, i) => {
+      if (heads[i]) td.setAttribute('data-label', heads[i]);
+      const cell = document.createElement('span'); // one grid item per cell in the card layout
+      cell.append(...td.childNodes);
+      td.append(cell);
+    });
+    const walk = document.createTreeWalker(table, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walk.nextNode()) if (/\S-\S/.test(walk.currentNode.data)) nodes.push(walk.currentNode);
+    for (const n of nodes) {
+      const parts = n.data.split(/(\S*\S-\S\S*)/);
+      n.replaceWith(...parts.map((p, i) => (i % 2 ? Object.assign(document.createElement('span'), { className: 'kd-nobr', textContent: p }) : p)));
+    }
+  }
+  return t.innerHTML;
+};
+const Md = ({ text }) => <div className="kd-prose" dangerouslySetInnerHTML={{ __html: useMemo(() => wrapTables(marked.parse(text)), [text]) }} />;
 
 const NAV = [['docs/what-is-keel', 'Docs'], ['commands', 'Commands'], ['skills', 'Skills'], ['adr', 'ADRs'], ['releases', 'Releases']];
 
