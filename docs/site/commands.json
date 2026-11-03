@@ -1,0 +1,19 @@
+{
+  "//": "User-facing list of /keel commands for the docs site. Edit with SKILL.md's mode headings; keep usage strings identical.",
+  "commands": [
+    { "name": "New project", "usage": ["/keel"],
+      "summary": "Interviews you about a new idea, then writes a tailored, cross-referenced set of docs to build from: AGENTS.md and CLAUDE.md, requirements, architecture, decision records, plan, deployment, runbook and more." },
+    { "name": "Version", "usage": ["/keel version"],
+      "summary": "Shows the installed keel version, the version that last updated this project's docs, doc sizes against their budgets, and whether a newer user-facing release exists." },
+    { "name": "Phase", "usage": ["/keel phase new <slug> [--after N | --split N]"],
+      "summary": "Scopes a new build phase: a plan block with exit gates, reserved decision-record numbers, and a workflow script. Insert after a phase or split one." },
+    { "name": "Change", "usage": ["/keel change <slug>"],
+      "summary": "Logs a hotfix-sized piece of work without a phase: its own branch, a change row, a CHANGELOG line and a small workflow script." },
+    { "name": "Closeout", "usage": ["/keel closeout"],
+      "summary": "Turns the open deferred items into a closeout phase, so postponed work gets scheduled instead of forgotten." },
+    { "name": "Upgrade", "usage": ["/keel upgrade", "/keel refresh", "/keel sync"],
+      "summary": "Audits existing keel docs against the current keel standard, reports the gaps, and applies the fixes you approve, including older doc-format migrations." },
+    { "name": "Archive", "usage": ["/keel archive"],
+      "summary": "Moves finished or superseded detail out of the living docs into archives, and splits docs that are still over budget. Nothing is deleted; every move leaves a link." }
+  ]
+}
