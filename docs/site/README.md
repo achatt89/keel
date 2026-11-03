@@ -1,7 +1,7 @@
 # docs/site — docs source for keel.thelogicatelier.com
 
-The site at keel.thelogicatelier.com is built by The Logic Atelier from these files. Keel owns
-the content; the site owner owns the layout. Until the founder approves the new site, the live
+The site at keel.thelogicatelier.com is built from these files by `site/` in this repo (layout and
+the TLA design system: Andy; content: Keel). Until the founder approves the new site, the live
 docs stay at `docs/index.html` (GitHub Pages).
 
 ## One file per page
