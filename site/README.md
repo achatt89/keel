@@ -10,7 +10,7 @@ internal releases collapsed), `plugins/keel/skills/keel/SKILL.md` (commands and 
 
 ```sh
 cd site
-DS_TGZ=<path to achatt89-tla-ui-1.0.1.tgz> npm run ds:local   # until the package is published
+export NODE_AUTH_TOKEN=$(gh auth token)   # classic token with read:packages (gh auth refresh -s read:packages)
 npm install
 npm run dev        # http://127.0.0.1:4420/
 ```
@@ -26,6 +26,6 @@ Deploy: `deploy/pages.yml`, inactive until cutover. `docs/` stays the live site 
 
 ## The design-system package
 
-Until `@achatt89/tla-ui` is published to GitHub Packages, the dependency is a local tarball in `.ds/` (gitignored).
-After the first publish the line becomes `"@thelogicatelier/ui": "npm:@achatt89/tla-ui@1.0.1"` (with `.npmrc`),
-and the imports do not change.
+`"@thelogicatelier/ui": "npm:@achatt89/tla-ui@1.0.1"`, a private package on GitHub Packages. `.npmrc` points the
+`@achatt89` scope at `npm.pkg.github.com` and reads `NODE_AUTH_TOKEN`; no token is committed. Code imports
+`@thelogicatelier/ui`. When the package moves to npm, only the dependency line changes.
