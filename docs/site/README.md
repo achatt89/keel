@@ -1,8 +1,7 @@
 # docs/site — docs source for keel.thelogicatelier.com
 
 The site at keel.thelogicatelier.com is built from these files by `site/` in this repo (layout and
-the TLA design system: Andy; content: Keel). Until the founder approves the new site, the live
-docs stay at `docs/index.html` (GitHub Pages).
+the TLA design system: Andy; content: Keel). It deploys on every push to main that touches these files.
 
 ## One file per page
 
@@ -24,8 +23,6 @@ anchor: upgrade                        # the hash in old URLs (achatt89.github.i
 
 Old URLs also use four group hashes with no page of their own — `#introduction`,
 `#getting-started`, `#how-it-works`, `#document-reference` — which go to the first page of that group.
-
-**Until cutover both are live:** a docs change edits the page here AND `docs/index.html`.
 
 Release notes are not pages here: the site reads `release.json` (schema
 `schemas/release-v1.schema.json`).

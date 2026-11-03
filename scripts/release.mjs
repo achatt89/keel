@@ -39,7 +39,7 @@ const REQUIREMENTS = {
 }
 // Audience: a CHANGELOG entry whose first line under the heading is "<!-- audience: internal -->"
 // is internal (no user-visible change); default "user". Internal releases stay in versions[] flagged;
-// "latest" and every user-facing surface (top-level summary/highlights, RELEASE.md, the docs badge,
+// "latest" and every user-facing surface (top-level summary/highlights, RELEASE.md, the docs site,
 // the skill's userVersion, the update check) use the newest USER release. "version" is always what
 // /plugin install gives (plugin.json).
 // Every place the version is stamped (CLAUDE.md release convention). [file, regex, which: version|latest]
@@ -50,7 +50,6 @@ const STAMPS = [
   ['plugins/keel/skills/keel/SKILL.md', /^\s+version:\s*(\S+)/m],
   ['plugins/keel/skills/keel/references/templates/keel-meta.json', /"keelVersion":\s*"([^"]+)"/],
   ['plugins/keel/skills/keel/SKILL.md', /^\s+userVersion:\s*(\S+)/m, 'latest'],
-  ['docs/index.html', /class="version-badge"[^>]*>v([^<]+)</, 'latest'],
 ]
 
 export function parseChangelog(md) {
@@ -125,7 +124,6 @@ if (process.argv.includes('--self-test')) {
   w('.claude-plugin/marketplace.json', `{"metadata":{"version":"${v}"},"plugins":[{"name":"keel","version":"${v}"}]}`)
   w('plugins/keel/skills/keel/SKILL.md', `---\nmetadata:\n  version: ${v}\n  userVersion: ${v}\n---\n`)
   w('plugins/keel/skills/keel/references/templates/keel-meta.json', `{"keelVersion":"${v}"}`)
-  w('docs/index.html', `<span class="version-badge" aria-label="Version ${v}">v${v}</span>`)
   const b = build(r, new Set(['keel--v1.0.0']))
   const j = JSON.parse(b.json)
   const ok = j.schemaVersion === 1 && j.version === '1.1.0' && j.date === '2026-02-01' && j.summary === 'Better things.' &&
@@ -134,9 +132,9 @@ if (process.argv.includes('--self-test')) {
     j.tagUrl.endsWith('/tree/keel--v1.1.0') && j.install.tools[0].methods.length === 3 && build(r, new Set()).json.includes('"compareUrl": null') &&
     b.md.startsWith('# keel 1.1.0 — 2026-02-01') && b.md.includes('/plugin install keel@thelogicatelier') &&
     stampErrors(r, v).length === 0
-  w('docs/index.html', '<span class="version-badge">v1.0.9</span>')                 // drift is caught
+  w('plugins/keel/skills/keel/SKILL.md', `---\nmetadata:\n  version: ${v}\n  userVersion: 1.0.9\n---\n`) // drift is caught
   const drift = stampErrors(r, v)
-  const pass = ok && drift.length === 1 && drift[0].startsWith('docs/index.html: 1.0.9')
+  const pass = ok && drift.length === 1 && drift[0].startsWith('plugins/keel/skills/keel/SKILL.md: 1.0.9')
   // audience: internal releases after (and between) user ones never become "latest"
   w('CHANGELOG.md', '# Changelog\n\n## [1.3.0] — 2026-04-01\n<!-- audience: internal -->\n\nFeed only.\n\n## [1.2.1] — 2026-03-15\n\n<!-- audience: internal -->\nCI only.\n\n' +
     '## [1.2.0] — 2026-03-01\n\nUser thing.\n\n### Added\n- **Visible** change\n\n## [1.1.1] — 2026-02-15\n<!-- audience: internal -->\nTidy.\n\n## [1.1.0] — 2026-02-01\n\nBetter things.\n')
@@ -145,9 +143,8 @@ if (process.argv.includes('--self-test')) {
   w('plugins/keel/skills/keel/SKILL.md', '---\nmetadata:\n  version: 1.3.0\n  userVersion: 1.2.0\n---\n')
   for (const f of ['plugins/keel/.claude-plugin/plugin.json', '.claude-plugin/marketplace.json', 'plugins/keel/skills/keel/references/templates/keel-meta.json'])
     w(f, readFileSync(join(r, f), 'utf8').replaceAll(v, '1.3.0'))
-  w('docs/index.html', '<span class="version-badge">v1.2.0</span>')
   const aErr = stampErrors(r, a.version, a.latest)
-  w('docs/index.html', '<span class="version-badge">v1.3.0</span>')               // badge showing an internal version is drift
+  w('plugins/keel/skills/keel/SKILL.md', '---\nmetadata:\n  version: 1.3.0\n  userVersion: 1.3.0\n---\n') // userVersion on an internal release is drift
   const aErr2 = stampErrors(r, a.version, a.latest)
   let bad = ''; try { parseChangelog('## [1.0.0] — 2026-01-01\n<!-- audience: staff -->\n') } catch (e) { bad = e.message }
   const pass2 = aj.version === '1.3.0' && aj.latest === '1.2.0' && aj.summary === 'User thing.' && aud === 'internal,internal,user,internal,user' &&

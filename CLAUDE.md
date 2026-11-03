@@ -12,35 +12,35 @@ keel is a Claude Code plugin/skill that interviews founders about a greenfield i
 | plugins/keel/skills/keel/references/ | Interview personas, document catalog, conventions, templates (`templates/adr/`, `templates/workflows/`), upgrade + archive guides |
 | .agents/skills/modern-web-guidance/ | Modern web guidance skill (auto-pulled) |
 | .claude/skills/impeccable/ | Impeccable FE quality skill |
-| docs/ | GitHub Pages documentation site |
+| site/ | Docs site (React + TLA design system) → GitHub Pages at keel.thelogicatelier.com |
+| docs/site/ | Docs page content (markdown) the site renders |
 | skills-lock.json | Installed skills manifest |
 
 ## Active skills in this project
 
-**impeccable** (FE quality): PostToolUse hook fires after Edit/Write on UI files in docs/.
-Invoke: /impeccable audit docs/
+**impeccable** (FE quality): PostToolUse hook fires after Edit/Write on UI files in site/.
+Invoke: /impeccable audit site/
 Key commands: audit, critique, polish, typeset, adapt, harden
 
 **modern-web-guidance**: PostToolUse reminder fires when HTML/CSS/JS files are edited.
 Invoke: npx -y modern-web-guidance@latest search "<query>"
-Trigger: any HTML/CSS/JS/TS edit in docs/
+Trigger: any HTML/CSS/JS/TS edit in site/
 
 ## Working agreements
 - Branch per feature off main
 - Parallel work in separate git worktrees: git worktree add -b feat/name ../keel-feat-name
 - Commit messages: conventional commits (feat:, fix:, docs:, chore:)
-- FE changes in docs/: consult modern-web-guidance first, impeccable audit after
-- Docs content lives in `docs/site/*.md` (source for keel.thelogicatelier.com) and, until cutover, also in `docs/index.html` — change both
+- FE changes in site/: consult modern-web-guidance first, impeccable audit after
+- Docs content lives in `docs/site/*.md` (+ `docs/site/commands.json`); `site/` renders it, `.github/workflows/pages.yml` deploys on push to main
 - After each significant change: update CHANGELOG.md
 
 ## Release (every version)
-1. Bump the version stamps (SKILL.md `userVersion` + docs badge = newest user-facing release): plugin.json, marketplace.json (metadata + plugin entry +
-   description line), SKILL.md `metadata.version`, `templates/keel-meta.json` `keelVersion`,
-   the `docs/index.html` badge.
+1. Bump the version stamps (SKILL.md `userVersion` = newest user-facing release): plugin.json, marketplace.json (metadata + plugin entry +
+   description line), SKILL.md `metadata.version`, `templates/keel-meta.json` `keelVersion`. The docs site reads release.json.
 2. Add the CHANGELOG entry `## [X.Y.Z] — YYYY-MM-DD` (lead paragraph = summary; `- **Highlight** …` bullets).
    If nothing a keel user sees changes (CI, release tooling, docs-source moves), put
    `<!-- audience: internal -->` on the line under the heading. Internal releases keep SKILL.md
-   `userVersion` and the docs badge on the newest user-facing release; `--check` enforces both.
+   `userVersion` on the newest user-facing release; `--check` enforces it.
 3. `node scripts/release.mjs` regenerates `release.json` + `RELEASE.md` (never edit them by hand);
    `node scripts/release.mjs --check` must pass before committing.
 4. Branch `feat/keel-X` → `git merge --no-ff` → annotated tag `keel--vX.Y.Z` → push main + tag.
@@ -52,6 +52,8 @@ Feed schema: `schemas/release-v1.schema.json` (additive changes only within v1).
 keel documents projects using the templates in references/templates/. The document it generates for this REPO (what you're reading) is itself a usage of the keel convention.
 
 ## Current status
+Docs site cutover (no plugin version): `site/` (React, TLA DS from GitHub Packages) deploys to keel.thelogicatelier.com via `.github/workflows/pages.yml`; old `docs/index.html` single page retired.
+
 v2.5.4 — ADR index budget: the verdict reason says when 320 B × ADRs overrides an explicit `budgets` entry (the entry is a floor). Merged to main.
 
 v2.5.3 — release audience: CHANGELOG `<!-- audience: internal -->`; release.json `latest` + per-version `audience`; RELEASE.md/badge/update notices show user-facing releases only; 2.5.0–2.5.2 marked internal. Merged to main.
