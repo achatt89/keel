@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// BASE_PATH: '/keel/' on achatt89.github.io, '/' on a custom domain (set DOCS_DOMAIN in the Pages workflow).
+// Base '/' for the docs domain (keel.thelogicatelier.com, scripts/route-list.mjs); BASE_PATH=/keel/ only for achatt89.github.io/keel/.
 export default defineConfig({
   base: (process.env.BASE_PATH || '/').replace(/\/?$/, '/'),
   plugins: [react()],

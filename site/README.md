@@ -18,8 +18,9 @@ npm run dev        # http://127.0.0.1:4420/
 ## Build
 
 `npm run build` writes `dist/` with one `index.html` per route and a `404.html`, so GitHub Pages serves deep links.
-- `BASE_PATH`: `/keel/` for achatt89.github.io/keel/, `/` (default) for a custom domain.
-- `DOCS_DOMAIN`: writes `CNAME` when set. Leave it empty until the domain is chosen.
+Default target: **keel.thelogicatelier.com** at base `/` — the build writes `CNAME`, per-route canonical and
+Open Graph tags, `sitemap.xml` and `robots.txt` for that host. For achatt89.github.io/keel/ instead:
+`DOCS_DOMAIN= BASE_PATH=/keel/ npm run build`.
 
 Deploy: `deploy/pages.yml`, inactive until cutover. `docs/` stays the live site until then.
 

@@ -16,7 +16,7 @@ documents — wired together with traceable IDs and cross-references.
 
 ## Documentation
 
-Full documentation is available at **[achatt89.github.io/keel](https://achatt89.github.io/keel/)** — installation guides, how it works, the document catalog, and contributing notes.
+Full documentation is available at **[keel.thelogicatelier.com](https://keel.thelogicatelier.com/)** — installation guides, how it works, the document catalog, and contributing notes.
 
 ## What it does
 

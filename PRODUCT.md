@@ -16,7 +16,7 @@ Founders, solo developers, and small teams starting a new software project who w
 4. Optionally runs adversarial threat-modeling and hardens the generated docs
 
 ## The GitHub Pages site
-The documentation website for keel itself. URL: https://achatt89.github.io/keel/
+The documentation website for keel itself. URL: https://keel.thelogicatelier.com/
 This is a brand documentation site — register: brand.
 
 ## Design direction
