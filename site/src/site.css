@@ -17,8 +17,12 @@ body { background: var(--tla-bg); color: var(--tla-ink); font-family: var(--tla-
 .kd-prose pre, .kd-code { overflow-x: auto; padding: var(--tla-space-4); background: var(--tla-surface-sunk); border-radius: var(--tla-dim-4); font: 0.9rem / 1.5 var(--tla-font-mono); margin: 0; }
 .kd-prose code, .kd-card code { font-family: var(--tla-font-mono); font-size: 0.9em; }
 .kd-prose blockquote { margin: var(--tla-space-6) 0; padding: var(--tla-space-4); background: var(--tla-surface-sunk); border-radius: var(--tla-dim-4); }
-.kd-prose table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; }
-.kd-prose th, .kd-prose td { border-bottom: var(--tla-dim-1) solid var(--tla-rule); padding: 0.5rem; text-align: left; vertical-align: top; }
+.kd-table { overflow-x: auto; margin: var(--tla-space-6) 0; }
+.kd-prose table { border-collapse: collapse; width: 100%; }
+/* Columns size to their content: a cell only wraps between words, never inside one (overrides .kd-main below). */
+.kd-prose th, .kd-prose td { border-bottom: var(--tla-dim-1) solid var(--tla-rule); padding: 0.5rem; text-align: left; vertical-align: top;
+  overflow-wrap: normal; word-break: normal; hyphens: manual; }
+.kd-prose td:last-child { min-width: 18ch; }
 .kd-card { border-top: var(--tla-dim-1) solid var(--tla-rule); padding: var(--tla-space-6) 0; }
 .kd-card h2 { margin-top: 0; }
 .kd-card summary { cursor: pointer; font-weight: 600; }

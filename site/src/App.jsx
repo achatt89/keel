@@ -34,7 +34,9 @@ const useRoute = () => {
   return path;
 };
 
-const Md = ({ text }) => <div className="kd-prose" dangerouslySetInnerHTML={{ __html: useMemo(() => marked.parse(text), [text]) }} />;
+// Wide tables scroll inside their own box; the page never scrolls sideways.
+const wrapTables = (html) => html.replace(/<table>/g, '<div class="kd-table"><table>').replace(/<\/table>/g, '</table></div>');
+const Md = ({ text }) => <div className="kd-prose" dangerouslySetInnerHTML={{ __html: useMemo(() => wrapTables(marked.parse(text)), [text]) }} />;
 
 const NAV = [['docs/what-is-keel', 'Docs'], ['commands', 'Commands'], ['skills', 'Skills'], ['adr', 'ADRs'], ['releases', 'Releases']];
 
