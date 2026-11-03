@@ -1,4 +1,4 @@
-# docs-site: Keel's React documentation site
+# site: Keel's React documentation site
 
 Built on the TLA design system, consumed as a package (`@thelogicatelier/ui`), never copied source.
 Content is read in place at build time from Keel's own files (owner: keel-mvvwe9nj):
@@ -9,7 +9,7 @@ internal releases collapsed), `plugins/keel/skills/keel/SKILL.md` (commands and 
 ## Run locally
 
 ```sh
-cd docs-site
+cd site
 DS_TGZ=<path to achatt89-tla-ui-1.0.1.tgz> npm run ds:local   # until the package is published
 npm install
 npm run dev        # http://127.0.0.1:4420/
