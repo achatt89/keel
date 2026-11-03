@@ -3,6 +3,8 @@ import release from '../../release.json';
 import skillRaw from '../../plugins/keel/skills/keel/SKILL.md?raw';
 import adrIndexRaw from '../../plugins/keel/skills/keel/references/templates/adr/README.md?raw';
 import adrRecordRaw from '../../plugins/keel/skills/keel/references/templates/adr/ADR-NNN-slug.md?raw';
+import adrExIndex from '../../docs/site/adr-example/README.md?raw';
+import adrExRecord from '../../docs/site/adr-example/ADR-002-offline-storage.md?raw';
 
 const files = import.meta.glob('../../docs/site/[0-9]*.md', { query: '?raw', import: 'default', eager: true });
 
@@ -22,6 +24,7 @@ export const pages = Object.entries(files)
     const file = path.split('/').pop();
     const { meta, body } = frontmatter(text);
     return {
+      file,
       slug: meta.slug || file.replace(/^\d+-|\.md$/g, ''),
       title: meta.title,
       lead: meta.lead,
@@ -62,3 +65,5 @@ export const commands = commandsFile.commands;
 // The record template's guidance quotes '<!-- Keel guidance -->' inside its own comment; drop that first.
 const stripGuidance = (t) => t.replace(/<!-- Keel guidance -->/g, '').replace(/<!--[\s\S]*?-->\n*/g, '');
 export const adr = { index: stripGuidance(adrIndexRaw), record: stripGuidance(adrRecordRaw) };
+// A worked example for a made-up project (docs/site/adr-example/), so the page teaches before it shows blanks.
+export const adrExample = { index: adrExIndex, record: adrExRecord };

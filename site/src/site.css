@@ -44,3 +44,9 @@ body { background: var(--tla-bg); color: var(--tla-ink); font-family: var(--tla-
 .kd-main { overflow-wrap: anywhere; }
 .kd-prose pre code { overflow-wrap: normal; }
 .kd-main .tla-panel + .tla-panel { margin-top: var(--tla-space-4); }
+/* ADR page: the raw template sits in its own ruled section; {{fill-ins}} read as labelled blanks, not unfinished text. */
+.kd-template { margin-top: var(--tla-space-12); border-top: var(--tla-dim-1) solid var(--tla-rule); }
+.kd-fill { background: var(--tla-surface-sunk); color: var(--tla-ink-muted); outline: var(--tla-dim-1) dashed var(--tla-rule);
+  border-radius: var(--tla-dim-2, 2px); padding: 0 0.2em; font: 0.9em var(--tla-font-mono); box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.kd-file { margin: var(--tla-space-8) 0 0; padding-top: var(--tla-space-4); border-top: var(--tla-dim-1) solid var(--tla-rule); font-weight: 600; }
+.kd-file code { font: 400 0.9em var(--tla-font-mono); color: var(--tla-ink-muted); }

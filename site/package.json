@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/routes.mjs",
+    "build": "node scripts/check-fills.mjs && vite build && node scripts/routes.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

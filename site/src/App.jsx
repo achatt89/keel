@@ -3,7 +3,7 @@ import { marked } from 'marked';
 import {
   TLABadge, TLAContainer, TLAHeader, TLALogo, TLAModeToggle, TLAPanel, TLASection, useTLAViewMode,
 } from '@thelogicatelier/ui';
-import { adr, anchorToSlug, commands, groups, pages, release, skill } from './content.js';
+import { adr, adrExample, anchorToSlug, commands, groups, pages, release, skill } from './content.js';
 
 const BASE = import.meta.env.BASE_URL; // '/keel/' or '/'
 const href = (p = '') => BASE + p;
@@ -65,7 +65,60 @@ const wrapTables = (html) => {
   }
   return t.innerHTML;
 };
-const Md = ({ text }) => <div className="kd-prose" dangerouslySetInnerHTML={{ __html: useMemo(() => wrapTables(marked.parse(text)), [text]) }} />;
+// Template text: each {{fill-in}} becomes one labelled chip, matched per block by brace depth, so a nested
+// fill-in or one that wraps `code` ({{Built `{{commit}}` {{date}}}}) is still a single chip.
+const BLOCKS = 'p, li, td, th, h1, h2, h3, h4, h5, h6, pre';
+const markFills = (html) => {
+  const t = document.createElement('template');
+  t.innerHTML = html;
+  const blocks = [...t.content.querySelectorAll(BLOCKS)].filter((e) => e.textContent.includes('{{') && !e.querySelector(BLOCKS));
+  for (const el of blocks) {
+    const text = el.textContent, spans = [];
+    for (let i = 0, depth = 0, start = 0; i < text.length - 1; i++) {
+      if (text.startsWith('{{', i)) { if (depth++ === 0) start = i; i++; }
+      else if (text.startsWith('}}', i) && depth) { if (--depth === 0) spans.push([start, i + 2]); i++; }
+    }
+    const nodes = []; // [text node, offset of its first char in el.textContent]
+    const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    for (let at = 0; walk.nextNode(); at += walk.currentNode.length) nodes.push([walk.currentNode, at]);
+    const point = (pos) => { const [n, at] = nodes.findLast(([, a]) => a <= pos); return [n, pos - at]; };
+    for (const [s, e] of spans.reverse()) { // last first: earlier offsets stay valid
+      const r = document.createRange();
+      r.setStart(...point(s)); r.setEnd(...point(e - 1)); r.setEnd(r.endContainer, r.endOffset + 1);
+      const mark = Object.assign(document.createElement('mark'), { className: 'kd-fill', title: 'Fill-in: keel completes this' });
+      mark.append(r.extractContents());
+      r.insertNode(mark);
+    }
+  }
+  return t.innerHTML;
+};
+// `file`: a whole document shown inside a page (ADR page): its headings sit two levels down, and its relative
+// links (./ADR-001-….md) point at files that are not on this site, so they become plain text.
+const asFile = (html) => {
+  const t = document.createElement('template');
+  t.innerHTML = html;
+  for (const h of t.content.querySelectorAll('h1, h2, h3, h4')) {
+    const d = document.createElement(`h${Math.min(+h.tagName[1] + 2, 6)}`);
+    d.append(...h.childNodes);
+    h.replaceWith(d);
+  }
+  for (const a of t.content.querySelectorAll('a[href^="./"]')) a.replaceWith(...a.childNodes);
+  return t.innerHTML;
+};
+// A docs page links another by its source file (./08-the-interview.md); on the site that is /docs/<slug>/.
+const pageLinks = (html) => html.replace(/href="\.\/(\d+-[\w-]+\.md)(#[^"]*)?"/g, (m, f, hash = '') => {
+  const p = pages.find((x) => x.file === f);
+  return p ? `href="${href(`docs/${p.slug}/`)}${hash}"` : m;
+});
+const Md = ({ text, fills, file }) => {
+  const html = useMemo(() => {
+    let h = pageLinks(marked.parse(text));
+    if (file) h = asFile(h);
+    if (fills) h = markFills(h); // before wrapTables: its nobr spans would split a {{…}}
+    return wrapTables(h);
+  }, [text, fills, file]);
+  return <div className="kd-prose" dangerouslySetInnerHTML={{ __html: html }} />;
+};
 
 const NAV = [['docs/what-is-keel', 'Docs'], ['commands', 'Commands'], ['skills', 'Skills'], ['adr', 'ADRs'], ['releases', 'Releases']];
 
@@ -156,10 +209,20 @@ const Adr = () => (
   <>
     <h1>Architecture decision records</h1>
     <p className="kd-lead">The ADR format keel writes into a project: the index, and one record.</p>
-    <h2>The index (docs/adr/README.md)</h2>
-    <Md text={adr.index} />
-    <h2>One record (docs/adr/ADR-NNN-slug.md)</h2>
-    <Md text={adr.record} />
+    <h2>Example: Larder</h2>
+    <p>What keel writes for Larder, a made-up meal-planning app.</p>
+    <p className="kd-file">The index · <code>docs/adr/README.md</code></p>
+    <Md text={adrExample.index} file />
+    <p className="kd-file">One record · <code>docs/adr/ADR-002-offline-storage.md</code></p>
+    <Md text={adrExample.record} file />
+    <section className="kd-template" aria-labelledby="adr-template">
+      <h2 id="adr-template">Template</h2>
+      <p>The files keel starts from. Each <mark className="kd-fill">{'{{fill-in}}'}</mark> is a blank keel completes from your interview answers.</p>
+      <p className="kd-file">The index · <code>docs/adr/README.md</code></p>
+      <Md text={adr.index} file fills />
+      <p className="kd-file">One record · <code>docs/adr/ADR-NNN-slug.md</code></p>
+      <Md text={adr.record} file fills />
+    </section>
   </>
 );
 
