@@ -30,3 +30,4 @@ body { background: var(--tla-bg); color: var(--tla-ink); font-family: var(--tla-
 }
 .kd-main { overflow-wrap: anywhere; }
 .kd-prose pre code { overflow-wrap: normal; }
+.kd-main .tla-panel + .tla-panel { margin-top: var(--tla-space-4); }

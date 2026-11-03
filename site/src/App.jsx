@@ -51,11 +51,21 @@ const Sidebar = ({ path }) => (
   </nav>
 );
 
-const Install = () => (
-  <TLAPanel bar="Install in Claude Code" barRight={`v${release.latest}`}>
-    <pre className="kd-code">{release.install.commands.join('\n')}</pre>
-  </TLAPanel>
-);
+// Every install method of the Claude Code entry in release.json install.tools; install.commands is the fallback.
+const Install = () => {
+  const tool = release.install.tools?.find((t) => t.id === 'claude-code');
+  const methods = tool?.methods ?? [{ id: 'plugin', label: 'Plugin', shell: false, commands: release.install.commands }];
+  return (
+    <>
+      {methods.map((m) => (
+        <TLAPanel key={m.id} bar={`${tool?.name ?? 'Claude Code'} · ${m.label}`} barRight={m.shell ? 'terminal' : 'in Claude Code'}>
+          <pre className="kd-code">{m.commands.join('\n')}</pre>
+        </TLAPanel>
+      ))}
+      {tool?.start && <p className="kd-muted">Then run <code>{tool.start}</code>. {release.install.note}</p>}
+    </>
+  );
+};
 
 const Home = () => (
   <>
