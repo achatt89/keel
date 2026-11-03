@@ -34,8 +34,27 @@ const useRoute = () => {
   return path;
 };
 
-// Wide tables scroll inside their own box; the page never scrolls sideways.
-const wrapTables = (html) => html.replace(/<table>/g, '<div class="kd-table"><table>').replace(/<\/table>/g, '</table></div>');
+// Wide tables scroll inside their own box; the page never scrolls sideways. In cells a hyphenated word
+// ('doc-sync') stays whole: CSS can forbid breaks inside a word but not at its hyphen.
+const wrapTables = (html) => {
+  if (!html.includes('<table>')) return html;
+  const t = document.createElement('template');
+  t.innerHTML = html;
+  for (const table of t.content.querySelectorAll('table')) {
+    const box = document.createElement('div');
+    box.className = 'kd-table';
+    table.replaceWith(box);
+    box.append(table);
+    const walk = document.createTreeWalker(table, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walk.nextNode()) if (/\S-\S/.test(walk.currentNode.data)) nodes.push(walk.currentNode);
+    for (const n of nodes) {
+      const parts = n.data.split(/(\S*\S-\S\S*)/);
+      n.replaceWith(...parts.map((p, i) => (i % 2 ? Object.assign(document.createElement('span'), { className: 'kd-nobr', textContent: p }) : p)));
+    }
+  }
+  return t.innerHTML;
+};
 const Md = ({ text }) => <div className="kd-prose" dangerouslySetInnerHTML={{ __html: useMemo(() => wrapTables(marked.parse(text)), [text]) }} />;
 
 const NAV = [['docs/what-is-keel', 'Docs'], ['commands', 'Commands'], ['skills', 'Skills'], ['adr', 'ADRs'], ['releases', 'Releases']];

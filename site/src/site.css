@@ -23,6 +23,7 @@ body { background: var(--tla-bg); color: var(--tla-ink); font-family: var(--tla-
 .kd-prose th, .kd-prose td { border-bottom: var(--tla-dim-1) solid var(--tla-rule); padding: 0.5rem; text-align: left; vertical-align: top;
   overflow-wrap: normal; word-break: normal; hyphens: manual; }
 .kd-prose td:last-child { min-width: 18ch; }
+.kd-nobr { white-space: nowrap; }
 .kd-card { border-top: var(--tla-dim-1) solid var(--tla-rule); padding: var(--tla-space-6) 0; }
 .kd-card h2 { margin-top: 0; }
 .kd-card summary { cursor: pointer; font-weight: 600; }
