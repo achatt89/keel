@@ -55,17 +55,9 @@ export const skill = {
   userVersion: skillHead.match(/^\s+userVersion:\s*(.+)$/m)?.[1].trim(),
 };
 
-// Commands: the default interview plus each "## <Name> Mode — `/keel …`" section's opening paragraph.
-// ponytail: parses SKILL.md headings; keel-mvvwe9nj offered a data file if this ever proves brittle.
-const modes = [...skillRaw.matchAll(/^## (.+?) Mode — (.+)\n+([\s\S]*?)(?=\n#{2,3} |\n\n)/gm)].map((m) => ({
-  name: m[1],
-  usage: [...m[2].matchAll(/`([^`]+)`/g)].map((u) => u[1]),
-  summary: m[3].replace(/\s+/g, ' ').trim(),
-}));
-export const commands = [
-  { name: 'New project', usage: ['/keel'], summary: skill.description.split(/(?<=\.) /)[0] },
-  ...modes,
-];
+// Commands: written for users by keel-mvvwe9nj in docs/site/commands.json (name, usage[], summary).
+import commandsFile from '../../docs/site/commands.json';
+export const commands = commandsFile.commands;
 
 const stripGuidance = (t) => t.replace(/<!--[\s\S]*?-->\n*/g, '');
 export const adr = { index: stripGuidance(adrIndexRaw), record: stripGuidance(adrRecordRaw) };
