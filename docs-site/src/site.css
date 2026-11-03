@@ -1,0 +1,32 @@
+/* Layout for the docs site only; colours, type and spacing come from the TLA tokens. */
+body { background: var(--tla-bg); color: var(--tla-ink); font-family: var(--tla-font-sans); margin: 0; }
+.kd-page { max-width: 72ch; }
+.kd-docs { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: var(--tla-space-12); align-items: start; }
+.kd-main { min-width: 0; max-width: 72ch; }
+.kd-main h1 { font: 400 clamp(2rem, 4vw, 3rem) / 1.1 var(--tla-font-serif); letter-spacing: -0.02em; margin: 0 0 var(--tla-space-4); text-wrap: balance; }
+.kd-main h2 { font: 400 1.6rem / 1.2 var(--tla-font-serif); margin: var(--tla-space-12) 0 var(--tla-space-4); }
+.kd-lead { font-size: 1.15rem; color: var(--tla-ink-muted); margin: 0 0 var(--tla-space-8); }
+.kd-muted { color: var(--tla-ink-muted); }
+.kd-side { position: sticky; top: 6rem; display: grid; gap: var(--tla-space-4); font-size: 0.95rem; }
+.kd-side__h { margin: 0 0 var(--tla-space-2); font-weight: 600; }
+.kd-side a { display: block; padding: 0.3rem 0; color: var(--tla-ink-muted); text-decoration: none; }
+.kd-side a:hover, .kd-side a[aria-current='page'] { color: var(--tla-ink); }
+.kd-side a[aria-current='page'] { font-weight: 600; }
+.kd-prose { line-height: 1.65; text-wrap: pretty; }
+.kd-prose a, .kd-links a, .kd-pager a { color: var(--tla-accent); }
+.kd-prose pre, .kd-code { overflow-x: auto; padding: var(--tla-space-4); background: var(--tla-surface-sunk); border-radius: var(--tla-dim-4); font: 0.9rem / 1.5 var(--tla-font-mono); margin: 0; }
+.kd-prose code, .kd-card code { font-family: var(--tla-font-mono); font-size: 0.9em; }
+.kd-prose blockquote { margin: var(--tla-space-6) 0; padding: var(--tla-space-4); background: var(--tla-surface-sunk); border-radius: var(--tla-dim-4); }
+.kd-prose table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; }
+.kd-prose th, .kd-prose td { border-bottom: var(--tla-dim-1) solid var(--tla-rule); padding: 0.5rem; text-align: left; vertical-align: top; }
+.kd-card { border-top: var(--tla-dim-1) solid var(--tla-rule); padding: var(--tla-space-6) 0; }
+.kd-card h2 { margin-top: 0; }
+.kd-card summary { cursor: pointer; font-weight: 600; }
+.kd-links { padding-left: 1.2em; line-height: 2; }
+.kd-pager { display: flex; justify-content: space-between; gap: var(--tla-space-4); margin-top: var(--tla-space-12); padding-top: var(--tla-space-6); border-top: var(--tla-dim-1) solid var(--tla-rule); }
+@media (max-width: 860px) {
+  .kd-docs { grid-template-columns: 1fr; }
+  .kd-side { position: static; }
+}
+.kd-main { overflow-wrap: anywhere; }
+.kd-prose pre code { overflow-wrap: normal; }

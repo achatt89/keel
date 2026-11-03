@@ -1,0 +1,27 @@
+# Keel docs site -> GitHub Pages. INACTIVE here: at cutover (founder OK) move it to .github/workflows/ in place of
+# the docs/ upload. DOCS_DOMAIN is a repository variable, empty until the founder gives the domain.
+name: Docs site
+on:
+  push: { branches: [main], paths: ['docs-site/**', 'docs/site/**', 'release.json', 'plugins/keel/skills/keel/**'] }
+  workflow_dispatch:
+permissions: { contents: read, pages: write, id-token: write, packages: read }
+concurrency: { group: pages, cancel-in-progress: true }
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: { name: github-pages, url: '${{ steps.d.outputs.page_url }}' }
+    defaults: { run: { working-directory: docs-site } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, registry-url: 'https://npm.pkg.github.com', scope: '@achatt89' }
+      - run: npm ci
+        env: { NODE_AUTH_TOKEN: '${{ secrets.GITHUB_TOKEN }}' } # the package must grant achatt89/keel read access
+      - run: npm run build
+        env:
+          BASE_PATH: ${{ vars.DOCS_DOMAIN && '/' || '/keel/' }}
+          DOCS_DOMAIN: ${{ vars.DOCS_DOMAIN }}
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: docs-site/dist }
+      - id: d
+        uses: actions/deploy-pages@v4
