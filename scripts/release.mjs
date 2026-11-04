@@ -63,11 +63,15 @@ export function parseChangelog(md) {
     const audience = a ? a[1] : 'user'
     if (!['user', 'internal'].includes(audience)) throw new Error(`${m[1]}: audience must be user or internal, not "${audience}"`)
     if (a) notes = notes.slice(a[0].length).trim()
+    // Optional plain headline for the docs site home ("<!-- headline: … -->", after any audience marker);
+    // summary stays the changelog line. Absent: the summary is the headline.
+    const h = notes.match(/^<!--\s*headline:\s*([\s\S]*?)\s*-->\s*/)
+    if (h) notes = notes.slice(h[0].length).trim()
     const lead = notes.split(/\n\s*\n/)[0]
     const highlights = [...notes.matchAll(/^- \*\*(.+?)\*\*/gm)].map(h => h[1].replace(/`/g, '').replace(/[.:]$/, '')).slice(0, 6)
     const summary = !/^(#|-)/.test(lead) ? lead.replace(/\s*\n\s*/g, ' ')
       : highlights.length ? highlights.slice(0, 3).join('; ') + '.' : ''
-    out.push({ version: m[1], date: m[2], audience, summary, highlights, notes })
+    out.push({ version: m[1], date: m[2], audience, headline: h ? h[1].replace(/\s+/g, ' ') : summary, summary, highlights, notes })
   }
   return out
 }
@@ -89,7 +93,7 @@ export function build(root, tags = null) {
   const nextUser = vs.slice(li + 1).findIndex(v => v.audience === 'user')
   const bundled = vs.slice(li + 1, nextUser < 0 ? vs.length : li + 1 + nextUser).map(v => v.version)
   const json = { $schema: SCHEMA, schemaVersion: 1, name: 'keel', repository: REPO,
-    version: vs[0].version, latest: l.version, date: l.date, summary: l.summary, highlights: l.highlights, tag: l.tag, tagUrl: l.tagUrl,
+    version: vs[0].version, latest: l.version, date: l.date, headline: l.headline, summary: l.summary, highlights: l.highlights, tag: l.tag, tagUrl: l.tagUrl,
     compareUrl: l.compareUrl, install: INSTALL, requirements: REQUIREMENTS, versions: vs }
   const span = a => a.length > 1 ? `${a[a.length - 1]}–${a[0]}` : a[0]
   const md = `# keel ${l.version} — ${l.date}\n\n${l.summary}\n\n` +
@@ -146,12 +150,14 @@ if (process.argv.includes('--self-test')) {
   const aErr = stampErrors(r, a.version, a.latest)
   w('plugins/keel/skills/keel/SKILL.md', '---\nmetadata:\n  version: 1.3.0\n  userVersion: 1.3.0\n---\n') // userVersion on an internal release is drift
   const aErr2 = stampErrors(r, a.version, a.latest)
+  const hl = parseChangelog('## [1.0.0] — 2026-01-01\n<!-- audience: user -->\n<!-- headline: Plain\n words. -->\n\nLong line.\n')[0]
+  const headOk = hl.headline === 'Plain words.' && hl.summary === 'Long line.' && !hl.notes.includes('headline') && j.headline === 'Better things.'
   let bad = ''; try { parseChangelog('## [1.0.0] — 2026-01-01\n<!-- audience: staff -->\n') } catch (e) { bad = e.message }
   const pass2 = aj.version === '1.3.0' && aj.latest === '1.2.0' && aj.summary === 'User thing.' && aud === 'internal,internal,user,internal,user' &&
     !aj.versions[0].notes.includes('audience') && aj.versions[1].notes === 'CI only.' &&
     a.md.startsWith('# keel 1.2.0') && a.md.includes('Installing today gives keel 1.3.0') && a.md.includes('1.2.1–1.3.0') &&
     a.md.includes('Also includes internal release 1.1.1') && !a.md.includes('Feed only') &&
-    aErr.length === 0 && aErr2.length === 1 && /latest user-facing 1\.2\.0/.test(aErr2[0]) && /audience must be/.test(bad)
+    aErr.length === 0 && aErr2.length === 1 && /latest user-facing 1\.2\.0/.test(aErr2[0]) && /audience must be/.test(bad) && headOk
   console.log(pass && pass2 ? 'ok' : 'FAIL ' + JSON.stringify({ pass, j, drift, md: b.md, aj, aErr, aErr2, amd: a.md, bad }, null, 1)); process.exit(pass && pass2 ? 0 : 1)
 }
 

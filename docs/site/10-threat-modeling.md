@@ -15,9 +15,9 @@ The threat-modeling pass works adversarially across seven dimensions:
 - **Tenant isolation:** whether multi-tenant boundaries are enforced at every layer
 - **Untrusted input:** all attack surfaces that accept external data
 - **Secrets and auth:** key management, token lifetimes, privilege escalation paths
-- **Abuse and DoS:** rate limiting, resource exhaustion, quota enforcement
-- **Privacy and regulatory:** PII handling, consent flows, retention limits
-- **Availability:** single points of failure, disaster recovery, RTO/RPO
+- **Abuse and overload:** rate limits, resource exhaustion, quotas. Denial of service means flooding the system until it stops answering.
+- **Privacy and regulation:** personal data, consent, how long you keep it.
+- **Availability:** single points of failure, disaster recovery, and how fast and how complete a recovery has to be.
 
 ## How it mitigates
 

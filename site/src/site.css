@@ -44,3 +44,14 @@ body { background: var(--tla-bg); color: var(--tla-ink); font-family: var(--tla-
 .kd-main { overflow-wrap: anywhere; }
 .kd-prose pre code { overflow-wrap: normal; }
 .kd-main .tla-panel + .tla-panel { margin-top: var(--tla-space-4); }
+/* ADR page: the raw template sits in its own ruled section; {{fill-ins}} read as labelled blanks, not unfinished text. */
+.kd-template { margin-top: var(--tla-space-12); border-top: var(--tla-dim-1) solid var(--tla-rule); }
+.kd-fill { background: var(--tla-surface-sunk); color: var(--tla-ink-muted); outline: var(--tla-dim-1) dashed var(--tla-rule);
+  border-radius: var(--tla-dim-2, 2px); padding: 0 0.2em; font: 0.9em var(--tla-font-mono); box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.kd-file { margin: var(--tla-space-8) 0 0; padding-top: var(--tla-space-4); border-top: var(--tla-dim-1) solid var(--tla-rule); font-weight: 600; }
+.kd-file code { font: 400 0.9em var(--tla-font-mono); color: var(--tla-ink-muted); }
+.kd-raw { margin-top: var(--tla-space-6); border-top: var(--tla-dim-1) solid var(--tla-rule); padding-top: var(--tla-space-4); }
+.kd-raw p { color: var(--tla-ink-muted); font-size: 0.95em; }
+/* Install commands wrap at phone width instead of hiding behind a sideways scroll; copying still gives one line each. */
+.kd-code.kd-wrap { white-space: pre-wrap; overflow-wrap: break-word; } /* breaks after '/' (<wbr>), mid-word only as a last resort */
+.kd-cmd { display: block; padding-left: 2ch; text-indent: -2ch; } /* a wrapped command's next line is indented */

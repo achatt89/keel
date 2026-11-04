@@ -1,20 +1,20 @@
 ---
 title: "Why Keel?"
-lead: "Most documentation tools either dump a template on you, or generate docs from a one-line description. Keel does neither."
+lead: "Five decisions shape everything Keel writes: it interviews first, scopes to the project, keeps each fact in one place, can harden the design before you code and writes for Claude Code."
 group: "Introduction"
 order: 2
 slug: why-keel
 anchor: why-keel
 ---
 
-- **Interview-first**: Never generates a document from a one-line idea. The interview is where the value is created by surfacing what you haven't thought through yet.
-- **Adaptive scope**: A weekend prototype and a multi-tenant regulated platform get very different doc sets. Keel proposes only what your project actually needs.
-- **One fact, one home**: No copy-paste between documents. Every fact lives once and is cross-referenced by a stable requirement ID from every document that depends on it.
-- **Threat-modeled**: Optionally hardens the generated spec before you write a line of code. Weaknesses are fixed in the design documents, not just noted in a risk register.
-- **Optimised for Claude Code**: The output is the source of truth for the AI builder. CLAUDE.md is the keystone; every other document hangs off it by stable reference.
+- **Interview first.** Keel never writes a document from a one-line idea. The questions are the work: they surface what you have not thought through yet.
+- **Scope to the project.** A weekend prototype and a regulated multi-tenant platform need different documents. Keel proposes only the ones your project needs, and tells you what it is leaving out and why.
+- **One fact, one home.** Nothing is copied between documents. Each fact lives once, and every document that depends on it refers to it by a stable requirement ID.
+- **Hardened before you code.** Keel can run an adversarial pass over the documents it has just written and fix the weaknesses in them, adding controls, security requirements and decision records, instead of noting a risk to deal with later.
+- **Written for Claude Code.** The documents are the source of truth for the build. AGENTS.md is the keystone index and CLAUDE.md imports it. Every other document hangs off it by a stable reference.
 
 ## When to use Keel
 
-Keel is designed for the very start of a greenfield project, before you've written code, chosen a stack, or committed to a structure. It's also useful when a project has grown organically and you need to reconstruct the foundational spec retroactively.
+Use Keel at the start, before you have written code, chosen a stack or settled on a structure. It also works on a project that grew without a spec, where the foundations have to be written down after the fact.
 
-It is not a substitute for ongoing documentation practices, sprint planning, or production runbooks, though it generates the initial versions of those artefacts too.
+Keel does not replace keeping documents current, planning the work or operating the thing in production. It writes the first version of each of those documents, and then they are yours to keep.

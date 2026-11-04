@@ -1,6 +1,6 @@
 ---
 title: "Quick Start"
-lead: "Two commands and you're ready to lay the keel of any new project."
+lead: "Two commands and you are ready to lay the keel of any new project."
 group: "Introduction"
 order: 3
 slug: quick-start
@@ -20,6 +20,6 @@ Restart Claude Code after installation. Then, in any project folder, tell Claude
 
 ## What happens next
 
-Keel will run an intake to understand your idea and set an ambition tier (Prototype, MVP, or Platform), then move through a staged panel of expert personas, each one building on what was said before. At the end, it proposes a doc set, generates everything with cross-references wired in, and optionally runs a threat-modeling pass.
+Keel will run an intake to understand your idea and ask how far the project goes: Prototype, MVP or Platform. That choice decides how many documents you get. Then it moves through a staged panel of expert personas, each one building on what was said before. At the end, it proposes a doc set, generates everything with cross-references wired in, and optionally runs a threat-modeling pass.
 
-Set aside a focused session: the interview is where the value is created.
+Set aside a focused session for the interview.

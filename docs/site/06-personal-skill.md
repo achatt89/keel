@@ -31,7 +31,7 @@ Then restart Claude Code.
 cp -R ~/code/keel/plugins/keel/skills/keel ~/.claude/skills/keel
 ```
 
-You'll need to re-copy to pick up updates.
+You need to copy it again to pick up updates.
 
 ## Project-scoped install (team use)
 

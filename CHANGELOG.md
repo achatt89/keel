@@ -4,6 +4,7 @@ All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
 ## [2.5.4] — 2026-10-31
+<!-- headline: Document size checks got clearer. -->
 
 The doc-size checker no longer overrides an explicit ADR index budget silently.
 

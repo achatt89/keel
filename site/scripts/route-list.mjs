@@ -6,7 +6,7 @@ export const DOMAIN = process.env.DOCS_DOMAIN ?? 'keel.thelogicatelier.com';
 
 const dir = new URL('../../docs/site/', import.meta.url);
 const field = (text, k) => text.match(new RegExp(`^${k}:\\s*"?([^"\\n#]+?)"?\\s*(#.*)?$`, 'm'))?.[1].trim();
-const SITE = 'Keel: the foundational documentation suite for a new software project, from one guided interview.';
+const SITE = 'Keel is a Claude Code skill. It interviews you about a new project, then writes the documents you build it from.';
 // { path, title, description } per route; '' is home.
 export const routes = () => [
   { path: '', title: 'Keel docs', description: SITE },
@@ -15,7 +15,7 @@ export const routes = () => [
     return { path: `docs/${field(t, 'slug') ?? f.replace(/^\d+-|\.md$/g, '')}`, title: field(t, 'title'), description: field(t, 'lead') ?? SITE };
   }),
   { path: 'commands', title: 'Commands', description: 'Every /keel command and what it does.' },
-  { path: 'skills', title: 'Skills', description: 'The keel skill: name, version and what it does.' },
-  { path: 'adr', title: 'Architecture decision records', description: 'The ADR format keel writes into a project.' },
+  { path: 'skills', title: 'Skills', description: 'Keel ships one skill. This is what it does, and every mode it has.' },
+  { path: 'adr', title: 'Architecture decision records', description: 'The decision record Keel writes into a project: a worked example first, then the blank it starts from.' },
   { path: 'releases', title: 'Releases', description: 'Keel release notes.' },
 ];

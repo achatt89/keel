@@ -3,7 +3,7 @@ import { marked } from 'marked';
 import {
   TLABadge, TLAContainer, TLAHeader, TLALogo, TLAModeToggle, TLAPanel, TLASection, useTLAViewMode,
 } from '@thelogicatelier/ui';
-import { adr, anchorToSlug, commands, groups, pages, release, skill } from './content.js';
+import { adr, adrExample, anchorToSlug, commands, groups, pages, release, skill, skillSummary } from './content.js';
 
 const BASE = import.meta.env.BASE_URL; // '/keel/' or '/'
 const href = (p = '') => BASE + p;
@@ -65,7 +65,62 @@ const wrapTables = (html) => {
   }
   return t.innerHTML;
 };
-const Md = ({ text }) => <div className="kd-prose" dangerouslySetInnerHTML={{ __html: useMemo(() => wrapTables(marked.parse(text)), [text]) }} />;
+// Template text: each {{fill-in}} becomes one labelled chip, matched per block by brace depth, so a nested
+// fill-in or one that wraps `code` ({{Built `{{commit}}` {{date}}}}) is still a single chip.
+const BLOCKS = 'p, li, td, th, h1, h2, h3, h4, h5, h6, pre';
+const markFills = (html) => {
+  const t = document.createElement('template');
+  t.innerHTML = html;
+  const blocks = [...t.content.querySelectorAll(BLOCKS)].filter((e) => e.textContent.includes('{{') && !e.querySelector(BLOCKS));
+  for (const el of blocks) {
+    const text = el.textContent, spans = [];
+    for (let i = 0, depth = 0, start = 0; i < text.length - 1; i++) {
+      if (text.startsWith('{{', i)) { if (depth++ === 0) start = i; i++; }
+      else if (text.startsWith('}}', i) && depth) { if (--depth === 0) spans.push([start, i + 2]); i++; }
+    }
+    const nodes = []; // [text node, offset of its first char in el.textContent]
+    const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    for (let at = 0; walk.nextNode(); at += walk.currentNode.length) nodes.push([walk.currentNode, at]);
+    const point = (pos) => { const [n, at] = nodes.findLast(([, a]) => a <= pos); return [n, pos - at]; };
+    for (const [s, e] of spans.reverse()) { // last first: earlier offsets stay valid
+      const r = document.createRange();
+      r.setStart(...point(s)); r.setEnd(...point(e - 1)); r.setEnd(r.endContainer, r.endOffset + 1);
+      const mark = Object.assign(document.createElement('mark'), { className: 'kd-fill', title: 'Fill-in: keel completes this' });
+      mark.append(r.extractContents());
+      r.insertNode(mark);
+    }
+  }
+  return t.innerHTML;
+};
+// `file`: a whole document shown inside a page (ADR page): its headings sit two levels down, and its relative
+// links (./ADR-001-….md) point at files that are not on this site, so they become plain text.
+const asFile = (html) => {
+  const t = document.createElement('template');
+  t.innerHTML = html;
+  for (const h of t.content.querySelectorAll('h1, h2, h3, h4')) {
+    const d = document.createElement(`h${Math.min(+h.tagName[1] + 2, 6)}`);
+    d.append(...h.childNodes);
+    h.replaceWith(d);
+  }
+  for (const a of t.content.querySelectorAll('a[href^="./"]')) a.replaceWith(...a.childNodes);
+  return t.innerHTML;
+};
+// A docs page links another by its source file (./08-the-interview.md); on the site that is /docs/<slug>/.
+const pageLinks = (html) => html.replace(/href="\.\/(\d+-[\w-]+\.md)(#[^"]*)?"/g, (m, f, hash = '') => {
+  const p = pages.find((x) => x.file === f);
+  return p ? `href="${href(`docs/${p.slug}/`)}${hash}"` : m;
+});
+// Leads come from frontmatter and may hold entities (&mdash;) or `code`: render them, never print them as text.
+const Lead = ({ text }) => <p className="kd-lead" dangerouslySetInnerHTML={{ __html: marked.parseInline(text || '') }} />;
+const Md = ({ text, fills, file }) => {
+  const html = useMemo(() => {
+    let h = pageLinks(marked.parse(text));
+    if (file) h = asFile(h);
+    if (fills) h = markFills(h); // before wrapTables: its nobr spans would split a {{…}}
+    return wrapTables(h);
+  }, [text, fills, file]);
+  return <div className="kd-prose" dangerouslySetInnerHTML={{ __html: html }} />;
+};
 
 const NAV = [['docs/what-is-keel', 'Docs'], ['commands', 'Commands'], ['skills', 'Skills'], ['adr', 'ADRs'], ['releases', 'Releases']];
 
@@ -90,7 +145,7 @@ const Install = () => {
     <>
       {methods.map((m) => (
         <TLAPanel key={m.id} bar={`${tool?.name ?? 'Claude Code'} · ${m.label}`} barRight={m.shell ? 'terminal' : 'in Claude Code'}>
-          <pre className="kd-code">{m.commands.join('\n')}</pre>
+          <pre className="kd-code kd-wrap">{m.commands.map((c) => <span key={c} className="kd-cmd">{c.split(/(?<=\/)/).flatMap((part, i) => (i ? [<wbr key={i} />, part] : [part]))}</span>)}</pre>
         </TLAPanel>
       ))}
       {tool?.start && <p className="kd-muted">Then run <code>{tool.start}</code>. {release.install.note}</p>}
@@ -101,8 +156,8 @@ const Install = () => {
 const Home = () => (
   <>
     <h1>Keel</h1>
-    <p className="kd-lead">{pages[0].lead}</p>
-    <p><TLABadge>v{release.latest}</TLABadge> <span className="kd-muted">{release.summary}</span></p>
+    <Lead text={pages[0].lead} />
+    <p><TLABadge>v{release.latest}</TLABadge> <span className="kd-muted">Latest release, {new Date(release.date + 'T00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}. {release.headline || release.summary}</span></p>
     <Install />
     <h2>Start here</h2>
     <ul className="kd-links">
@@ -117,7 +172,7 @@ const Doc = ({ page }) => {
     <article>
       <p className="kd-muted">{page.group}</p>
       <h1>{page.title}</h1>
-      <p className="kd-lead">{page.lead}</p>
+      <Lead text={page.lead} />
       <Md text={page.body} />
       <nav className="kd-pager" aria-label="Previous and next page">
         {pages[i - 1] ? <a href={href(`docs/${pages[i - 1].slug}/`)}>← {pages[i - 1].title}</a> : <span />}
@@ -144,10 +199,15 @@ const Commands = () => (
 const Skills = () => (
   <>
     <h1>Skills</h1>
-    <p className="kd-lead">Keel ships one skill.</p>
+    <p className="kd-lead">Keel ships one skill. This is what it does, and every mode it has.</p>
     <section className="kd-card">
       <h2>{skill.name} <TLABadge>v{skill.userVersion || skill.version}</TLABadge></h2>
-      <p>{skill.description}</p>
+      <Md text={skillSummary} />
+      <details className="kd-raw">
+        <summary>Exactly what Claude reads</summary>
+        <p>The text below is the skill's own description: the words Claude Code matches your request against when it decides to run keel. It is written for the machine, which is why it reads like a list of phrases.</p>
+        <p>{skill.description}</p>
+      </details>
     </section>
   </>
 );
@@ -155,11 +215,21 @@ const Skills = () => (
 const Adr = () => (
   <>
     <h1>Architecture decision records</h1>
-    <p className="kd-lead">The ADR format keel writes into a project: the index, and one record.</p>
-    <h2>The index (docs/adr/README.md)</h2>
-    <Md text={adr.index} />
-    <h2>One record (docs/adr/ADR-NNN-slug.md)</h2>
-    <Md text={adr.record} />
+    <p className="kd-lead">The decision record Keel writes into a project: a worked example first, then the blank it starts from.</p>
+    <h2>Example: Larder</h2>
+    <p>What keel writes for Larder, a made-up meal-planning app.</p>
+    <p className="kd-file">The index · <code>docs/adr/README.md</code></p>
+    <Md text={adrExample.index} file />
+    <p className="kd-file">One record · <code>docs/adr/ADR-002-offline-storage.md</code></p>
+    <Md text={adrExample.record} file />
+    <section className="kd-template" aria-labelledby="adr-template">
+      <h2 id="adr-template">Template</h2>
+      <p>This is the file before your answers go in. Each highlighted blank is filled from your interview.</p>
+      <p className="kd-file">The index · <code>docs/adr/README.md</code></p>
+      <Md text={adr.index} file fills />
+      <p className="kd-file">One record · <code>docs/adr/ADR-NNN-slug.md</code></p>
+      <Md text={adr.record} file fills />
+    </section>
   </>
 );
 
