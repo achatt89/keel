@@ -1,16 +1,19 @@
 # Changelog — shortlinks
 
-All notable changes. Format follows [Keep a Changelog](https://keepachangelog.com/); versions `[Unreleased]` until the first run on the team machine, then date-based `YYYY.MM.DD`.
+All notable changes to shortlinks. Format follows [Keep a Changelog](https://keepachangelog.com/); versions are date-based (`YYYY.MM.DD`) once anything ships.
 
-**Deploy-state tags** (one per line, flipped in place): `[on-branch]` built and gated, not on `main` · `[merged]` on `main` · `[deployed vNN]` running on the team machine · `[live-verified]` post-run curl check passed.
+**Deploy-state tags** (one per line, flipped in place as the work moves):
+
+| Tag | Meaning | Flipped by |
+|---|---|---|
+| `[on-branch]` | built and gated, not yet on trunk | doc-sync (initial write) |
+| `[merged]` | on `main` | the Merge step |
+| `[deployed vNN]` | running as release `vNN` | the deployer |
+| `[live-verified]` | post-run `curl` checklist passed on the real host | the deployer, same day |
 
 ---
 
 ## [Unreleased]
 
 ### Added
-- Foundational documentation suite (BRD, PRD, ARCHITECTURE, ADR-001..005, IMPLEMENTATION_PLAN, COMMANDS), workflow scripts and doc tooling — Keel generation `[on-branch]`
-
----
-
-*Older releases: `docs/PHASE_ARCHIVE.md#changelog` (once `/keel archive` has run).*
+- Foundational documentation suite (BRD, PRD, ARCHITECTURE, ADR-001..004, IMPLEMENTATION_PLAN, COMMANDS, keel tooling) — generation, no application code `[on-branch]`

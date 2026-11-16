@@ -39,19 +39,19 @@ Nothing leaves a working document without going somewhere: to a record document 
 
 **Fix the known bugs** (done in Keel 2.5.6). The split tool refuses paths outside the project (a security fix). References to a numbered section, such as section 9 of the architecture document, follow that section when a document is split. Closeout phases are numbered correctly, and the empty placeholder row in the deferred items table is no longer counted as open work.
 
-**Measure Keel.** A small test: the same few greenfield tasks, run by the same agent three ways (no documents, one short instructions file, the full Keel set). The end state is graded, and success, cost and length of context are recorded. The grader is itself tested on broken work, so a pass means something. This first run is the baseline, taken before anything below changes, and it is repeated after. The result can recommend shorter working documents, never a shorter record document and never a missing one: any proposal to remove a document type needs the written approval of Keel's maintainer.
+**Measure Keel** (baseline done; repeated for Keel 2.6.0). A small test: the same few greenfield tasks, run by the same agent three ways (no documents, one short instructions file, the full Keel set). The end state is graded, and success, cost and length of context are recorded. The grader is itself tested on broken work, so a pass means something. This first run is the baseline, taken before anything below changes, and it is repeated after. The result can recommend shorter working documents, never a shorter record document and never a missing one: any proposal to remove a document type needs the written approval of Keel's maintainer.
 
-**Measure what every project loads.** How much text a Keel project puts in front of the agent on every run, how large the Keel skill is, and which generated lines are ritual wording ("think carefully") that costs money for no gain.
+**Measure what every project loads** (done). How much text a Keel project puts in front of the agent on every run, how large the Keel skill is, and which generated lines are ritual wording ("think carefully") that costs money for no gain.
 
-**Leaner output** (one release, together with team answers below). Every document type stays. Size limits and shortening apply to the working documents only; the record documents stay full:
+**Leaner output** (shipped in Keel 2.6.0, together with team answers below). Every document type stays. Size limits and shortening apply to the working documents only; the record documents stay full:
 
 - A slimmer Keel skill: a short core, with each mode loaded only when you use it.
 - A shorter main instructions file (AGENTS.md) that holds facts, pointers and one "when to stop and ask" rule, plus a fixed end-of-run report: blocked on me, changed, found, could not confirm.
 - Rules for one area of the code, written to `.claude/rules/` with the paths they cover, so they load only when those files are touched. Each rule points to its decision record and never copies it.
-- A short header on new decision records: id, status, the paths it governs, who approved it, and how it is checked.
+- A short header on new decision records: id, status, the paths it governs, and how it is checked. Who approved it stays in the record's own table, so it is not written twice.
 - Plain wording in the Verify step: run a real check before calling work done, and a new evidence level, "check seen to fail when it should".
 
-**Team answers** (opt-in, same release, its own pull request). Today one person answers the whole interview. With team answers, each interview round can go to the person who knows it best. The "Team answers" section below has the details. It ships in its own pull request and stays off unless you turn it on, so the measurement above can still tell what the output changes did on their own.
+**Team answers** (opt-in, shipped in Keel 2.6.0 as its own pull request). Today one person answers the whole interview. With team answers, each interview round can go to the person who knows it best. The "Team answers" section below has the details. It ships in its own pull request and stays off unless you turn it on, so the measurement above can still tell what the output changes did on their own.
 
 ## Next
 
@@ -134,7 +134,7 @@ Run `/keel upgrade` after updating Keel. It works the way it always has (see [Up
 | Bug fixes and Keel's own scripts (size checker, workflow scripts, update check) | Replaced, as on every upgrade, and listed in the report |
 | Shorter working documents (AGENTS.md first) | Offered. The report shows each section and where it would move (a rule, a skill, a hook, or a record document). Text moves word for word; nothing is deleted. Record documents are not touched |
 | Area rules in `.claude/rules/` | Offered, generated from your existing decision records |
-| Header on decision records | New records only. Existing record files are never rewritten; their paths go in Keel's index instead |
+| Header on decision records | New records only. Existing record files are never rewritten; their paths go in the area rules files instead |
 | Verify wording and the new evidence level | Offered as a change to the Verify step |
 | Team answers | Nothing to migrate. Offered when you next run an interview round, for example in a new phase |
 | Permissions, guard hook, audit trail | Offered one entry at a time, shown as a change to your settings. Never switched on silently |

@@ -1,8 +1,21 @@
+---
+id: ADR-{{NNN}}
+status: {{Proposed}}
+paths: [{{"src/payments/**"}}]
+check: {{tests/payments/isolation.test.ts | lint rule no-raw-sql | none}}
+---
 <!--
   Keel template — docs/adr/ADR-NNN-<slug>.md (one decision record)
   WHAT: A single decision in table form: header, ≤2-sentence context, a Y-statement decision,
         the options weighed, and the consequences — including the ONE row where the build may
-        record how it deviated. Immutable once Accepted apart from that row and the Status cell.
+        record how it deviated. Immutable once Accepted apart from that row, the Status cell and
+        the header's `status`.
+  HEADER (new ADRs only, keel 2.6+): the frontmatter above, for scripts and `.claude/rules/`.
+        `status` = the stage word of the Status cell's latest step (Proposed / Accepted / Built /
+        Superseded), changed in the same commit; `/keel check` flags a mismatch. `paths` = the
+        code globs this decision governs (`[]` for a decision about no code); the area rules files
+        are built from them. `check` = what proves the decision holds (a test, a lint rule, a CI
+        gate, or `none`). ADRs written before 2.6 have no header and are never given one.
   FILE NAME: `ADR-{{NNN}}-{{kebab-slug}}.md` (zero-padded; slug from the Topic). The number is
         reserved in `docs/adr/README.md` first — by the phase script at scope time, or at
         Integrate for an unplanned decision. Never in a task worktree.

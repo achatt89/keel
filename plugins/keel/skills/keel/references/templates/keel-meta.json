@@ -1,5 +1,5 @@
 {
-  "keelVersion": "2.5.6",
+  "keelVersion": "2.6.0",
   "docFormat": 2,
   "generatedAt": "{{YYYY-MM-DD}}",
   "lastUpgraded": null,
@@ -27,6 +27,7 @@
   "skillsInstalled": [],
   "securitySkill": null,
   "agents": {},
+  "rounds": null,
   "updateCheck": true,
   "evidenceRetention": {
     "keepRunsPerBranch": 3,

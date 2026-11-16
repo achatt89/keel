@@ -18,6 +18,11 @@ Internal ledger for Keel evaluation v0. Every number comes from Claude Code's `m
 | Baseline | 27 | 4.721 | 2.761 | 7.482 | `baseline/summary.json` |
 | Re-judge of shortlinks-min-r1 (checking a judge failure) | 1 judge call | - | 0.103 | 0.103 | `claude-opus-5-5` |
 | **Recorded total** | | **5.525** | **3.573** | **9.098** | of the USD 60 approved |
+| 2.6.0 regression: fixture generation (ledger / shortlinks / booking, 2.6.0 at b01038d) | 3 | 2.425 | - | 2.425 | `tasks/*/keel-gen-usage.json` |
+| 2.6.0 regression: runs | 27 | 4.228 | 2.830 | 7.058 | `regression-260/summary.json` |
+| 2.6.0 regression: first try of ledger-keel-r3 (killed when the temp was stopped; transcript not saved) | 1 | not recorded | - | not recorded | re-run is in the 27 |
+| 2.6.0 regression: D1 live checks (/keel version, check, change) | 3 | 0.606 | - | 0.606 | `regression-2.6.0.md` |
+| **2.6.0 regression recorded total** | | **7.259** | **2.830** | **10.089** | of the USD 25 approved |
 
 The temp sessions' own tokens (the agents that ran the harness) are not in these records; the orchestrator meters those.
 
@@ -152,3 +157,115 @@ The temp sessions' own tokens (the agents that ran the harness) are not in these
 | task ledger | judge | `claude-opus-5-5` | 9 | 18 | 12,231 | 5,841 | 85,921 | 0.933 |
 | task shortlinks | agent | `claude-sonnet-5-5` | 9 | 44 | 58,104 | 390,477 | 142,840 | 1.192 |
 | task shortlinks | judge | `claude-opus-5-5` | 9 | 18 | 14,776 | 5,841 | 76,887 | 0.912 |
+
+## Regression 2.6.0 (3 tasks x 3 conditions x 3 reps; fixtures from 2.6.0)
+
+### Regression 2.6.0: Per run
+
+| run | role | model id | runs | input | output | cache read | cache write | cost $ |
+|---|---|---|---|---|---|---|---|---|
+| ledger-none-r1 | agent | `claude-sonnet-5-5` |  | 12 | 5,626 | 123,577 | 12,961 | 0.120 |
+| ledger-none-r1 | judge | `claude-opus-5-5` |  | 2 | 1,315 | 649 | 7,691 | 0.088 |
+| ledger-min-r1 | agent | `claude-sonnet-5-5` |  | 8 | 5,634 | 77,390 | 12,933 | 0.116 |
+| ledger-min-r1 | judge | `claude-opus-5-5` |  | 2 | 1,288 | 649 | 7,793 | 0.088 |
+| ledger-keel-r1 | agent | `claude-sonnet-5-5` |  | 22 | 18,607 | 404,137 | 39,942 | 0.386 |
+| ledger-keel-r1 | judge | `claude-opus-5-5` |  | 2 | 1,360 | 649 | 15,916 | 0.155 |
+| shortlinks-none-r1 | agent | `claude-sonnet-5-5` |  | 4 | 5,725 | 29,474 | 12,359 | 0.110 |
+| shortlinks-none-r1 | judge | `claude-opus-5-5` |  | 2 | 1,587 | 649 | 7,926 | 0.095 |
+| shortlinks-min-r1 | agent | `claude-sonnet-5-5` |  | 4 | 6,012 | 29,963 | 12,969 | 0.115 |
+| shortlinks-min-r1 | judge | `claude-opus-5-5` |  | 2 | 1,478 | 649 | 7,861 | 0.093 |
+| shortlinks-keel-r1 | agent | `claude-sonnet-5-5` |  | 8 | 7,848 | 94,129 | 23,625 | 0.182 |
+| shortlinks-keel-r1 | judge | `claude-opus-5-5` |  | 2 | 1,423 | 649 | 9,912 | 0.108 |
+| booking-none-r1 | agent | `claude-sonnet-5-5` |  | 4 | 5,044 | 29,499 | 11,797 | 0.101 |
+| booking-none-r1 | judge | `claude-opus-5-5` |  | 2 | 1,735 | 649 | 7,846 | 0.098 |
+| booking-min-r1 | agent | `claude-sonnet-5-5` |  | 4 | 4,409 | 29,971 | 11,516 | 0.093 |
+| booking-min-r1 | judge | `claude-opus-5-5` |  | 2 | 1,815 | 649 | 7,505 | 0.096 |
+| booking-keel-r1 | agent | `claude-sonnet-5-5` |  | 14 | 8,366 | 195,357 | 26,084 | 0.208 |
+| booking-keel-r1 | judge | `claude-opus-5-5` |  | 2 | 1,373 | 649 | 10,205 | 0.109 |
+| ledger-none-r2 | agent | `claude-sonnet-5-5` |  | 4 | 5,259 | 29,485 | 11,951 | 0.103 |
+| ledger-none-r2 | judge | `claude-opus-5-5` |  | 2 | 1,265 | 649 | 7,877 | 0.088 |
+| ledger-min-r2 | agent | `claude-sonnet-5-5` |  | 10 | 5,533 | 96,957 | 13,154 | 0.118 |
+| ledger-min-r2 | judge | `claude-opus-5-5` |  | 2 | 1,336 | 649 | 7,621 | 0.088 |
+| ledger-keel-r2 | agent | `claude-sonnet-5-5` |  | 22 | 17,502 | 386,226 | 37,958 | 0.366 |
+| ledger-keel-r2 | judge | `claude-opus-5-5` |  | 2 | 1,586 | 649 | 15,530 | 0.156 |
+| shortlinks-none-r2 | agent | `claude-sonnet-5-5` |  | 4 | 5,998 | 29,470 | 12,587 | 0.113 |
+| shortlinks-none-r2 | judge | `claude-opus-5-5` |  | 2 | 2,148 | 649 | 7,862 | 0.106 |
+| shortlinks-min-r2 | agent | `claude-sonnet-5-5` |  | 4 | 6,205 | 29,959 | 13,242 | 0.118 |
+| shortlinks-min-r2 | judge | `claude-opus-5-5` |  | 2 | 1,650 | 649 | 8,240 | 0.099 |
+| shortlinks-keel-r2 | agent | `claude-sonnet-5-5` |  | 10 | 7,625 | 125,898 | 26,261 | 0.194 |
+| shortlinks-keel-r2 | judge | `claude-opus-5-5` |  | 2 | 1,485 | 649 | 9,579 | 0.106 |
+| booking-none-r2 | agent | `claude-sonnet-5-5` |  | 4 | 4,960 | 29,499 | 11,637 | 0.099 |
+| booking-none-r2 | judge | `claude-opus-5-5` |  | 2 | 1,362 | 649 | 7,667 | 0.089 |
+| booking-min-r2 | agent | `claude-sonnet-5-5` |  | 4 | 5,233 | 29,983 | 12,425 | 0.105 |
+| booking-min-r2 | judge | `claude-opus-5-5` |  | 2 | 1,488 | 649 | 8,151 | 0.095 |
+| booking-keel-r2 | agent | `claude-sonnet-5-5` |  | 14 | 10,070 | 185,406 | 23,867 | 0.215 |
+| booking-keel-r2 | judge | `claude-opus-5-5` |  | 2 | 1,544 | 649 | 11,159 | 0.120 |
+| ledger-none-r3 | agent | `claude-sonnet-5-5` |  | 6 | 5,783 | 53,040 | 12,626 | 0.114 |
+| ledger-none-r3 | judge | `claude-opus-5-5` |  | 2 | 1,217 | 649 | 7,957 | 0.088 |
+| ledger-min-r3 | agent | `claude-sonnet-5-5` |  | 8 | 4,802 | 76,402 | 12,175 | 0.104 |
+| ledger-min-r3 | judge | `claude-opus-5-5` |  | 2 | 1,041 | 649 | 7,373 | 0.080 |
+| ledger-keel-r3 | agent | `claude-sonnet-5-5` |  | 14 | 14,397 | 221,741 | 35,557 | 0.308 |
+| ledger-keel-r3 | judge | `claude-opus-5-5` |  | 2 | 1,440 | 649 | 14,439 | 0.144 |
+| shortlinks-none-r3 | agent | `claude-sonnet-5-5` |  | 4 | 6,134 | 29,474 | 12,573 | 0.115 |
+| shortlinks-none-r3 | judge | `claude-opus-5-5` |  | 2 | 1,693 | 649 | 7,941 | 0.098 |
+| shortlinks-min-r3 | agent | `claude-sonnet-5-5` |  | 4 | 6,042 | 29,959 | 13,067 | 0.116 |
+| shortlinks-min-r3 | judge | `claude-opus-5-5` |  | 2 | 2,338 | 649 | 7,984 | 0.111 |
+| shortlinks-keel-r3 | agent | `claude-sonnet-5-5` |  | 6 | 8,048 | 57,525 | 21,312 | 0.171 |
+| shortlinks-keel-r3 | judge | `claude-opus-5-5` |  | 2 | 1,355 | 649 | 9,732 | 0.105 |
+| booking-none-r3 | agent | `claude-sonnet-5-5` |  | 6 | 6,438 | 53,022 | 13,286 | 0.123 |
+| booking-none-r3 | judge | `claude-opus-5-5` |  | 2 | 2,063 | 649 | 8,553 | 0.110 |
+| booking-min-r3 | agent | `claude-sonnet-5-5` |  | 10 | 5,401 | 101,920 | 13,047 | 0.116 |
+| booking-min-r3 | judge | `claude-opus-5-5` |  | 2 | 1,771 | 649 | 7,964 | 0.099 |
+| booking-keel-r3 | agent | `claude-sonnet-5-5` |  | 10 | 9,406 | 115,370 | 23,316 | 0.199 |
+| booking-keel-r3 | judge | `claude-opus-5-5` |  | 2 | 1,459 | 649 | 10,970 | 0.117 |
+| gen-usage.json | agent | `claude-sonnet-5-5` |  | 38 | 27,034 | 1,306,518 | 88,734 | 0.756 |
+| gen-usage.json | agent | `claude-sonnet-5-5` |  | 38 | 34,769 | 1,288,006 | 101,687 | 0.883 |
+| gen-usage.json | agent | `claude-sonnet-5-5` |  | 34 | 30,223 | 1,030,088 | 95,097 | 0.786 |
+
+### Regression 2.6.0: Totals
+
+| group | role | model id | runs | input | output | cache read | cache write | cost $ |
+|---|---|---|---|---|---|---|---|---|
+| (fixture) / gen | agent | `claude-sonnet-5-5` | 3 | 110 | 92,026 | 3,624,612 | 285,518 | 2.425 |
+| ALL | agent | `claude-sonnet-5-5` | 30 | 334 | 294,133 | 6,319,445 | 769,745 | 6.653 |
+| ALL | judge | `claude-opus-5-5` | 27 | 54 | 41,615 | 17,523 | 249,254 | 2.830 |
+| booking / keel | agent | `claude-sonnet-5-5` | 3 | 38 | 27,842 | 496,133 | 73,267 | 0.621 |
+| booking / keel | judge | `claude-opus-5-5` | 3 | 6 | 4,376 | 1,947 | 32,334 | 0.347 |
+| booking / min | agent | `claude-sonnet-5-5` | 3 | 18 | 15,043 | 161,874 | 36,988 | 0.315 |
+| booking / min | judge | `claude-opus-5-5` | 3 | 6 | 5,074 | 1,947 | 23,620 | 0.291 |
+| booking / none | agent | `claude-sonnet-5-5` | 3 | 14 | 16,442 | 112,020 | 36,720 | 0.323 |
+| booking / none | judge | `claude-opus-5-5` | 3 | 6 | 5,160 | 1,947 | 24,066 | 0.296 |
+| cond gen | agent | `claude-sonnet-5-5` | 3 | 110 | 92,026 | 3,624,612 | 285,518 | 2.425 |
+| cond keel | agent | `claude-sonnet-5-5` | 9 | 120 | 101,869 | 1,785,789 | 257,922 | 2.229 |
+| cond keel | judge | `claude-opus-5-5` | 9 | 18 | 13,025 | 5,841 | 107,442 | 1.121 |
+| cond min | agent | `claude-sonnet-5-5` | 9 | 56 | 49,271 | 502,504 | 114,528 | 1.001 |
+| cond min | judge | `claude-opus-5-5` | 9 | 18 | 14,205 | 5,841 | 70,492 | 0.849 |
+| cond none | agent | `claude-sonnet-5-5` | 9 | 48 | 50,967 | 406,540 | 111,777 | 0.998 |
+| cond none | judge | `claude-opus-5-5` | 9 | 18 | 14,385 | 5,841 | 71,320 | 0.860 |
+| ledger / keel | agent | `claude-sonnet-5-5` | 3 | 58 | 50,506 | 1,012,104 | 113,457 | 1.060 |
+| ledger / keel | judge | `claude-opus-5-5` | 3 | 6 | 4,386 | 1,947 | 45,885 | 0.455 |
+| ledger / min | agent | `claude-sonnet-5-5` | 3 | 26 | 15,969 | 250,749 | 38,262 | 0.338 |
+| ledger / min | judge | `claude-opus-5-5` | 3 | 6 | 3,665 | 1,947 | 22,787 | 0.256 |
+| ledger / none | agent | `claude-sonnet-5-5` | 3 | 22 | 16,668 | 206,102 | 37,538 | 0.337 |
+| ledger / none | judge | `claude-opus-5-5` | 3 | 6 | 3,797 | 1,947 | 23,525 | 0.265 |
+| shortlinks / keel | agent | `claude-sonnet-5-5` | 3 | 24 | 23,521 | 277,552 | 71,198 | 0.548 |
+| shortlinks / keel | judge | `claude-opus-5-5` | 3 | 6 | 4,263 | 1,947 | 29,223 | 0.319 |
+| shortlinks / min | agent | `claude-sonnet-5-5` | 3 | 12 | 18,259 | 89,881 | 39,278 | 0.349 |
+| shortlinks / min | judge | `claude-opus-5-5` | 3 | 6 | 5,466 | 1,947 | 24,085 | 0.302 |
+| shortlinks / none | agent | `claude-sonnet-5-5` | 3 | 12 | 17,857 | 88,418 | 37,519 | 0.338 |
+| shortlinks / none | judge | `claude-opus-5-5` | 3 | 6 | 5,428 | 1,947 | 23,729 | 0.299 |
+| task (fixture) | agent | `claude-sonnet-5-5` | 3 | 110 | 92,026 | 3,624,612 | 285,518 | 2.425 |
+| task booking | agent | `claude-sonnet-5-5` | 9 | 70 | 59,327 | 770,027 | 146,975 | 1.258 |
+| task booking | judge | `claude-opus-5-5` | 9 | 18 | 14,610 | 5,841 | 80,020 | 0.934 |
+| task ledger | agent | `claude-sonnet-5-5` | 9 | 106 | 83,143 | 1,468,955 | 189,257 | 1.736 |
+| task ledger | judge | `claude-opus-5-5` | 9 | 18 | 11,848 | 5,841 | 92,197 | 0.976 |
+| task shortlinks | agent | `claude-sonnet-5-5` | 9 | 48 | 59,637 | 455,851 | 147,995 | 1.234 |
+| task shortlinks | judge | `claude-opus-5-5` | 9 | 18 | 15,157 | 5,841 | 77,037 | 0.921 |
+
+### Regression 2.6.0: D1 live checks
+
+| check | role | model id | input | output | cache read | cache write | cost $ |
+|---|---|---|---|---|---|---|---|
+| /keel version | agent | `claude-sonnet-5-5` | 6 | 815 | 113,003 | 47,263 | 0.209 |
+| /keel check | agent | `claude-sonnet-5-5` | 6 | 219 | 116,015 | 42,506 | 0.184 |
+| /keel change fix-rounding-note | agent | `claude-sonnet-5-5` | 8 | 1,413 | 174,960 | 45,411 | 0.213 |

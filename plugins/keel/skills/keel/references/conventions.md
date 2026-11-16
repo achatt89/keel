@@ -88,6 +88,16 @@ claim, and doc-sync treats it as a lint failure.
 | `staging` | exercised on a deployed non-prod environment | env + deploy id + check performed |
 | `prod-live` | observed on production, by a human or a scripted check | env + deploy id + check performed |
 
+**Check proven to fail** is the rung every executed level (`unit` and up) stands on: a check
+counts as evidence only once it has been seen to fail on broken code (the test failed before the
+fix, or went red when the fix was reverted or the assertion broken). Verify records how in each
+gate's `failSeen`; a standing tool gate (lint, typecheck, audit, build) says `standing tool`. A met
+gate above `code-read` with no `failSeen` is `partial`. Verify runs a real check before calling
+anything done; a syntax-only check, one that failed to start, or a skipped test is not a check.
+
+Verify writes `code-read` to `staging` only; `node .keel/doc-size.mjs --evidence <record>` rejects
+`prod-live` and an unproven met gate in the record Verify writes. `prod-live` comes from a deploy.
+
 Rules: the level is the **lowest** that the claim actually rests on, never the highest available.
 Evidence inherited from an earlier phase is cited as inherited (`inherited: Phase 3 integration`),
 not restated as this phase's own. A gate whose mechanism is tested but whose stated outcome was
@@ -116,7 +126,9 @@ publishes release notes to users (a release feed, a docs badge, an update notice
 
 `Proposed` (written at phase scope, before build) → `Accepted` → `Built` (build confirmed, with
 deviations recorded) → `⚠️ Superseded by ADR-xxx`. The Status cell carries the lifecycle with
-commit + date for each transition.
+commit + date for each transition. ADRs written from keel 2.6 also open with a frontmatter header
+(`id`, `status`, `paths`, `check`) whose `status` moves with the Status cell; ADRs written earlier
+have no header and are never given one (`.claude/rules/` maps their paths instead).
 
 - **No addenda.** The only post-acceptance edit is filling the single `Build deviation` row in
   the Consequences table. A deviation that doesn't fit one row is a new ADR that supersedes.
@@ -231,7 +243,25 @@ investigation because the last one left no trace.
 ## AGENTS.md is canonical
 
 `AGENTS.md` is the keystone index (cross-tool standard). `CLAUDE.md` is one line — `@AGENTS.md`
-— plus Claude-only sections (Active skills, Workflow-tool notes). Never maintain two copies.
+— plus Claude-only lines (workflow tooling, review roles, a one-line UI-skills pointer). Never
+maintain two copies.
+
+## Placement rule (one home per instruction)
+
+Every instruction Keel generates has exactly one home. The other places point to it, never copy it.
+
+| Kind of instruction | Home | Example |
+|---|---|---|
+| A fact or one-line rule every session needs | Keystone (`AGENTS.md`; `CLAUDE.md` for Claude-only tooling) | "Never commit to `main`." · the hard-invariants table |
+| A rule for one area of the code | Path-scoped rules file (`.claude/rules/<area>.md`, `paths:` frontmatter) pointing to its ADR/NFR | "Payments code: ADR-007." |
+| A gate a machine can check | Hook or script (`.claude/hooks/`, `.keel/*.mjs`, the workflow scripts) | split-link check in the `keel-gates` Stop hook |
+| Reasoning, options, rationale, full command maps | Record document (ADR, ENGINEERING_DESIGN, DESIGN, NFR, …) | DESIGN.md §12 impeccable lifecycle |
+| How a procedure runs, step by step | Script or its README (`.claude/workflows/`), with the rules in IMPLEMENTATION_PLAN "Standing rules" | doc-sync delegate ⇄ review loop |
+
+Tests for a line in the keystone: would an agent act wrongly in *any* session without it? If not,
+it belongs in its home and the keystone gets a pointer at most. Can a script check it? Then the
+script is its home and the prose rule shrinks to a pointer. Moving text keeps it word for word:
+the home must already hold it (or receive it verbatim) before the keystone line is cut.
 
 ## Traceability checklist (run before handoff)
 

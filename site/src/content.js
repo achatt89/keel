@@ -68,6 +68,8 @@ export { skillSummary };
 
 // The record template's guidance quotes '<!-- Keel guidance -->' inside its own comment; drop that first.
 const stripGuidance = (t) => t.replace(/<!-- Keel guidance -->/g, '').replace(/<!--[\s\S]*?-->\n*/g, '');
-export const adr = { index: stripGuidance(adrIndexRaw), record: stripGuidance(adrRecordRaw) };
+// A record's frontmatter header (keel 2.6+) shows as a YAML block, not as a rule and a heading.
+const header = (t) => t.replace(/^---\n([\s\S]*?)\n---\n/, '```yaml\n---\n$1\n---\n```\n\n');
+export const adr = { index: stripGuidance(adrIndexRaw), record: header(stripGuidance(adrRecordRaw)) };
 // A worked example for a made-up project (docs/site/adr-example/), so the page teaches before it shows blanks.
-export const adrExample = { index: adrExIndex, record: adrExRecord };
+export const adrExample = { index: adrExIndex, record: header(adrExRecord) };

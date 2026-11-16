@@ -3,6 +3,7 @@
 Reference for Phase U2 (Audit) in the keel upgrade command.
 For each doc type, the checklist below defines what a fully current keel-generated doc must contain.
 Use it to diff existing docs against current keel standards and classify each gap.
+Skill layout (2.6): SKILL.md is a router and each mode lives in `references/modes/`; nothing to migrate in a project.
 
 ---
 
@@ -42,7 +43,7 @@ Use it to diff existing docs against current keel standards and classify each ga
 
 `.keel/meta.json` `docFormat: 2` is authoritative. When it is absent or `< 2`, or when the
 indicators contradict it, classify by indicators — **any two** → format 1 → the Format Migration
-sequence (SKILL.md Upgrade Mode U0–U7) is offered in place of the surgical U4:
+sequence (`modes/upgrade.md`, Upgrade Mode U0–U7) is offered in place of the surgical U4:
 
 | Indicator | Format 1 | Format 2 |
 |---|---|---|
@@ -68,7 +69,7 @@ Record the detection in the report ("format 1 by 5/12 indicators").
 ### AGENTS.md / CLAUDE.md (the keystone pair)
 
 Format 2 shape: `AGENTS.md` is the keystone; `CLAUDE.md`'s first non-comment line is `@AGENTS.md`
-and it holds only Claude-only sections (Active skills, workflow-tool notes). In format 1 the
+and it holds only Claude-only lines (workflow tooling, review roles, UI-skills pointer). In format 1 the
 checklist below applies to `CLAUDE.md` itself.
 
 Required sections (check by heading presence):
@@ -87,15 +88,15 @@ Required sections (check by heading presence):
   - [ ] Has doc-sync step (run doc-sync.js before every merge) ← new in v0.3+
   - [ ] Has decisions/ADR capture step ← new in v0.3+
 - [ ] Working agreements (conventional commits, branch per feature)
-- [ ] Active skills *(UI projects only — new in v0.3+)*
-  - [ ] impeccable section with command quick-reference table
-  - [ ] modern-web-guidance section with 3-function usage
+- [ ] UI-skills pointer *(UI projects only)*: CLAUDE.md "UI work" line pointing to DESIGN.md §12
+  (2.6); an older "Active skills" section is also accepted, and is offered the 2.6 pointer (see
+  "Slim keystone and hooks (2.6)" below)
 
 Outdated indicators → gap category:
 - "Git workflow" section present but no workflow script references → OUTDATED_CONVENTION (Important)
 - No doc-sync step in the workflow section → MISSING_FEATURE (Important)
-- No Active skills section in a UI project → MISSING_FEATURE (Important)
-- Active skills section present but only lists "audit" command → OUTDATED_CONVENTION (Important)
+- Neither a "UI work" pointer nor an Active skills section in a UI project → MISSING_FEATURE (Important)
+- DESIGN.md §12 missing or holding only the "audit" command → OUTDATED_CONVENTION (Important)
 - Status section is prose / > 2 lines, or invariants are a numbered list without `Enforced by`
   → FORMAT_MIGRATION (Critical — this is the file every session reads first)
 - `AGENTS.md` exists as a copy of `CLAUDE.md` (not an import), or differs from it → FORMAT_MIGRATION
@@ -235,6 +236,8 @@ Required (format 2):
   `Build deviation`, DEPLOYMENT deploy log, CHANGELOG, RUNBOOK postmortems, or FEEDBACK_ROUNDS)
 - [ ] No `[NEEDS DECISION]` markers in other docs that lack a row in Open decisions
 - [ ] Index file ≤ budget (default 16384 bytes)
+- [ ] ADRs written from 2.6 on open with the frontmatter header (`id`, `status`, `paths`, `check`);
+  older ADRs have none and are never given one (not a gap)
 
 Outdated indicators:
 - Single `ADR.md` with prose entries → FORMAT_MIGRATION (Critical); count the addenda for the
@@ -327,6 +330,12 @@ Check:
 - [ ] `.keel/evidence/` exists → MISSING_FEATURE (Important) if absent
 - [ ] At least one `phase-N-*.js` for each non-✅ phase in IMPLEMENTATION_PLAN → MISSING_FEATURE (Important)
 - [ ] `README.md` present → MISSING_FEATURE (Optional)
+- [ ] Verify stage of `change-template.js` and every non-✅ `phase-N-*.js` has the real-check line,
+  the `failSeen` field and the `doc-size.mjs --evidence` step (2.6: check proven to fail; `prod-live`
+  rejected by the checker, not by capitals) → OUTDATED_CONVENTION (Minor). Propose the three Verify
+  edits per script and apply on approval; `change-template.js` holds no project content and is
+  replaced verbatim. Needs `.keel/doc-size.mjs` with `--evidence` (installed on every upgrade).
+  Existing `.keel/evidence/*.json` records are history: never rewritten, never re-checked.
 
 ---
 
@@ -353,22 +362,22 @@ If UI project:
 Every project that will be built:
 - [ ] security-audit skill resolves (`~/.claude/skills/`, `~/.agents/skills/` or `.claude/skills/`
   `security-audit/SKILL.md`) → MISSING_SKILL (Important) unless `.keel/meta.json` `securitySkill`
-  is `"never"`. Fix only after an explicit yes (SKILL.md "Security skill": global, third-party).
+  is `"never"`. Fix only after an explicit yes (`modes/generation.md` "Security skill": global, third-party).
 - [ ] Skill installed → the security role has an owner (full-time security/QA agent, else
   `.claude/agents/security.md`) recorded in `agents.security` → MISSING_SKILL (Important). Never
   both: a full-time agent gets the skill and no subagent is written.
 - [ ] `agents` entry written by keel 2.1 as an orchestrator request (not a `.claude/agents/` path,
   not `type: full-time` for an agent that exists) → OUTDATED_CONVENTION (Important): replace per
-  SKILL.md "Migrating keel 2.1 agent requests".
-- [ ] A role is set up → AGENTS.md workflow step 9 *Review before done* + its Pre-PR line present →
+  `modes/upgrade.md` "Migrating keel 2.1 agent requests".
+- [ ] A role is set up → AGENTS.md workflow step 9 *Review before done* present (2.6: one line; older: + its Pre-PR line) →
   MISSING_FEATURE (Important)
 - [ ] A role is set up → `.keel/prune-evidence.mjs` + `evidenceRetention` in meta.json →
   MISSING_FEATURE (Optional)
 - [ ] (every project) `doc-sync` role has an owner (full-time doc agent, else
   `.claude/agents/doc-sync.md`) in `agents."doc-sync"`; `doc-sync.js` has the delegate → review →
   ≤3-round loop; phase scripts' Doc Sync stage calls `doc-sync.js`; AGENTS.md has workflow step 5
-  (doc sync before the completing commit), the "Delegation" section and the doc-sync Pre-PR line →
-  OUTDATED_CONVENTION (Important). Fix: SKILL.md "Migrating to keel 2.3".
+  (doc sync before the completing commit) and the Delegation section or (2.6) its pointer to `.claude/workflows/README.md` →
+  OUTDATED_CONVENTION (Important). Fix: `modes/upgrade.md` "Migrating to keel 2.3".
 - [ ] Every role subagent file ends with the `## Report` block and the caller-only rule →
   OUTDATED_CONVENTION (Important)
 - [ ] `.keel/doc-size.mjs` present (with `--split`) and `defaultBudget` in meta.json → MISSING_FEATURE (Important)
@@ -389,10 +398,97 @@ Every project that will be built:
   named section (never compress)
 - [ ] `.keel/meta.json` has no `budgetExceptions` (moved to `waivers` with `reason` + `reviewed`)
   → OUTDATED_CONVENTION (Minor; ask the user per entry)
+- [ ] Split docs (a parent with `## Parts`): no same-file `#anchor` link in the family points at a heading that moved to
+  another part (2.6.0; `.keel/check.mjs` reports them as `dead-link … no heading`) → OUTDATED_CONVENTION (Minor).
+  Propose `node .keel/doc-size.mjs --relink <parent.md>` per family and run it on approval: it rewrites only those links,
+  to `NN-part.md#anchor`, is idempotent, and never touches ADR files. New splits do this themselves.
+- [ ] `.keel/check.mjs` present (2.6.0: `/keel check`, read-only drift check) → MISSING_FEATURE (Optional).
+  U1 installs it verbatim on every upgrade; no document changes. Run it once at U2 and list its findings in the
+  report as information (doc-sync or the named mode fixes them; the upgrade itself does not)
 - [ ] an installed `.claude/hooks/keel-update-check.mjs` reads `release.json` (2.5.3: user-facing releases only) → else OUTDATED_CONVENTION (Minor): replace verbatim
 - [ ] `.claude/hooks/keel-update-check.mjs` + SessionStart entry → MISSING_FEATURE (Optional, opt-in)
+- [ ] AGENTS.md "Stops and end-of-run report" section (2.6: one stop line filled from the project's ADR/NFR/
+  COMPLIANCE/THREAT_MODEL rows, and the four-line end-of-run report) → MISSING_FEATURE (Optional). Propose the
+  stop list for the owner to edit; never invent a stop the docs do not support
+- [ ] Slim keystone and hooks (2.6) → see the section below; every item is OUTDATED_CONVENTION
+  (Minor) and an offer, never applied without approval
+- [ ] Team answers (opt-in, `references/team-answers.md`): no `rounds` in `.keel/meta.json` → nothing
+  to migrate and no gap; it is offered at Phase 0 of the next interview round, never forced. If
+  `.keel/rounds/` exists: `.keel/packet-check.mjs` present and passing → else MISSING_FEATURE
+  (Important): install it verbatim from `templates/keel-packet-check.mjs`; repo public and
+  `.keel/rounds/` not git-ignored → ask the owner (Minor).
 
 ---
+
+### Slim keystone and hooks (2.6)
+
+Keel 2.6 cuts the always-loaded keystone (fresh project 16.1 KB → under 9.5 KB) by moving
+detail to the one home it already has (`references/conventions.md` "Placement rule"). Execution
+tier only: record documents are never shortened or rewritten. Each item is its own offer and,
+if approved, its own commit. Never compress wording in place; a section that cannot be matched
+to its home stays as it is.
+
+**How to offer a keystone cut (C1–C4).** For each section below: (1) show the section, (2) show
+the home and grep it for each rule the section states, (3) if the home holds it word for word,
+offer the one-line pointer from the 2.6 template; if a sentence is missing from the home, first
+offer to move that sentence there verbatim (execution-tier homes only: IMPLEMENTATION_PLAN
+"Standing rules", `.claude/workflows/README.md`), then the pointer. Show the byte saving.
+
+| # | Keystone section | Home that must hold it | 2.6 replacement |
+|---|---|---|---|
+| C1 | CLAUDE.md "Active skills" (impeccable table, modern-web-guidance) | DESIGN.md §12.1 / §12.2 (record, read only; if §12 is missing, keep the section) | the "UI work" line |
+| C2 | AGENTS.md "Git & working workflow" steps 0–9 (multi-line) | IMPLEMENTATION_PLAN "Standing rules" + `.claude/workflows/README.md` (Stages, Rules) | one line per step + the "Rules and rationale" pointer. Step 9's text goes into Standing rules as the "Review before done" bullet if absent; step 5 gains the proportional-sync sentence there |
+| C3 | CLAUDE.md "Review subagents" table | AGENTS.md steps 5 and 9 + `.claude/agents/*.md` | the "Review roles" line |
+| C4 | AGENTS.md "Delegation" section | `.claude/workflows/README.md` "Delegation" (append the section verbatim if absent) + each agent's Report block | the Delegation pointer line |
+
+**C5: standing gates → hook.** Offer `.claude/hooks/keel-gates.mjs` (from
+`templates/keel-gates-hook.mjs`, verbatim) and the `Stop` entry from `templates/hooks-settings.json`.
+Once installed, offer to drop the Pre-PR boxes it and steps 5–9 cover (tests line, decision line,
+security/design reviewer, doc-sync Report, doc-sync commit + size check); the invariant boxes and
+the COMMANDS/DEPLOYMENT/RUNBOOK box stay.
+
+**C6: subagent descriptions.** For each `.claude/agents/{design,security,doc-sync}.md` whose
+`description:` still says "MUST BE USED PROACTIVELY": offer the 2.6 template description (plain
+trigger conditions). Leave a hand-edited description alone unless the user approves; never touch a
+full-time agent's definition.
+
+**C7: modern-web-guidance hook.** If `.claude/hooks/modern-web-guidance-hook.mjs` matches
+`.js/.mjs/.ts` or has no once-per-session marker: offer the 2.6 file (verbatim) and the matching
+DESIGN.md §12.2 trigger sentence (a factual correction, shown as a diff, applied only on
+approval). **Duplicate registration:** if the same hook command appears more than once across
+`.claude/settings.json` and `.claude/settings.local.json` (any hook, not only this one), report it
+and offer to keep one entry in `settings.json`.
+
+**Proportional doc sync.** `.claude/workflows/doc-sync.js` is replaced verbatim, as on every
+upgrade (it gains the status-only triage). Offer the matching Standing-rules sentence and the
+doc-sync subagent description.
+
+### Area rules and ADR header (2.6)
+
+Keel 2.6 adds path-scoped area rules: `.claude/rules/<area>.md` files that Claude Code loads only
+when matching files are touched, each line pointing to the ADR or NFR that holds the reason. New
+ADRs also open with a small frontmatter header (`id`, `status`, `paths`, `check`). Both are offers;
+nothing is applied without approval.
+
+**ADR files are record tier and are never rewritten.** Existing ADRs get no header, now or later.
+A missing header on an ADR written before the upgrade is not a gap; do not report it. Only ADRs
+written after the upgrade use the 2.6 template (doc-sync and `/keel phase new` do this).
+
+**How to offer the rules files.**
+1. Read each ADR (Accepted or Built; skip Superseded) and the NFR table. Collect the code paths
+   their text names: module names, folders, file globs. Never invent a glob: an ADR whose text
+   names no path is listed as "no path found" and the user may supply one or skip it.
+2. Group by area (one file per module, layer or boundary). For each rule write one or two lines:
+   what to do or never do there, ending in the ID. Never paste the ADR's or NFR's text.
+3. Show each proposed file in full (frontmatter + lines) with the ADR/NFR each line came from.
+   Write only the approved files, from `templates/rules/area.md`.
+4. Offer the AGENTS.md sentence "Area rules load by path: …" from the 2.6 template, in place of
+   "read the relevant one *before* touching code". Only if at least one rules file was written.
+5. Run `node .keel/check.mjs` (installed on every upgrade): it must report no `rule-ref` finding.
+
+**Second run.** Rules files that already exist are compared, not rewritten: offer only the lines
+for ADRs/NFRs added since (a new ADR's header `paths` makes this exact). Running upgrade twice
+changes nothing the second time.
 
 ## Gap severity reference
 
@@ -422,7 +518,7 @@ Every project that will be built:
 | IMPLEMENTATION_PLAN missing deferred items table | Important |
 | IMPLEMENTATION_PLAN missing Workflow: line per phase | Important |
 | Phase workflow scripts missing from .claude/workflows/ | Important |
-| CLAUDE.md Active skills section missing (UI project) | Important |
+| CLAUDE.md UI-skills pointer (or older Active skills section) missing (UI project) | Important |
 | Skill files (impeccable/modern-web-guidance) not installed (UI) | Important |
 | Unfilled `{{PLACEHOLDER}}` or `[NEEDS DECISION]` in any doc | Important |
 | Missing cross-references between docs | Optional |
@@ -445,12 +541,12 @@ Every project that will be built:
 3. **Appending.** These sections are added at the end of the doc when absent:
    - DESIGN.md §12 (before the `*End of DESIGN.md*` line)
    - IMPLEMENTATION_PLAN deferred items table + workflow scripts index (before `*End of*` line)
-   - CLAUDE.md Active skills section (at end of file)
+   - CLAUDE.md "UI work" line (at end of file)
 
 4. **Placeholder fill.** After every edit, grep the modified doc for `{{[A-Z_]+}}` and fill
    each from project context established during this session. Report any that couldn't be filled.
 
-5. **Skill installation.** Follow the FE skill integration steps in the main keel SKILL.md Phase 3.
+5. **Skill installation.** Follow the FE skill integration steps in `modes/generation.md` Phase 3.
    Merge hook entries into existing `.claude/settings.json` rather than overwriting.
    Never delete existing hook entries — append to the PostToolUse array.
 
@@ -461,7 +557,7 @@ Every project that will be built:
 
 ## Format migration (U0–U7) — per-doc mechanics
 
-The sequence itself is in SKILL.md Upgrade Mode. This section holds the mechanics the surgical
+The sequence itself is in `modes/upgrade.md` (Upgrade Mode). This section holds the mechanics the surgical
 rules above cannot express, because a format migration *does* rewrite whole files — under four
 rules that replace "surgical only" for these steps: **IDs never change · relocate, never delete
 (verbatim, with source recorded) · unclassifiable → `Unclassified (review)` · one commit per

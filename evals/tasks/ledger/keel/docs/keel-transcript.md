@@ -1,83 +1,75 @@
-# Keel transcript — ledger
+# Keel interview transcript — ledger
 
-Non-interactive run (2026-11-16): the founder supplied the full specification (`prompt.md`) and a block of interview answers up front; nobody could be asked follow-ups. This file records that exchange by persona round. Where no answer existed, Keel took its recommended default and marked it `[ASSUMPTION]`; those defaults are the provenance for `docs/adr/README.md` Open decisions OD-01..06 and BRD §5.
+Non-interactive run (2026-11-16): the founder supplied `prompt.md` (the specification) and a written answer sheet instead of a live interview. Questions marked *(default)* had no answer; keel took its recommended default and tagged it `[ASSUMPTION]` in the docs. The document-set proposal was pre-approved.
 
-## Phase 0 — Intake & framing
+## Phase 0 — Intake
 
-**Founder's description (verbatim requirement set, all lines confirmed):** build `ledger`, a CLI that splits shared expenses in a small group. Node.js 20+, stdlib only, entry `node src/cli.js <command> [args]`, JSON data file at `LEDGER_FILE` (default `./ledger.json`, created on first write). Commands `add`, `list`, `remove`, `balances`, `settle` with the exact formats and the greedy settle algorithm; money in integer cents with leftover cents to participants alphabetically; names 1–20 lowercase `a-z`; any invalid input → `error:` on stderr, exit 2; own tests runnable with `node --test`; a README on how to run the tool and the tests. (Full text → BRD §4.)
+**Reflection.** `ledger` is a Node 20+ stdlib-only CLI that records shared expenses in one JSON file, shows exact per-person balances, and prints transfers that settle them.
+**Ambition tier.** Founder: *Prototype / weekend* — personal tool for a few friends sharing a flat, run by one user on their own laptop. Confirmed.
+**Team answers.** Solo (default). Nothing handed to a team.
 
-**Keel's reflection:** a personal flat-sharing expense splitter used by one person at a laptop; the hard parts are exact cents and a deterministic settle. Nothing in the description needs a network, a UI, or a database.
+## Round — Business Analyst
 
-**Ambition tier** — Founder answer: *Prototype / weekend; personal tool for a few friends sharing a flat; one user runs it on their own laptop.* Keel's read matched. Drives: lite BRD + lite ARCHITECTURE, no PRD/NFR/security suite.
-
-## Round 1 — Business Analyst
-
-| Topic | Founder answer |
+| Question | Founder answer |
 |---|---|
-| Users | The person who runs the CLI; the people named in expenses never use it |
 | Problem | Friends lose track of who paid for what; settling up takes too many transfers |
-| Success | Balances always reconcile to the cent; `settle` prints the fewest practical transfers *by the stated algorithm* |
-| Compliance | None applies |
+| Success | Balances always reconcile to the cent; `settle` prints the fewest practical transfers by the stated algorithm |
+| Who pays / market / competition | *(default)* Not applicable: personal tool, no market |
 
-Keel note: "fewest practical" is bounded by the stated greedy rule, which is not provably minimal → recorded as RSK-003 / ADR-003 rather than promising optimality.
+Keel note: "fewest practical transfers" is the greedy algorithm in the spec, not a proven minimum; the BRD (BO-02) measures against the algorithm, not optimality.
 
-## Round 2 — Product Manager
+## Round — Product Manager
 
-Scope is exactly the five commands in the description; nothing else was requested. Keel's out-of-scope list (BRD §1) — no UI/web/API/network, no accounts, no payments, no uneven splits, no edit-in-place — follows from the founder's "CLI only … no payments are made by the tool" plus the absence of those features in the spec. Edit-in-place is `remove` + `add`.
-
-Spec ambiguities Keel found (no answer available → defaults, all `[ASSUMPTION]`): participant display order (OD-01), duplicate participants (OD-02), amount upper bound (OD-03), exit code for a corrupt data file (OD-04), no-command / `--help` behaviour (OD-05), `--note` placement and allowed text (OD-06), silent success for `remove` (REM-001), `settle` read-only (SET-003).
-
-## Round 3 — Architect / Eng Lead
-
-| Topic | Founder answer / Keel recommendation |
+| Question | Founder answer |
 |---|---|
-| Stack | Node.js 20+, stdlib only, `node:test`. No database: one JSON file. |
-| Interface | CLI only |
-| Never-reused ids | Not specified how. Keel recommends a persisted `nextId` (ADR-002) — `max(id)+1` would reuse an id after removing the newest. |
-| Money | Integer cents (ADR-001); upper bound 10^12 cents so sums stay in safe-integer range `[ASSUMPTION]` |
-| Write safety | Atomic temp-file + rename `[ASSUMPTION]`, reserved ADR-005 |
-| Arg parsing | Hand-rolled vs `node:util` `parseArgs` left open, reserved ADR-004 for Phase 0 |
+| Users | The person who runs the CLI; named people never use it |
+| Scope | Every line of `prompt.md` is a confirmed requirement (five commands, money rules, name rules, error contract) |
+| Out of scope | *(default)* Editing, unequal splits, currencies, multiple groups, payments, import/export, UI (BRD §7) |
+| Input ambiguities (empty ledger output, duplicates, extra args, note rules, participant order) | *(default)* `[ASSUMPTION]` rows EXP-005/006, VAL-003, A-02 |
 
-## Round 4 — Security / Compliance (scaled down)
+## Round — Architect
 
-Founder: names and amounts only, no personal data beyond first names, no payments, no network; the data file is local and trusted; validate all CLI input. Keel's consequence: no COMPLIANCE or THREAT_MODEL doc; a stance paragraph in BRD §7 and a trust-boundary note in ARCHITECTURE §6; input validation is requirement-level (VAL-001..004, MNY-003), and the data file is still shape-checked on load so a hand edit fails cleanly.
-**Security-audit skill offer:** declined by the founder (`securitySkill: "declined"` in `.keel/meta.json`; `/keel upgrade` may re-ask).
-
-## Round 5 — Designer
-
-Not run: no UI. **impeccable / modern-web-guidance:** declined (not applicable). No DESIGN.md, PRODUCT.md, hooks or `settings.json` generated.
-
-## Round 6 — Delivery / Ops & ways of working
-
-| Topic | Founder answer / default taken |
+| Question | Founder answer |
 |---|---|
-| Deployment | None; run from a clone; no remote environment → no DEPLOYMENT.md, RUNBOOK |
+| Stack | Node.js 20+, standard library only, `node:test`; no database, one JSON file |
+| Interface | CLI only: no UI, web, API or network |
+| Data file edge cases (corrupt file, missing file, id reuse, atomicity) | *(default)* DAT-002..004, ADR-002: state object with `nextId`, atomic temp+rename, corrupt file → exit 1 |
+| Amount limits | *(default)* MON-004: cap 9,999,999.99 so cents stay safe integers (ADR-001) |
+
+Keel recommendation accepted by default: pure core / thin shell, one error path (ADR-003).
+
+## Round — Security / Compliance (brief)
+
+Data: names and amounts only, no personal data beyond first names, no payments made. Compliance: none applies. Data file is local and trusted; validate all CLI input (VAL-001..003, ARCHITECTURE §7). Security-audit skill offer: **declined** (`securitySkill: never`).
+
+## Round — Designer
+
+Not applicable (no UI). impeccable / modern-web-guidance: **declined**.
+
+## Round — Delivery / Ops
+
+| Question | Answer |
+|---|---|
 | Team | One developer building with Claude Code |
-| Git workflow | Keel proven defaults `[ASSUMPTION]`: `git init`/initial commit, branch-per-phase off `main`, parallel agents in `git worktree`s, doc-sync after each phase |
-| Goal exit strategy | Not answered → default **bounded retries (3), then escalate** `[ASSUMPTION]` (BRD A-04) |
-| Byte budgets | Defaults: keystone 12 KB, plan 64 KB, ADR index 16 KB, others 32 KB |
-| Phasing | Keel proposal: Phase 0 foundations → 1 expense commands → 2 balances/settle/README |
-| Update-check hook | Declined |
+| Deployment | None; run from a clone, no remote environment, so no DEPLOYMENT.md or RUNBOOK.md |
+| Ways of working | *(default)* Git from commit one, branch-per-phase, doc-sync before each completing commit; bounded-retries exit strategy `[ASSUMPTION]`; budgets: keystone 12 KB, plan 64 KB, ADR index 16 KB, other docs 32 KB |
+| Update-check hook | **Declined** |
 | Almanac | No |
 
-## Phase 2 — Document-set proposal (accepted as approved)
+## Document-set proposal (accepted as approved)
 
-| Doc | Included? | Why / trigger to add |
+| Doc | Included | Why / trigger to add |
 |---|---|---|
-| AGENTS.md + CLAUDE.md | Yes | Always |
-| BRD (lite) | Yes | Home of the whole command contract |
-| ARCHITECTURE (lite) | Yes | Module contracts, file format, error contract |
-| docs/adr/ (3 accepted, 2 reserved) | Yes | Three founder-level bets + two build decisions |
-| IMPLEMENTATION_PLAN + 3 phase scripts + change/doc-sync scripts | Yes | Always |
-| CHANGELOG, keel-transcript, README | Yes | Always / founder-requested README |
-| PRD, ENGINEERING_DESIGN, HLD, LLD | No | One CLI, one user; BRD + ARCHITECTURE suffice. Add PRD if a second surface appears |
-| NFR | No | No performance/scale/availability targets. Add if latency or file size matters |
-| DESIGN / PRODUCT / FE hooks | No | No UI |
-| COMPLIANCE / THREAT_MODEL | No | No personal data beyond first names, no network |
-| DEPLOYMENT / RUNBOOK / COMMANDS | No | No remote environment; commands live in README |
-| FEEDBACK_ROUNDS, almanac, security/design agents | No | No clients; founder declined |
-| SPIKE / COST_ANALYSIS / AUDIT | on demand | Triggers: an investigation, metered spend, a dated audit |
-
-## Phase 4 — Threat-model & harden
-
-Run as a quick single-pass sanity check (prototype tier; nobody to answer the opt-in). Findings, all applied in the docs: (1) a corrupt/hand-edited data file could poison balances → shape validation on load, VAL-004; (2) partial write on crash → atomic write, DAT-004 / ADR-005; (3) overflow of safe-integer cents → amount upper bound, MNY-003; (4) tests overwriting the user's real ledger → invariant 7; (5) unexpected exception breaking the exit-code contract → ARCHITECTURE §5 last row. Residual: no file locking (A-02, ARCHITECTURE §7).
+| `AGENTS.md`, `CLAUDE.md`, `CHANGELOG.md`, this transcript | Yes | Always |
+| `docs/BRD.md` (lite) | Yes | Always; carries every requirement ID and assumption |
+| `docs/ARCHITECTURE.md` (lite) | Yes | Always; money rule, file shape, settle algorithm |
+| `docs/adr/` (3 ADRs) | Yes | Prototype default omits; included because three hard bets (cents, file shape, error path) are cheap to record now |
+| `docs/IMPLEMENTATION_PLAN.md` | Yes | Always; three phases with exit gates |
+| Workflow scripts, doc-sync agent, `.keel/` tooling, Stop hook | Yes | Every project |
+| PRD, ENGINEERING_DESIGN, HLD, LLD, NFR | No | Product tier; BRD + ARCHITECTURE cover a five-command tool. Add LLD/NFR if it grows |
+| DESIGN, PRODUCT, UI hooks | No | No UI |
+| COMPLIANCE, THREAT_MODEL | No | No sensitive data; Phase 4 threat pass reduced to ARCHITECTURE §7 |
+| DEPLOYMENT, RUNBOOK, FEEDBACK_ROUNDS | No | No remote environment, no clients. Add DEPLOYMENT if it is ever hosted |
+| COMMANDS, `docs/README.md` | No | Command table lives in AGENTS.md; AGENTS.md is the index. `README.md` (the tool's) is a Phase 2 deliverable |
+| Security / design agents, area rules | No | Skills declined; no UI. Area rules skipped: no path-specific risks beyond the ADR headers |
+| SPIKE, COST_ANALYSIS, AUDIT, almanac | No | On demand only |

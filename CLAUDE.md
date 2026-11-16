@@ -54,6 +54,8 @@ keel documents projects using the templates in references/templates/. The docume
 ## Current status
 Docs site cutover (no plugin version): `site/` (React, TLA DS from GitHub Packages) deploys to keel.thelogicatelier.com via `.github/workflows/pages.yml`; old `docs/index.html` single page retired.
 
+v2.6.0 — leaner output, full doc set kept: slim keystone (fresh load 16.1 → 8.7 KB), proportional doc sync, keel-gates Stop hook, Stops + end-of-run report; slim SKILL.md router + references/modes/ (100 → 11.5 KB); .claude/rules/ by path + header on new ADRs only; /keel check (read-only drift); Verify real check + failSeen + --evidence; split relinks ToC anchors (--relink); team answers (opt-in). Evals: v0 baseline + 2.6.0 regression. Merged to main.
+
 v2.5.6 — backlog fixes: `--split` refuses a "Part of" link outside the project or its folder (security); plain `FILE.md §N` refs repointed on split; `--closeout` prints open deferred rows (italic placeholder row never counted; template status `—`) and the closeout number (N.5, else next free N.x); scope branch may start off an unmerged upgrade branch. Self-test case per fix. Parked note `docs/discussions/hosted-answer-link.md`. Merged to main.
 
 v2.5.5 (internal) — documentation policy + docs-site Roadmap page (docs/site/19-roadmap.md): full doc set always generated; execution tier (AGENTS/CLAUDE.md, COMMANDS, plan, runbook, deployment) may be shortened, record tier (BRD, PRD, ADRs, HLD, LLD, NFR, threat model…) stays full and drift-checked; no doc type removed without typed founder OK. No /keel behaviour change; userVersion stays 2.5.4. Merged to main.

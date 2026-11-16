@@ -1,77 +1,72 @@
 # booking — AGENTS.md
 
-booking is a meeting-room booking library (Node.js 20+, standard library only, pure in-memory, no I/O). Rule exactness and "no double booking, ever" rank above convenience or features.
+booking is a meeting-room booking library (Node.js 20+, standard library only, pure in-memory, no I/O). Correctness first: no room or person is ever double-booked, and every rule holds exactly as specified.
 
-This file is deliberately light. The documents below are the source of truth — read the relevant one *before* touching code.
+This file is deliberately light. The documents below are the source of truth. Area rules load by path: `.claude/rules/<area>.md` names the ADR or requirement to read before touching that code (agents without path loading open the file whose `paths:` match).
 
 ## Document map
 
 | Read this | When you are |
 |---|---|
-| `docs/BRD.md` | Questioning scope or behaviour — requirement IDs (BKG/QRY/PKG/SEC), constraints, `[ASSUMPTION]`s (§8), risks |
-| `docs/ARCHITECTURE.md` | Writing code — module shape, public contract, the `book` check order, invariants I-1…I-4, security controls |
-| `docs/adr/` | Wondering "why is it like this?" — one file per decision; `docs/adr/README.md` is the index + open questions |
-| `docs/IMPLEMENTATION_PLAN.md` | Picking up work — phases 0–2, scope, exit gates, Changes, deferred items |
-| `docs/COMMANDS.md` | Running anything — `node --test`, doc tooling |
-| `CHANGELOG.md` | Asking "what shipped?" — every change with its state tag |
-| `docs/keel-transcript.md` | Tracing where a decision or `[ASSUMPTION]` came from |
-| `docs/README.md` | A map of everything in `docs/` |
+| `docs/PRD.md` | Implementing anything — the public contract (§2) and the behaviour table, one row per test (§3) |
+| `docs/BRD.md` | Questioning scope — objectives, constraints `CON-xxx`, requirements, assumptions `A-xx`, risks |
+| `docs/ARCHITECTURE.md` | Making structural choices — components, data model, principles |
+| `docs/adr/` | Wondering "why is it like this?" — `docs/adr/README.md` is the index + open decisions |
+| `docs/IMPLEMENTATION_PLAN.md` | Picking up work — current phase, scope, exit gates |
+| `README.md` *(written in Phase 2)* | Using the library or running the tests |
+| `CHANGELOG.md` | Asking "what shipped, and is it on `main`?" |
+| `docs/keel-transcript.md` | Asking where an `[ASSUMPTION]` came from |
+| `docs/README.md` | The full doc index |
 
-## Hard invariants (rationale: `docs/ARCHITECTURE.md` §1, §6, §7)
-
-Nothing is built yet, so every "Gap" is open until its phase closes.
+## Hard invariants
 
 | # | Rule | Enforced by | Gap | Source |
 |---|---|---|---|---|
-| 1 | No two live bookings overlap in a room, nor for one person (half-open intervals) | single `commit` path after checks; property test over random `book`/`cancel` | not built — Phase 1 (logic), Phase 2 (property test) | ARCHITECTURE §6 I-1 |
-| 2 | Every public input is validated before use; each caller property is read once; bad input throws only `BookingError` | typeof checks + hostile-input test matrix | not built — Phase 1 | ARCHITECTURE §7, SEC-001 |
-| 3 | Errors are `BookingError` with `code` ∈ the 7 specified names, in the fixed check order (overlap before person_busy) | one pipeline function; precedence tests | not built — Phase 1 | ADR-003 |
-| 4 | A rejected `book`/`cancel` changes nothing; returned objects are copies | no writes before last check; mutation test | not built — Phases 1–2 | ARCHITECTURE §6 I-2, P-05 |
-| 5 | Ids are library-generated (`randomUUID`), looked up in a `Map` after a `typeof` check; never trusted | ADR-004; hostile-id tests | not built — Phase 1 | ADR-004, SEC-002 |
-| 6 | Standard library only; no I/O; `package.json` has no dependencies | test asserting no deps; Verify checks `require`s | not built — Phase 0 | BRD CON-001..003 |
+| 1 | No two bookings overlap in a room, and none overlap for one person; times are half-open | `book` check order + conflict tests | not built yet (Phase 1) | ADR-003, ADR-005 |
+| 2 | Failed `book` changes nothing; callers never hold live records | validate-then-write + atomicity tests | not built yet (Phase 1) | ADR-005 |
+| 3 | Standard library only; no I/O, clock or environment randomness in `src/` | `package.json` has no dependencies; review | code-read only (Phase 0 gate); no automated scan | CON-002, CON-003 |
+| 4 | Times are parsed only by `src/time.js` (strict, no `Date` rollover) | single parser + time tests | not built yet (Phase 0) | ADR-002 |
+| 5 | Ids are minted internally; a caller-supplied id is only a lookup key | `Map` lookup + cancel tests | not built yet (Phase 1) | ADR-004 |
+| 6 | Only `BookingError` with a documented `code` is thrown for a rule break | API test over every rule | not built yet (Phase 0–2) | BRD §3 |
 
 ## Git & working workflow (mandatory — the build loop)
 
-0. **Version control from commit one.** The folder is a git repo; commit the generated docs first, before any feature work.
-1. **Two units of work.** A **Phase** runs its workflow script on `phase-N-<slug>` off `main`. A **Change** (`CHG-xxx`) is `/keel change <slug>` → `chg/<slug>` off `main`, a Changes-table row and a CHANGELOG line. Never commit directly to `main`. New phases: `/keel phase new <slug>`.
-2. **Run the phase workflow script:** `claude --workflow .claude/workflows/phase-N-<slug>.js` (or the Workflow tool). It checks out the phase branch, fans out divisible tasks as parallel agents in separate `git worktree`s, each opening with `/goal`; task branches merge into the phase branch, never straight to `main`. **Verify** then writes `.keel/evidence/phase-N.json`; only the phase branch (tasks + evidence + doc-sync commit) merges to `main`. Exit strategy when stuck: IMPLEMENTATION_PLAN "Standing rules".
-3. **Write tests with the code, never after** (`node:test`). The no-double-booking property and every error code are *proven by a test*.
-4. **Definition of done:** `node --test` green on Node ≥ 20 · no dependencies in `package.json` · doc-sync commit present.
-5. **Doc sync before the commit that completes any piece of work.** Delegate to the **doc-sync** role (`doc-sync` subagent, `.claude/agents/doc-sync.md`): it updates this file's status table · IMPLEMENTATION_PLAN tables · `docs/adr/` · CHANGELOG `[Unreleased]` · any doc the work touched — citing the evidence file, never re-deriving it — and returns a Report. Check the Report against `git log` and `git diff main --name-only`; send gaps back as specific feedback. **Hard cap: 3 rounds**, then record remaining gaps as Deferred items rows and proceed. Then commit. `.claude/workflows/doc-sync.js` runs this loop, auto-archives if a doc breaches its budget, and prunes old evidence. A branch without the doc-sync commit is not done.
-6. **Merge to `main`** only after gates pass and the doc-sync commit is present. There is no deploy: state stops at `[merged]` (BRD A-14).
-7. **Decisions captured without fail.** Any decision (even "X over Y because Z") becomes `docs/adr/ADR-xxx-<slug>.md` before merge (ID taken at Integrate, never in a worktree). No addenda: one `Build deviation` row, else a superseding ADR. Open questions are one row each in `docs/adr/README.md`.
-8. **Claims carry evidence.** Nothing is `✅` without an evidence level (`code-read` < `unit` < `integration` < `local-browser` < `staging` < `prod-live`) and an artefact. Overclaiming is a defect.
+0. **Git from commit one:** commit the generated docs on `main` before any feature work.
+1. **Two units of work:** a Phase runs on `phase-N-<slug>` (`/keel phase new <slug>`); a Change on `chg/<slug>` (`/keel change <slug>`). Never commit to `main`.
+2. **Run the phase script:** `claude --workflow .claude/workflows/phase-N-<slug>.js` (mechanics: `.claude/workflows/README.md`).
+3. **Tests ship with the code;** every PRD §3 row is proven by a `node --test` test.
+4. **Done per change:** `node --test` green, no dependencies added, doc-sync commit present.
+5. **Doc sync before the completing commit:** inline when only status lines change, else delegate to doc-sync (`.claude/agents/doc-sync.md`; `doc-sync.js`, ≤3 rounds, then deferred items).
+6. **Merge** only with gates green and the doc-sync commit present. There is no deployment.
+7. **Decisions → `docs/adr/` before merge** (no addenda; open questions in `docs/adr/README.md`).
+8. **Claims carry evidence:** no `✅` without a level (`code-read` < `unit` < … < `prod-live`) and an artefact.
 
-(No security or design reviewer is set up — both skills were declined; `/keel upgrade` re-offers the security skill.)
+Rules and rationale: IMPLEMENTATION_PLAN "Standing rules". Delegation: `.claude/workflows/README.md`. No security or design reviewer (declined / no UI).
 
-## Delegation (callers supervise their subagents)
+## Stops and end-of-run report
 
-The agent doing a piece of work is the **caller**; the doc-sync subagent works for it. It returns a **Report** (fixed format in `.claude/agents/doc-sync.md`), never commits, pushes or merges, and messages only its caller. The caller reads the Report, decides (accept / specific follow-up, max 3 rounds / escalate) and commits. If the caller has its own supervisor, that relationship is unchanged.
+**Stop and ask** before: adding any dependency or file/network/clock use; changing an error code, the check order or the time format; or when two docs disagree on something the task depends on.
+**End every run with four lines:** Blocked on me · Changed · Found · Could not confirm.
 
 ## Current status
 
 | | What | Deploy state | Evidence |
 |---|---|---|---|
-| **Last completed** | Foundational docs generated (BRD, ARCHITECTURE, ADR-001..004, plan, workflows) | on-branch | `CHANGELOG.md` |
-| **Now** | Phase 0 — Foundation & time primitives (not started) | — | — |
+| **Last completed** | Documentation suite generated | on-branch | CHANGELOG `[Unreleased]` |
+| **Now** | Phase 0 — Foundations & validation (not started) | — | — |
 
 ## Working agreements
 
-- Definition of done per change: see workflow step 4 (details: `docs/IMPLEMENTATION_PLAN.md`).
-- New decisions become `docs/adr/` entries; new accepted risks go to `docs/ARCHITECTURE.md` §8.
-- Never add a public method, a dependency, or any I/O without a founder decision (BRD CON-001..003, CON-005).
+- Open founder questions: `docs/adr/README.md` OD-01, OD-02 (defaults assumed, marked `[ASSUMPTION]`).
+- New decisions become `docs/adr/` entries; new accepted risks go to `docs/ARCHITECTURE.md` §5.
 - Negative results are recorded ("confirmed not a bug" is a row, not silence).
 - When this file and a referenced doc disagree, **the referenced doc wins** — fix the pointer, not the doc.
 
 ## Pre-PR checklist
 
-- [ ] (1) no path accepts a booking that overlaps in room or for a person; property test still green
-- [ ] (2) every new input is typeof-checked and read once; hostile matrix still throws only `BookingError`
-- [ ] (3) check order and codes unchanged unless ADR-003 was superseded
-- [ ] (4) failures leave state untouched; nothing returns internal references
-- [ ] (5) ids only from `randomUUID`, looked up via `Map` after a string check
-- [ ] (6) no dependency, I/O or non-`node:` import added
-- [ ] tests ship with the code; new decision → `docs/adr/`; new punt → deferred items (owner + revisit trigger)
-- [ ] `docs/COMMANDS.md` updated if a command changed
-- [ ] doc-sync Report reviewed against the work; gaps fixed or (after 3 rounds) logged as deferred items
-- [ ] doc-sync commit present; `node .keel/doc-size.mjs` passes (this file under 12 KB)
+- [ ] (1) conflict checks run before every state write
+- [ ] (2) `book` mutates only after all checks pass; nothing returned is a live record
+- [ ] (3) no `require` outside `node:` builtins/local files; no I/O
+- [ ] (4) no `new Date(string)` / `Date.parse` on caller input
+- [ ] (5) no caller id used as anything but a `Map` key
+- [ ] (6) only `BookingError` (documented `code`) thrown for rule breaks
