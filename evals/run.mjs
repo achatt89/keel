@@ -7,7 +7,7 @@
 // Conditions: none, min, answers (min + founder-answers.md), spec (answers + idea.md), keel. A task with "base" starts every condition from that code.
 // A task with "sessions" runs them in order in the same folder, one fresh `claude -p` each; one row per session.
 // Options: --model sonnet (agent), --judge opus, --effort <level>, --out <dir under results/raw>,
-//   --rescore (with --out: recompute usage fields from saved transcripts, no model calls).
+//   --keel-overlay <dir> (files copied over the keel fixture), --rescore (with --out: recompute usage fields from saved transcripts, no model calls).
 import { mkdtempSync, mkdirSync, cpSync, writeFileSync, readFileSync, existsSync, rmSync, readdirSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { join, resolve } from 'node:path';
@@ -58,6 +58,8 @@ const conditions = {
     const fx = join(task.dir, 'keel');
     if (!existsSync(fx)) throw new Error(`no Keel fixture for ${task.id}: run --gen-keel ${task.id} first`);
     cpSync(fx, d, { recursive: true });
+    const ov = arg('keel-overlay'); // files copied over the fixture, e.g. a newer doc-sync as /keel upgrade would install it
+    if (ov) cpSync(resolve(ov), d, { recursive: true });
   },
 };
 
