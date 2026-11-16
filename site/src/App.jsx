@@ -122,7 +122,7 @@ const Md = ({ text, fills, file }) => {
   return <div className="kd-prose" dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
-const NAV = [['docs/what-is-keel', 'Docs'], ['commands', 'Commands'], ['skills', 'Skills'], ['adr', 'ADRs'], ['releases', 'Releases']];
+const NAV = [['docs/what-is-keel', 'Docs'], ['commands', 'Commands'], ['skills', 'Skills'], ['adr', 'ADRs'], ['releases', 'Releases'], ['docs/roadmap', 'Roadmap']];
 
 const Sidebar = ({ path }) => (
   <nav className="kd-side" aria-label="Docs pages">
@@ -270,7 +270,7 @@ export const App = () => {
         page={path}
         logo={<TLALogo as="a" href={href()} label="Keel docs, home" />}
         sheetLogo={<TLALogo />}
-        nav={NAV.map(([p, label]) => ({ label, href: href(`${p}/`), current: path === p || (label === 'Docs' && !!page) }))}
+        nav={NAV.map(([p, label]) => ({ label, href: href(`${p}/`), current: path === p || (label === 'Docs' && !!page && !NAV.some(([n]) => n === path)) }))}
         toggle={<TLAModeToggle />}
       />
       <main id="main">
