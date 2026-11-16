@@ -19,7 +19,7 @@ A ✅ is never bare. Every exit gate records its evidence level (`code-read` \< 
 
 ## Where things live now
 
-- **AGENTS.md**: The canonical keystone (cross-tool standard); `CLAUDE.md` is `@AGENTS.md` plus Claude-specific sections. Status is a two-row table. Hard budget: 12 KB; doc-sync auto-archives past it.
+- **AGENTS.md**: The canonical keystone (cross-tool standard); `CLAUDE.md` is `@AGENTS.md` plus a few Claude-specific lines. Each workflow step is one line; the detail lives in the plan's standing rules and the workflow README, so a fresh project loads about 8 KB at session start. Status is a two-row table. Hard budget: 12 KB; doc-sync auto-archives past it.
 - **docs/adr/**: One table-based file per decision. Lifecycle `Proposed → Accepted → Built → Superseded`; a single *Build deviation* row is the only post-acceptance edit. No addenda: incidents are postmortems, deploys are log rows.
 - **DEPLOYMENT.md**: One doc for every environment: the env matrix, promotion path, build-time vs runtime config table, pre/post-deploy checklists, rollback per component, and the deploy log.
 - **CHANGELOG.md**: What shipped and in what deploy state, one line per Phase or Change. The journal that used to bloat the keystone.

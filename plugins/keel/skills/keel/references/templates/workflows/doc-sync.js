@@ -3,7 +3,7 @@
 // Run: claude --workflow .claude/workflows/doc-sync.js   (or via the Workflow tool)
 //
 // Used standalone, by change scripts and by hand; phase scripts call
-// this workflow from their Doc Sync step. Stages: Sync (delegate ⇄ review, ≤3 rounds) → Budget → Archive / Split (only on a breach) → Prune.
+// this workflow from their Doc Sync step. Stages: Sync (status-only work inline; else delegate ⇄ review, ≤3 rounds) → Budget → Archive / Split (only on a breach) → Prune.
 // Sync writes tables, not prose, and every claim carries an evidence level + artefact.
 // Budget runs .keel/doc-size.mjs (every doc once, split parts separately, link check). Archive
 // relocates (never deletes) closed detail per keel-archive-guide; whatever is still over budget
@@ -14,7 +14,7 @@ export const meta = {
   name: 'doc-sync',
   description: 'Mandatory pre-merge doc sync: status tables, exit-gate evidence, ADRs, deferred items, CHANGELOG; then byte-budget check + auto-archive',
   phases: [
-    { title: 'Sync', detail: 'Delegate to the doc-sync role, review its report, feedback ≤3 rounds, then commit (gaps → deferred items)' },
+    { title: 'Sync', detail: 'Status-only work: one inline pass. Otherwise delegate to the doc-sync role, review its report, feedback ≤3 rounds, then commit (gaps → deferred items)' },
     { title: 'Budget', detail: '.keel/doc-size.mjs: every doc + split parts against budgets; split-link check' },
     { title: 'Archive', detail: 'Breaches on archivable docs: relocate closed detail to PHASE_ARCHIVE.md, one commit per doc' },
     { title: 'Split', detail: 'Still over budget: split the doc into docs/<name>/ parts behind a slim index; link check must pass' },
@@ -34,7 +34,7 @@ const DEFAULT_BUDGETS = {
 // The doc rules live HERE, once. The doc-sync subagent (.claude/agents/doc-sync.md) and any
 // full-time doc agent follow them; phase and change scripts call this workflow, never a copy.
 const SYNC_RULES = `
-  Mandatory doc sync — MUST run before the commit that completes a piece of work.
+  Doc sync runs before the commit that completes a piece of work.
   Docs never lag code. Tables, not prose. Every ✅ / "verified" carries an evidence LEVEL and
   an ARTEFACT.
 
@@ -144,7 +144,31 @@ phase('Sync')
 const MAX_ROUNDS = 3
 let feedback = ''
 let review = { complete: false, missing: [] }
-for (let round = 1; round <= MAX_ROUNDS; round++) {
+
+// Proportional sync: when the work changes only status lines, the caller does it inline in one
+// pass and the delegate ⇄ review loop is skipped. Anything that touches a record doc delegates.
+const inline = await agent(`
+  Working directory: <project root>
+  You are the CALLER. Decide whether this work needs only a status sync.
+  Run: git log --oneline main..HEAD ; git diff main --name-only ; ls .keel/evidence/
+  STATUS-ONLY means the docs need nothing beyond SYNC_RULES steps 2, 3 and 6 (exit-gate / phase
+  row or Changes row, the AGENTS.md status table, one CHANGELOG line). It is NOT status-only if the
+  work made or changed a decision, filled an ADR stub, resolved a [NEEDS DECISION], deferred
+  anything, or changed a command, env var, procedure, schema, API, requirement or design rule.
+  If status-only: do steps 1, 2, 3, 6 and 8 below yourself now, then run node .keel/doc-size.mjs
+  (no LINK ERROR). Do not commit. If not status-only: edit nothing and say why.
+  ${SYNC_RULES}
+`, {
+  label: 'doc-sync-triage',
+  schema: {
+    type: 'object',
+    properties: { statusOnly: { type: 'boolean' }, reason: { type: 'string' } },
+    required: ['statusOnly', 'reason'],
+  },
+})
+if (inline.statusOnly) review = { complete: true, missing: [] }
+
+for (let round = 1; round <= MAX_ROUNDS && !inline.statusOnly; round++) {
   const report = await agent(`
   Working directory: <project root>
   You are the doc-sync role for this project: follow .claude/agents/doc-sync.md, or the brief of

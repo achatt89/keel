@@ -325,7 +325,7 @@ Gradient text (`background-clip: text`) · glassmorphism as default · hero-metr
 
 ### 12.2 modern-web-guidance — modern web platform patterns (all three functions)
 
-**Trigger (automatic):** `.claude/hooks/modern-web-guidance-hook.mjs` fires after every FE file edit (`.html`, `.css`, `.js`, `.ts`, `.tsx`, `.jsx`, `.vue`, `.svelte`, `.astro`, `.scss`) and reminds to check before implementing new UI patterns.
+**Trigger (automatic):** `.claude/hooks/modern-web-guidance-hook.mjs` fires after the first UI file edit of each session (`.html`, `.css`, `.scss`, `.sass`, `.less`, `.tsx`, `.jsx`, `.vue`, `.svelte`, `.astro`; plain `.js`/`.ts` never) and reminds to check before implementing new UI patterns.
 
 **Three functions — use all three in sequence:**
 

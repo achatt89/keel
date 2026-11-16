@@ -143,7 +143,7 @@ These can be integrated into the project without re-running the full interview.
 | IMPLEMENTATION_PLAN — doc-sync exit gate per phase | {{Present / Absent}} | Ensures docs never lag code; every phase exit includes a doc-sync commit |
 | IMPLEMENTATION_PLAN — deferred items table | {{Present / Absent}} | Prevents punted scope from disappearing; every deferral has a reason + target |
 | .claude/workflows/ phase scripts | {{Present (N scripts) / Absent}} | One command to run a full phase with parallel worktrees + doc-sync + merge |
-| CLAUDE.md — Active skills quick-reference | {{Present / Absent}} | All-commands cheat sheet so Claude always knows what's available |
+| CLAUDE.md — "UI work" pointer to DESIGN.md §12 | {{Present / Absent}} | One line in every session; the full command map stays in DESIGN.md §12 |
 | modern-web-guidance — all 3 functions in DESIGN.md §12.2 | {{Current / Outdated (search only) / Absent}} | search + retrieve + list all mapped with usage guide |
 
 ---

@@ -130,7 +130,7 @@ a one-line justification per inclusion and per omission, and adjust.
   **product** for app UI, dashboards, admin, tools (design SERVES the product).
 - **Depends on:** Designer interview round; PRD (personas); brand/experience direction.
 - **Owns:** Nothing. Consumed by impeccable's context.mjs. Referenced in DESIGN.md §12 and
-  CLAUDE.md "Active skills".
+  CLAUDE.md "UI work" line.
 
 ### `.claude/hooks/modern-web-guidance-hook.mjs` — modern-web-guidance PostToolUse hook *(if UI + skills integration)*
 - **Purpose:** A PostToolUse hook that fires after any FE file edit (.html, .css, .js, .ts, .tsx,

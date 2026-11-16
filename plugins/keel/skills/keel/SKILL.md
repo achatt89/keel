@@ -279,7 +279,9 @@ default to the current working directory). For each document:
 - **Keystone pair.** `AGENTS.md` from `references/templates/AGENTS.md` is the full keystone
   (document map, invariants as `Rule · Enforced by · Gap · Source`, status as a two-row table,
   pre-PR checklist). `CLAUDE.md` from `references/templates/CLAUDE.md` opens with `@AGENTS.md`
-  and holds only Claude-specific sections (Active skills, workflow-tool notes). Never duplicate
+  and holds only Claude-specific lines (workflow tooling, review roles, the UI-skills pointer).
+  Keystone text follows `references/conventions.md` "Placement rule": one line per workflow step,
+  detail in IMPLEMENTATION_PLAN "Standing rules" and `.claude/workflows/README.md`. Never duplicate
   keystone content into `CLAUDE.md` — duplication is how the two drift apart.
 - **`docs/keel-transcript.md`** — write the interview as it happened (persona rounds, the user's
   answers, your recommendations and their responses), lightly cleaned, never summarised into
@@ -328,8 +330,9 @@ is yes).
      (project name, description, target users, design direction, register: **brand** for
      landing/marketing/portfolio, **product** for app UI/dashboard/admin/tool).
    - `.claude/hooks/modern-web-guidance-hook.mjs` ← `references/templates/modern-web-guidance-hook.mjs` (verbatim, no edits needed).
-   - `.claude/settings.json` ← `references/templates/hooks-settings.json` (modern-web-guidance's
-     hook only — impeccable is deliberately excluded here, see step 5). If `.claude/settings.json`
+   - `.claude/settings.json` ← the `PostToolUse` entry of `references/templates/hooks-settings.json`
+     (modern-web-guidance's hook — UI files only, once per session; impeccable is deliberately
+     excluded here, see step 5). If `.claude/settings.json`
      already exists in the target project, **merge** the PostToolUse hook entry; never overwrite
      the whole file. Remove the `_comment` key before writing.
    - `skills-lock.json` — if one exists, add the two entries; if not, create it with both entries.
@@ -339,14 +342,15 @@ is yes).
      impeccable: `{ "source": "impeccable", "sourceType": "npm", "version": "<installed version>" }`
 
 4. **Wire into the other generated docs:**
-   - `CLAUDE.md` must include the "Active skills" conditional section (from the CLAUDE.md template).
+   - `CLAUDE.md` keeps its one-line "UI work" pointer (from the CLAUDE.md template); the command
+     map lives only in DESIGN.md §12.
    - `DESIGN.md` must include §12 Skill Integration (from the DESIGN.md template).
 
 5. **Impeccable hook activation note** — impeccable's `skills install` places the skill files and
    its hook scripts, but does **not** enable the hook. Activation is a separate, deliberate step
    that writes `.claude/settings.local.json` (impeccable's own gitignored, machine-local convention
    — distinct from the shared `.claude/settings.json` modern-web-guidance's hook lives in). Include
-   in the CLAUDE.md "Active skills" section and in the Phase 3 handoff summary:
+   in the CLAUDE.md "UI work" line (short form) and in the Phase 3 handoff summary:
    > "Activate impeccable hook: run `/impeccable hooks on` once in Claude Code after the skill
    > is installed. The modern-web-guidance hook is active immediately."
 
@@ -397,16 +401,17 @@ one-shot temps are never auto-invoked. Same steps for every role:
    Record `"agents": { "<role>": { "type": "full-time", "name": "<agent name>" } }`.
 2. **None exists → write the repo-local subagent** `.claude/agents/<role>.md` from
    `references/templates/agents/<role>.md` (fill `{{PROJECT_NAME}}`, `{{SECURITY_SKILL_REF}}`).
-   Its description says *MUST BE USED PROACTIVELY* so Claude Code delegates to it unprompted.
+   Its description states trigger conditions in plain words (no capitals), so Claude Code
+   delegates to it unprompted without over-triggering.
    Record `"agents": { "<role>": { "type": "subagent", "path": ".claude/agents/<role>.md" } }`.
 3. **Make invocation reliable — don't rely on the description alone.** Fill AGENTS.md workflow
    step 5 (*doc sync before the completing commit*: delegate to doc-sync, review its Report,
    ≤3 feedback rounds, leftovers → deferred items) and step 9 (*Review before done*: after any task
    that changed code, run the security reviewer on the branch diff before reporting done; UI work
-   also runs the design reviewer), their Pre-PR checklist lines, and the CLAUDE.md "Review
-   subagents" table with the owners from step 1/2. The phase/change Verify stages call security
+   also runs the design reviewer), and the CLAUDE.md "Review roles" line with the owners from
+   step 1/2 (one line each; the rules live in IMPLEMENTATION_PLAN "Standing rules"). The phase/change Verify stages call security
    and design whenever `.keel/meta.json` `agents` lists them; `doc-sync.js` runs the doc-sync loop.
-4. **Delegation model.** AGENTS.md "Delegation": the agent doing the work is the *caller* and
+4. **Delegation model.** `.claude/workflows/README.md` "Delegation" (AGENTS.md points to it): the agent doing the work is the *caller* and
    supervises its role subagents. Each subagent returns the fixed `## Report` block from its
    template (role · caller · scope · status · changed · checked · findings · evidence · not
    verified · needs from caller), never commits, pushes or messages anyone but its caller. The
@@ -439,8 +444,12 @@ mandatory build loop — worktrees, doc-sync, merge — so the builder never has
    deterministic **Budget** check (`.keel/doc-size.mjs`) that triggers a conditional **Archive**
    step and then a **Split** step for anything still over — this is how auto-archive and
    auto-split work; there is no hook or daemon. Copy `references/templates/keel-doc-size.mjs` to
-   `.keel/doc-size.mjs` (verbatim). Its Sync stage
-   is the doc-sync loop (delegate → review Report → ≤3 feedback rounds → commit). Set up the
+   `.keel/doc-size.mjs` (verbatim). Copy `references/templates/keel-gates-hook.mjs` to
+   `.claude/hooks/keel-gates.mjs` (verbatim) and merge the
+   `Stop` entry from `references/templates/hooks-settings.json` into `.claude/settings.json` (every
+   project): it runs the size + link check when Claude stops and blocks once on a LINK ERROR. Its
+   Sync stage is proportional: status-only work is synced inline in one pass; otherwise the
+   doc-sync loop (delegate → review Report → ≤3 feedback rounds → commit). Set up the
    `doc-sync` role owner per "Role owners" (always — every project has docs to sync).
 3. **For each phase in the generated `IMPLEMENTATION_PLAN.md`**, generate a phase workflow script:
    - Copy `references/templates/workflows/phase-template.js` as the base.
@@ -603,6 +612,7 @@ Load these as needed; you do not need all of them in context at once.
 | `references/templates/keel-doc-size.mjs` | Size + split-link check (`.keel/doc-size.mjs`) used by doc-sync, `/keel version`, upgrade, archive |
 | `references/templates/keel-evidence-prune.mjs` | Evidence retention for review runs |
 | `references/templates/keel-update-check.mjs` | The opt-in SessionStart update-check hook |
+| `references/templates/keel-gates-hook.mjs` | The Stop hook that runs the size + link check (every project) |
 | `references/templates/keel-meta.json` | Writing or migrating `.keel/meta.json` (budgets, docFormat, adrLayout) |
 | `references/keel-upgrade-guide.md` | Running Phase U2 — the upgrade audit checklist, format-1 detection, the addenda classifier |
 | `references/keel-archive-guide.md` | Running Phase X2/X4 (and doc-sync's auto-archive) — what's archivable and how to move it |
@@ -850,8 +860,8 @@ CLAUDE.md *or* AGENTS.md with keel-standard headings. If not detected, respond:
    `references/templates/keel-doc-size.mjs` to `.keel/doc-size.mjs` verbatim on **every** upgrade
    (whatever `keelVersion` says, even 1.x or 2.0 with no copy yet) and use it for every size and
    link measurement below. It is read-only until `--split` / `--move-out` is called.
-   **Keystone headroom:** before adding any keystone text this release brings (a Pre-PR line, a
-   workflow step), compare its byte cost with `AGENTS.md`'s headroom in the checker output. If it
+   **Keystone headroom:** before adding any keystone text this release brings (a workflow step
+   line, a pointer), compare its byte cost with `AGENTS.md`'s headroom in the checker output. If it
    does not fit, propose in U3 which whole `## ` section to move out first
    (`node .keel/doc-size.mjs --move-out AGENTS.md "<section>"` → `docs/agents/NN-<slug>.md`, linked
    both ways) — never compress existing wording to make room.
@@ -874,7 +884,7 @@ CLAUDE.md *or* AGENTS.md with keel-standard headings. If not detected, respond:
    .claude/workflows/phase-*.js · .keel/evidence/
 
    *Hook config:* .claude/settings.json · .claude/hooks/modern-web-guidance-hook.mjs ·
-   .claude/hooks/keel-update-check.mjs
+   .claude/hooks/keel-update-check.mjs · .claude/hooks/keel-gates.mjs
 
    *Security & agents:* the security-audit skill (global or project — see "Security skill" step 1)
    · a full-time doc / security / design agent, or `.claude/agents/{doc-sync,security,design}.md` ·
@@ -976,8 +986,8 @@ check for every absent doc. Produce a structured gap list.
    just becomes `{ "type": "subagent", "path": … }`): if a full-time agent
    for that role now actually exists, record it as `type: "full-time"`; otherwise write the
    repo-local subagent and record `type: "subagent"`. Either way, also add AGENTS.md step 9, the
-   Pre-PR line, the CLAUDE.md "Review subagents" table (replacing 2.1's "Permanent agents" table)
-   and the evidence-prune script. Tell the user which it was.
+   CLAUDE.md "Review roles" line (replacing 2.1's "Permanent agents" table; both in the 2.6
+   one-line form) and the evidence-prune script. Tell the user which it was.
 
    **Migrating to keel 2.3 (doc-sync loop + Report model)** — for any project on 2.2 or earlier:
    set up the `doc-sync` role owner ("Role owners": full-time doc agent if one exists, else
@@ -986,9 +996,15 @@ check for every absent doc. Produce a structured gap list.
    '.claude/workflows/doc-sync.js' })` call from `phase-template.js` (and relax its Merge check to
    "a docs: sync commit follows the last code commit"); add the `## Report` section and the
    caller rule to existing `security.md` / `design.md` subagents (regenerate them if unedited);
-   replace AGENTS.md workflow step 5, add the "Delegation" section and the doc-sync Pre-PR line;
-   add the doc-sync row to CLAUDE.md "Review subagents". Never touch a full-time agent's own
+   replace AGENTS.md workflow step 5 and add the Delegation pointer (2.6 one-line forms; the
+   Delegation text goes to `.claude/workflows/README.md`); name doc-sync in CLAUDE.md "Review roles". Never touch a full-time agent's own
    definition without saying so; give the user the text instead if you can't edit it.
+
+   **Slim keystone (keel 2.6)** — any 2.x project: run `references/keel-upgrade-guide.md`
+   "Slim keystone and hooks (2.6)". For each long keystone section it shows where the text
+   already lives, checks that home holds it word for word (or moves it there verbatim first),
+   then offers the one-line pointer; the `keel-gates` Stop hook, the new modern-web-guidance hook
+   and the plain-word subagent descriptions are separate offers. Never compress wording in place.
 
 5. **Update-check hook** — if `.claude/hooks/keel-update-check.mjs` is absent, offer it (same
    wording as Phase 3's "Update-check hook").

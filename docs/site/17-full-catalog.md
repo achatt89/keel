@@ -9,7 +9,7 @@ anchor: full-catalog
 
 | Document | What it answers |
 | --- | --- |
-| AGENTS.md / CLAUDE.md | Keystone index: invariants with their enforcement and gaps, document map, two-row status, pre-PR checklist. `AGENTS.md` is canonical; `CLAUDE.md` imports it and adds Claude-specific sections. Budgeted at 12 KB. |
+| AGENTS.md / CLAUDE.md | Keystone index: invariants with their enforcement and gaps, document map, two-row status, the workflow as one line per step, pre-PR checklist for the invariants. `AGENTS.md` is canonical; `CLAUDE.md` imports it and adds Claude-specific sections. Budgeted at 12 KB. |
 | BRD.md | Business requirements: the problem being solved, objectives, success metrics, constraints, and risks. |
 | PRD.md | Product requirements: user personas, key journeys, feature list, scope cuts, and roadmap. |
 | ENGINEERING_DESIGN.md | Design pillars, data classification policy, and non-negotiable technical constraints. |
