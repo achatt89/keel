@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "name": "keel",
   "repository": "https://github.com/achatt89/keel",
-  "version": "2.5.4",
+  "version": "2.5.5",
   "latest": "2.5.4",
   "date": "2026-10-31",
   "headline": "Document size checks got clearer.",
@@ -70,6 +70,23 @@
     "node": ">=18, for the .keel/*.mjs helper scripts keel installs in a project"
   },
   "versions": [
+    {
+      "version": "2.5.5",
+      "date": "2026-11-16",
+      "audience": "internal",
+      "headline": "How Keel treats documentation is now written down, and the docs site has a roadmap page. Nothing that `/keel` generates changes in this release; the rules below govern every release after it.",
+      "summary": "How Keel treats documentation is now written down, and the docs site has a roadmap page. Nothing that `/keel` generates changes in this release; the rules below govern every release after it.",
+      "highlights": [
+        "The full documentation set stays",
+        "Two tiers of document",
+        "Measure before cutting",
+        "Roadmap page"
+      ],
+      "notes": "How Keel treats documentation is now written down, and the docs site has a roadmap page. Nothing\nthat `/keel` generates changes in this release; the rules below govern every release after it.\n\n### Changed\n- **The full documentation set stays.** Keel keeps generating every document that fits a project:\n  BRD, PRD, engineering design, architecture, HLD, LLD, ADRs, NFR, design, compliance, threat\n  model, plan, runbook and the rest. No document type is removed without the maintainer's typed\n  approval. Why: a full documentation set per project is Keel's original requirement, and shorter\n  output must not trade it away.\n- **Two tiers of document.** *Execution tier* (AGENTS.md, CLAUDE.md, COMMANDS, IMPLEMENTATION_PLAN,\n  RUNBOOK, DEPLOYMENT, PRODUCT, the docs and ADR indexes): what agents load and act from. Later\n  releases shorten these to facts, pointers and steps, and move \"never\" rules into hooks and\n  settings that enforce them. *Record tier* (BRD, PRD, ENGINEERING_DESIGN, ARCHITECTURE, HLD, LLD,\n  ADR files, NFR, DESIGN, COMPLIANCE, THREAT_MODEL, CONNECTOR_SPEC, COST_ANALYSIS, SPIKE, AUDIT,\n  FEEDBACK_ROUNDS, CHANGELOG, almanac): kept full and only checked for drift against the code. An\n  oversize record doc may still be split or archived word for word, never cut. Why: execution\n  files are read on every run, so each extra line costs on every run; record documents are opened\n  for one question, and their value is being complete. Nothing leaves an execution file except to\n  a record document or an enforced rule.\n- **Measure before cutting.** Size budgets and leaner output apply to the execution tier only, and\n  only after an evaluation (the same tasks run with no docs, a minimal AGENTS.md and the full Keel\n  set) gives a baseline. Its result may recommend shorter execution documents, never a shorter\n  record document or a missing document type. Why: the evidence that long context files can lower\n  agent success is about always-loaded instructions, and Keel's own effect is not yet measured.\n\n### Added\n- **Roadmap page** on the docs site (`docs/site/19-roadmap.md`, `/docs/roadmap/`): Now, Next and\n  Later with no dates; the two document tiers; team answers (opt-in packet files); how existing\n  projects adopt each change through `/keel upgrade`; and what Keel will not build.",
+      "tag": "keel--v2.5.5",
+      "tagUrl": "https://github.com/achatt89/keel/tree/keel--v2.5.5",
+      "compareUrl": "https://github.com/achatt89/keel/compare/keel--v2.5.4...keel--v2.5.5"
+    },
     {
       "version": "2.5.4",
       "date": "2026-10-31",

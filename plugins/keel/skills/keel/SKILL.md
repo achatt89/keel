@@ -25,7 +25,7 @@ description: >
   "what version of keel is this", "check keel version", "is my keel up to date", "which keel
   version generated these docs", "check for keel updates").
 metadata:
-  version: 2.5.4
+  version: 2.5.5
   userVersion: 2.5.4
 license: MIT
 ---
