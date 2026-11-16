@@ -128,7 +128,7 @@ async function main() {
     const g = await grade(id, d, { judgeModel: JUDGE });
     const row = { name, task: id, cond, rep, model: MODEL, ...usage(res, resultEvents(r.stdout), r.wallMs), timedOut: r.timedOut, ...profile(r.stdout),
       testsPass: g.tests.pass, testsTotal: g.tests.total, testsFailed: g.tests.failed,
-      judge: g.judge.verdict, judgeFailed: g.judge.items.filter((i) => !i.pass).map((i) => i.id), judgeCostUsd: g.judge.costUsd, judgeModels: g.judge.models, success: g.success };
+      judge: g.judge.verdict, judgeFailed: g.judge.items.filter((i) => !i.pass).map((i) => i.id), judgeReasons: Object.fromEntries(g.judge.items.filter((i) => !i.pass).map((i) => [i.id, i.reason])), judgeCostUsd: g.judge.costUsd, judgeModels: g.judge.models, success: g.success };
     rows.push(row);
     spent += row.costUsd + row.judgeCostUsd;
     writeFileSync(summaryFile, JSON.stringify(rows, null, 2));
