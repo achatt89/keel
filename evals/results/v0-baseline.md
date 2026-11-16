@@ -55,9 +55,9 @@ IMPLEMENTATION_PLAN (about 10 KB, execution tier) was opened by the building age
 
 Under the founder rule, these cover execution-tier documents only. No record document gets shorter, and no document type is dropped.
 
-1. **Make the doc-sync hand-off in AGENTS.md proportional for prototype-tier work**: for example, sync inline when the change touches only the plan's status lines, and delegate only when record documents change. It is the largest measured cost (+$0.30 and +90 s per run when it fires) and showed no quality gain at this scale.
+1. **Make the doc-sync hand-off in AGENTS.md proportional for prototype-tier work**: for example, sync inline when the change touches only the plan's status lines, and delegate only when record documents change. It is the largest measured cost (+$0.30 and +90 s per run when it fires) and showed no gain in code quality at this scale. What doc-sync produces (documents kept current for the next session) is not graded by v0, so its value is unmeasured, not zero.
 2. **Shorten AGENTS.md for prototype tier.** It is loaded into every turn (7 to 7.8 KB). Moving procedure detail (Verify stage, evidence ladder, delegation) behind links to on-demand files would cut cache-read volume without losing any rule.
-3. **IMPLEMENTATION_PLAN can be slimmer for a single-phase prototype.** It was rarely opened (1 in 9). Its phase detail could move behind the plan index.
+3. **IMPLEMENTATION_PLAN can be slimmer for a single-phase prototype.** It was rarely opened (1 in 9). Its surrounding prose could move behind the plan index; each phase's scope and done contract stay word for word (doc-tiers rule).
 
 These are candidates to re-measure, not proven gains: v0 cannot show whether the same docs help on harder work.
 
@@ -67,6 +67,7 @@ These are candidates to re-measure, not proven gains: v0 cannot show whether the
 - **Ceiling:** every run passed every hidden test, so quality differences cannot show here. Separating the conditions needs harder tasks or tasks that need the docs' decisions (to be agreed with Keel; none added).
 - Fixtures were generated once at prototype tier; a fuller tier was not measured.
 - The judge sees source only, not docs; `clarity` verdicts vary between calls.
+- Single-session tasks only. What the docs are for (decisions carried across sessions, drift, upkeep) is not exercised: no run starts from earlier work, and no grader checks the docs.
 - The pilot and its generation spend from the earlier temp are lost (see `token-usage.md`).
 
 ## Harness fixes made during this run
