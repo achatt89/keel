@@ -7,7 +7,7 @@
 // Conditions: none, min, answers (min + founder-answers.md), spec (answers + idea.md), keel. A task with "base" starts every condition from that code.
 // A task with "sessions" runs them in order in the same folder, one fresh `claude -p` each; one row per session.
 // Options: --model sonnet (agent), --judge opus, --effort <level>, --out <dir under results/raw>,
-//   --keel-fixture <name> (default keel), --keel-overlay <dir> (files copied over the keel fixture), --rescore (with --out: recompute usage fields from saved transcripts, no model calls).
+//   --judge-reserve-usd <n> (default 0.6, held back from each session's budget for its judge calls), --keel-fixture <name> (default keel), --keel-overlay <dir> (files copied over the keel fixture), --rescore (with --out: recompute usage fields from saved transcripts, no model calls).
 import { mkdtempSync, mkdirSync, cpSync, writeFileSync, readFileSync, existsSync, rmSync, readdirSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { join, resolve } from 'node:path';
@@ -157,7 +157,11 @@ async function main() {
     else { cpSync(join(outDir, nameOf(first)), d, { recursive: true }); commit(d, `after session ${first} (restored)`); }
     for (let k = first + 1; k <= sessions.length; k++) {
       const name = nameOf(k);
-      const left = cap - spent;
+      // Reserve the judge calls that run after the session (outside its --max-budget-usd), plus the small
+      // overshoot claude allows past its own budget, so cap - spent never goes negative (2.6.3 run: +0.009).
+      const judgeSeen = Math.max(0, ...rows.map((r) => r.judgeCostUsd ?? 0));
+      const reserve = Math.max(Number(arg('judge-reserve-usd', '0.6')), judgeSeen * 1.25) + 0.05;
+      const left = cap - spent - reserve;
       if (left < 0.5) { console.log(`STOP: spend cap ${cap} reached (${spent.toFixed(2)} spent)`); return finish(rows, outDir); }
       const prompt = readFileSync(join(task.dir, sessions[k - 1].prompt), 'utf8');
       process.stdout.write(`${name} ... `);
