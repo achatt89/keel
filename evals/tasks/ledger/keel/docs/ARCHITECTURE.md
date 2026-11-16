@@ -1,77 +1,58 @@
-# ledger — Architecture (lite)
+# Architecture — ledger (lite)
 
-Requirements: `BRD.md`. Decisions: `adr/README.md`. No LLD: module contracts are §4 here (prototype tier).
+**References:** [BRD](./BRD.md) · [ADR index](./adr/README.md) · [IMPLEMENTATION_PLAN](./IMPLEMENTATION_PLAN.md)
 
 ## 1. Principles
 
 | ID | Principle |
 |---|---|
-| P-01 | Integer cents everywhere; strings only at the edges (parse in, format out). ADR-001 |
-| P-02 | Pure core, thin shell: money, balances and settle are pure functions; only `store.js` touches disk and only `cli.js` touches argv/stdout/stderr/exit. |
-| P-03 | One error path: every invalid input throws `UsageError`; one top-level handler prints `error: <msg>` to stderr and exits 2. Nothing else sets a non-zero exit code. |
-| P-04 | Validate before any write; a failed command never changes the file. |
-| P-05 | Standard library only (`node:fs`, `node:path`, `node:test`, `node:assert`). |
+| P-01 | Pure core, thin shell: money, split, balances and settle are pure functions; only `store.js` and `cli.js` touch the outside world |
+| P-02 | Integer cents everywhere inside the program; strings only at the I/O edge (MON-001) |
+| P-03 | Validate once, at the edge, before any state changes (VAL-002) |
+| P-04 | One error path: modules throw `CliError`; only `cli.js` prints and exits |
+| P-05 | Node 20 stdlib only (`node:fs`, `node:path`, `node:test`, `node:assert`) |
 
-## 2. Components & data flow
+## 2. Components
 
-```
-argv ──► cli.js ──► commands/{add,list,remove,balances,settle}.js
-                         │  parse+validate (names.js, money.js)
-                         ▼
-                    store.js  ◄──► $LEDGER_FILE (JSON)
-                         │
-          balances.js ◄──┘ (pure)      settle.js (pure) ◄── balances
-                         ▼
-                  lines → stdout       UsageError → stderr, exit 2
-```
+| Module | Responsibility | Owns |
+|---|---|---|
+| `src/cli.js` | Entry point: parse argv, dispatch, print, map errors to exit codes | exit codes, stdout/stderr |
+| `src/commands.js` | One function per command; orchestrates validate → store → core → output lines | command behaviour |
+| `src/validate.js` | Parse and validate name, amount, participants, id, note, flags; throws `CliError` | VAL-001..003, MON-003/004 |
+| `src/money.js` | `parseAmount(str)→cents`, `formatCents`, `formatSigned`, `splitEqually(cents, names)→Map` | MON-001..002 |
+| `src/balances.js` | `computeBalances(expenses)`, `settle(balances)` (pure) | BAL-002..004 |
+| `src/store.js` | Locate `LEDGER_FILE`, load (missing → empty), validate shape, atomic save | DAT-001..004 |
+| `src/errors.js` | `CliError` (exit 2) and `DataError` (exit 1) | error contract |
+| `tests/*.test.js` | `node:test` suites, one per module plus CLI end-to-end (spawn `node src/cli.js` with a temp `LEDGER_FILE`) | QUA-002 |
 
-Read commands (`list`, `balances`, `settle`): load → compute → print. Write commands (`add`, `remove`): load → validate → mutate in memory → atomic save → print.
+## 3. Data flow
 
-## 3. Data file (ADR-002)
+`argv → cli.js → commands.<cmd> → validate (CliError on bad input) → store.load → core (money/balances) → store.save (mutating cmds only) → lines on stdout → exit 0`.
+Any thrown `CliError` → `error: <message>` on stderr, exit 2. `DataError` → `error: <message>`, exit 1 (DAT-003). Anything else is a bug: stderr `error: internal: <message>`, exit 1.
+
+## 4. Money and split rule ([ADR-001](./adr/ADR-001-integer-cents-and-split-rule.md))
+
+Amount string → cents by regex `^\d{1,7}(\.\d{1,2})?$` (> 0 after parse), no floats. Split of `C` cents among `n` distinct participants: base `floor(C/n)`, remainder `r = C mod n`; participants sorted alphabetically, the first `r` get `base+1`. Shares sum to `C`. Payer balance `+C`, each participant `−share`; a payer who is also a participant nets `C − share`. Formatting: sign `+` for positive, `-` for negative, none for zero; always two decimals.
+
+## 5. Data file ([ADR-002](./adr/ADR-002-single-json-file-store.md))
 
 ```json
-{ "version": 1, "nextId": 3,
-  "expenses": [
-    { "id": 1, "payer": "alice", "amountCents": 1250, "participants": ["alice","bob"], "note": "pizza" }
-  ] }
+{ "version": 1, "nextId": 3, "expenses": [
+  { "id": 1, "payer": "alice", "cents": 1250, "participants": ["alice", "bob"], "note": "pizza" } ] }
 ```
 
-`note` omitted when absent. `expenses` ordered by id ascending (= oldest first, since ids only increase). `participants` kept in the order entered [ASSUMPTION OD-01]. Shares are **not** stored; they are recomputed from `amountCents` + participants (single source of truth, no drift).
+`note` omitted when absent. Load checks: object shape, `nextId` positive integer greater than every id, ids unique and ascending, names valid, `cents` safe positive integer, participants non-empty and distinct. Violation → `DataError` (exit 1), file untouched. `remove` never lowers `nextId` (EXP-002). Save: write `<file>.tmp-<pid>`, then `rename` over the target.
 
-## 4. Modules (the contract the builder implements)
+## 6. Settle algorithm (BAL-004)
 
-| § | Module | Exports | Owns / does not own |
-|---|---|---|---|
-| 4.1 | `src/money.js` | `parseAmount(str) → cents` · `formatCents(c) → "12.50"` · `formatSigned(c) → "+10.00"/"-10.00"/"0.00"` · `splitCents(total, names) → Map name→cents` | Owns all cents math (MNY-001..003). `splitCents`: sort names, `base = floor(total/n)`, `r = total mod n`, first `r` names get `base+1`. Never uses floats; `parseAmount` splits the string on `.`, no `parseFloat`. |
-| 4.2 | `src/names.js` | `parseName(str)` · `parseParticipants(str) → string[]` | VAL-001, VAL-003 (empty entry, duplicates). Throws `UsageError`. |
-| 4.3 | `src/errors.js` | `class UsageError extends Error` | Only error type that maps to exit 2 (P-03). |
-| 4.4 | `src/store.js` | `ledgerPath()` · `load() → {nextId, expenses}` · `save(ledger)` | DAT-001..004, VAL-004. Missing file → `{nextId:1, expenses:[]}`. `save` writes `<file>.tmp-<pid>` then `rename` (ADR-005). Validates shape on load. |
-| 4.5 | `src/cli.js` | (entry; no exports) | Parses argv, dispatches to `commands/*`, owns the single try/catch, writes stdout lines, sets `process.exitCode` (0 or 2). Argument parsing approach: ADR-004. |
-| 4.6 | `src/commands/*.js` | one `run(args, ledger) → { lines, ledger? }` each | Command-specific validation and output formatting. Return lines, do not print — keeps them unit-testable. |
-| 4.7 | `src/balances.js` | `computeBalances(expenses) → Map name→cents` | BAL-001..003. For each expense: payer `+= amountCents`; each participant `-= share` (via `splitCents`). Sum is always 0 (BO-01). |
-| 4.8 | `src/settle.js` | `settle(balances) → [{from,to,cents}]` | SET-001, ADR-003. Loop: debtor = most negative (tie: name asc), creditor = most positive (tie: name asc), `t = min(-d, c)`, emit, adjust, stop when all zero. |
+Input: balances in cents (sum is 0). Loop while any non-zero balance: debtor = most negative (tie: alphabetically first name), creditor = most positive (tie: alphabetically first name); `t = min(−debtor, creditor)`; emit `debtor -> creditor: t`; adjust both. Each step zeroes at least one person, so it terminates in at most `n−1` steps. Deterministic for a given input.
 
-## 5. Error & exit contract
+## 7. Trust boundaries and security
 
-| Situation | stdout | stderr | exit |
-|---|---|---|---|
-| Success | result lines (or nothing) | — | 0 |
-| Any `UsageError` (VAL-002/003/004) | nothing | `error: <message>` (one line) | 2 |
-| Unexpected exception (a bug) [ASSUMPTION] | nothing | `error: internal: <message>` | 2 |
+Single local user; data file trusted but validated on load (RSK-004). No network, no child processes, no `eval`, no dynamic `require` of user input. Note text is stored and printed verbatim as data (newlines rejected so `list` stays one line per expense). No secrets.
 
-The unexpected-exception row exists so the "only 0 or 2" contract holds even on a defect; the handler still prints `error:` first.
+## 8. Accepted residual risks
 
-## 6. Security & trust boundaries
-
-One boundary: argv/env → validators. Everything after validation is trusted internal data. The data file is trusted-local (founder answer) but shape-checked on load (VAL-004) so a hand-edited file fails cleanly rather than corrupting balances. No network, no subprocess, no `eval`, no dynamic `require` of user input. `LEDGER_FILE` is used as given (the user owns their environment); the tool never reads or writes any other path.
-
-## 7. Accepted risks
-
-| ID | Risk | Accepted because | Revisit when |
-|---|---|---|---|
-| RSK-003 | Greedy settle may not be globally minimal in transfer count | It is the founder-specified algorithm (ADR-003) | Founder wants provably-minimal transfers |
-| A-02 | No file locking; two concurrent writers can lose an update | One user, one laptop | Two terminals/processes ever write at once |
-
-## 8. Observability, cost, deployment
-
-None. No logging, metrics, hosting, or spend. Run from a clone (`node src/cli.js`); no `DEPLOYMENT.md` (no remote environment).
+| ID | Risk | Revisit trigger |
+|---|---|---|
+| RSK-003 | Concurrent runs can lose an update (no locking; A-04) | Two people share one data file |

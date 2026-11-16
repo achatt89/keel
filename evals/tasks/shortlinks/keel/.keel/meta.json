@@ -17,22 +17,39 @@
   "waivers": {},
   "waiverReviewDays": 90,
   "evidenceDir": ".keel/evidence",
-  "closeout": { "maxOpenDeferred": 8, "everyNPhases": 5 },
+  "closeout": {
+    "maxOpenDeferred": 8,
+    "everyNPhases": 5
+  },
   "deployLogKeep": 10,
   "lastArchiveTrigger": null,
   "documentsGenerated": [
-    "AGENTS.md", "CLAUDE.md", "CHANGELOG.md",
-    "docs/README.md", "docs/BRD.md", "docs/PRD.md", "docs/ARCHITECTURE.md",
-    "docs/adr/README.md", "docs/adr/ADR-001-runtime-and-storage-stdlib-commonjs-in-memory.md",
-    "docs/adr/ADR-002-rate-limiter-sliding-window-log-per-ip.md",
-    "docs/adr/ADR-003-client-identity-socket-address-no-forwarded-headers.md",
-    "docs/adr/ADR-004-post-links-validation-order-and-strictness.md",
-    "docs/adr/ADR-005-routing-by-path-shape-and-reserved-code-links.md",
-    "docs/IMPLEMENTATION_PLAN.md", "docs/COMMANDS.md", "docs/keel-transcript.md"
+    "AGENTS.md",
+    "CLAUDE.md",
+    "CHANGELOG.md",
+    "docs/README.md",
+    "docs/BRD.md",
+    "docs/PRD.md",
+    "docs/ARCHITECTURE.md",
+    "docs/IMPLEMENTATION_PLAN.md",
+    "docs/COMMANDS.md",
+    "docs/keel-transcript.md",
+    "docs/adr/README.md",
+    "docs/adr/ADR-001-stdlib-only-http.md",
+    "docs/adr/ADR-002-in-memory-store.md",
+    "docs/adr/ADR-003-rate-limit-sliding-window.md",
+    "docs/adr/ADR-004-routing-and-reserved-code.md",
+    ".claude/rules/service.md"
   ],
   "skillsInstalled": [],
-  "securitySkill": "declined",
-  "agents": { "doc-sync": { "type": "subagent", "path": ".claude/agents/doc-sync.md" } },
+  "securitySkill": "never",
+  "agents": {
+    "doc-sync": { "type": "subagent", "path": ".claude/agents/doc-sync.md" }
+  },
+  "rounds": null,
   "updateCheck": true,
-  "evidenceRetention": { "keepRunsPerBranch": 3, "pruneMergedAfterDays": 30 }
+  "evidenceRetention": {
+    "keepRunsPerBranch": 3,
+    "pruneMergedAfterDays": 30
+  }
 }

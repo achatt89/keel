@@ -9,10 +9,10 @@
 
 export const meta = {
   name: 'phase-1-booking-engine',
-  description: 'Phase 1: Booking engine — book and cancel enforce every rule with the exact error codes and precedence, and no double booking is possible',
+  description: 'Phase 1: Booking engine — book and cancel make double-booking impossible, with every error code and the stated precedence',
   phases: [
     { title: 'Setup', detail: 'Create/checkout phase-1-booking-engine off main; reserve ADR IDs' },
-    { title: 'Build', detail: 'two parallel tasks (see TASKS)' },
+    { title: 'Build', detail: 'book + cancel with all rules' },
     { title: 'Integrate', detail: 'Merge each task branch into phase-1-booking-engine; renumber pending ADRs' },
     { title: 'Verify', detail: 'Run every exit gate once; write .keel/evidence/phase-1.json' },
     { title: 'Doc Sync', detail: 'doc-sync.js: delegate to doc-sync role, review report (≤3 rounds), commit; budget, archive, prune' },
@@ -39,7 +39,7 @@ export const meta = {
 
 // Decisions this phase's IMPLEMENTATION_PLAN scope block names. One reserved ADR per entry.
 // Setup allocates the numbers; tasks write into the stubs. Leave empty ([]) if the scope names none.
-const RESERVED_ADRS = []  // ADR-001..004 are Accepted at generation; none reserved
+const RESERVED_ADRS = []
 
 phase('Setup')
 
@@ -74,14 +74,13 @@ await agent(`
 phase('Build')
 
 const TASKS = [
-  "Implement book() input validation and the full rule pipeline in the order fixed by ADR-003 (invalid_input, invalid_time, outside_hours, too_long, overlap, person_busy), atomic on failure, ids per ADR-004; tests in test/book.test.js",
-  "Implement cancel(id) (not_found on unknown or non-string id) and prove cancel frees both room and person; tests in test/cancel.test.js",
+  "Implement book and cancel in src/booking.js per ADR-003, ADR-004, ADR-005 and PRD section 3 rows 5-13, 15, 16, 21: hours, length, room overlap, person_busy, fixed check order, internal ids, private Maps, validate-then-write, copies out. Tests: test/hours.test.js, test/conflicts.test.js, test/precedence.test.js, test/cancel.test.js, test/atomicity.test.js (this is one cohesive task: the checks share one function)",
 ]
 
 const buildResults = await parallel(TASKS.map((task, i) => () => agent(`
   You are working in a git worktree of <project root>.
-  Reference these docs before starting: IMPLEMENTATION_PLAN.md Phase 1, ARCHITECTURE.md, docs/adr/.
-  Hard invariants (AGENTS.md) apply unconditionally.
+  Reference these docs before starting: IMPLEMENTATION_PLAN.md Phase 1, docs/ARCHITECTURE.md, docs/PRD.md, docs/adr/README.md.
+  Hard invariants in AGENTS.md apply unconditionally.
 
   Your task: ${task}
 
@@ -125,14 +124,12 @@ const buildResults = await parallel(TASKS.map((task, i) => () => agent(`
   1. Read the relevant spec sections listed above.
   2. Implement the task following the spec.
   3. Write tests alongside the code (unit for logic, integration for cross-module behaviour).
-  4. Run tests and lint: node --test  (no lint step; no npm dependencies).
+  4. Run tests and lint: node --test.
   5. Run the verify skill — exercise the change end-to-end, not just tests/typecheck.
   6. If anything fails: fix it and repeat from step 3. Do not stop on a failure — that's what
      /goal is for.
 
-  Retry budget: up to 3 fix-and-retest cycles. If the goal still isn't met after 3 attempts, stop — run /goal clear, commit whatever is
-    working, and add a row to IMPLEMENTATION_PLAN's deferred-items table (in the part \`node .keel/doc-size.mjs --where docs/IMPLEMENTATION_PLAN.md "Deferred"\` prints if the plan is split) stating exactly what's
-    blocking and why, for human review.
+  Retry budget: up to 3 fix-and-retest cycles. If the goal still isn't met after 3 attempts, stop — run /goal clear, commit whatever is working, and add a row to IMPLEMENTATION_PLAN's deferred-items table (in the part \`node .keel/doc-size.mjs --where docs/IMPLEMENTATION_PLAN.md "Deferred"\` prints if the plan is split) stating exactly what's blocking and why, for human review.
 
   7. Stage and commit all changes: git add -A && git commit -m "feat(${task.slice(0,40)}): ..."
   8. Return: your branch name (git branch --show-current), a 2–3 line summary, and — honestly —
@@ -192,6 +189,8 @@ await agent(`
   Produce evidence for every exit gate of IMPLEMENTATION_PLAN.md Phase 1 and write it to
   .keel/evidence/phase-1.json. You run the checks yourself, once. Do not trust the Build
   agents' summaries — reproduce.
+  Run a real check before calling anything done: execute it and read its output. A syntax-only
+  check, a check that failed to start, or a skipped test is not a check.
 
   1. Read IMPLEMENTATION_PLAN.md Phase 1 — list every exit gate verbatim (the Gate column of
      its exit-gate table, or the bullets if not yet tabular).
@@ -206,7 +205,11 @@ await agent(`
        local-browser  — a real claude-in-chrome pass on the local stack (save the transcript to
                         .keel/evidence/phase-1/browser-<gate-slug>.md)
        staging        — observed on a deployed staging env
-     NEVER write "prod-live" here — only a deploy (DEPLOYMENT.md deploy log) can claim that.
+     Not "prod-live": only a deploy (DEPLOYMENT.md deploy log) writes it; step 5b rejects it.
+     A check proves a gate only once it has been seen to fail on broken code: the test failed
+     before the fix, or went red when you reverted the fix or broke the assertion. Record how in
+     "failSeen" (a standing tool gate such as lint, typecheck, audit or build: "standing tool").
+     A met gate above code-read with no failSeen is "partial".
      If a gate's own wording demands a level you did not reach (e.g. it says "in a browser" and
      you only have unit tests), status is "partial", not "met". Say what is missing in notes.
   4. UI phases: run the claude-in-chrome golden path + key edge cases against the local stack,
@@ -228,6 +231,7 @@ await agent(`
            "artefact": "<commit sha | .keel/evidence/phase-1/<file> | CI run URL | browser transcript path>",
            "verifiedBy": "verify-agent",
            "status": "met | partial | unmet",
+           "failSeen": "<how the check was seen to fail on broken code; empty for code-read>",
            "notes": "<what was observed; for partial/unmet, exactly what is missing>"
          }
        ],
@@ -238,6 +242,8 @@ await agent(`
        "security": { "confirmedHighOrCritical": <int>, "needsValidation": <int>, "report": "<path or null>" }
      }
      Every gate in the plan appears exactly once. Unknown = "unmet", never omitted.
+  5b. node .keel/doc-size.mjs --evidence .keel/evidence/phase-1.json must print "evidence ok";
+     fix the record (never the checker) until it does.
   6. Commit: git add .keel/evidence && git commit -m "test(phase-1): verify — <met>/<total> gates met"
 
   Report: the gates table (gate · level · status) and any suite failures. Do NOT fix code here —

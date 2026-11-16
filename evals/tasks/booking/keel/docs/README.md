@@ -1,26 +1,18 @@
 # booking — Docs Index
 
-> All product and technical documentation for booking. Keystone: [`../AGENTS.md`](../AGENTS.md) (Claude adds [`../CLAUDE.md`](../CLAUDE.md)).
-
-## Documents
+> Documentation for the `booking` meeting-room library. Status: ⬜ build not started.
 
 | File | Status | Description |
-|------|--------|-------------|
-| [BRD.md](BRD.md) | 🔄 Draft | Requirements (BKG/QRY/PKG/SEC), constraints, assumptions A-xx, risks |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | 🔄 Draft | Module shape, public contract, check order, invariants, security controls |
-| [adr/](adr/README.md) | ADR-001..004 Accepted (nothing Built yet) | One file per decision; index + open decisions |
-| [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | ⬜ Phases 0–2 not started | Phases, exit-gate tables, Changes, deferred items |
-| [COMMANDS.md](COMMANDS.md) | 🔄 Draft | `node --test` and doc tooling |
-| [keel-transcript.md](keel-transcript.md) | Complete | The interview and the assumptions taken |
+|---|---|---|
+| [BRD.md](BRD.md) | 🔄 draft | Problem, objectives, constraints, requirements, assumptions, risks |
+| [PRD.md](PRD.md) | 🔄 draft | Features, the public contract, the behaviour table (one row = one test) |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | 🔄 draft | Components, principles, data model, accepted risks |
+| [adr/](adr/README.md) | 🔄 draft | Decision records ADR-001..005, index and open decisions |
+| [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | ⬜ | Phases 0–2 with exit-gate tables, deferred items, changes |
+| [keel-transcript.md](keel-transcript.md) | ✅ | The interview and where each `[ASSUMPTION]` came from |
 
-Also: [`../CHANGELOG.md`](../CHANGELOG.md) — what changed, with its state tag.
+Also at the root: `AGENTS.md` (keystone), `CLAUDE.md`, `CHANGELOG.md`.
 
-## Reading order
+**Reading order:** developer → PRD §2–3, then ARCHITECTURE; founder → BRD §3–4 and `adr/README.md` Open decisions; builder → `AGENTS.md`, then IMPLEMENTATION_PLAN.
 
-- **New developer / builder:** AGENTS.md → BRD §6 → ARCHITECTURE §3–§6 → IMPLEMENTATION_PLAN phase you are on.
-- **Founder reviewing assumptions:** BRD §8 → ADR-003 → keel-transcript.
-- **Reviewer:** ARCHITECTURE §6–§8 → plan exit gates.
-
-## ID conventions
-
-`BO-xx` objectives · `BKG-/QRY-/PKG-/SEC-xxx` requirements · `CON-xxx` constraints · `A-xx` assumptions · `RSK-xxx` risks (BRD) · `P-xx` principles, `I-x` invariants (ARCHITECTURE) · `ADR-xxx` · `Phase N` · `CHG-xxx`.
+**IDs:** `BO-` `CON-` `A-` `RSK-` and requirement groups `API/TIM/HRS/CNF/INP/QRY/TST/DOC` (BRD) · `F-` (PRD) · `P-` (ARCHITECTURE) · `ADR-` · `Phase N` · `CHG-`.

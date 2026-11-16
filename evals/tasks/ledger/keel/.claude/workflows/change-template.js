@@ -96,6 +96,8 @@ await agent(`
 
   Produce the evidence record for ${CHG}. Run the checks yourself, once; do not trust the Build
   report. Same shape as a phase record, with the change's own acceptance as its gates.
+  Run a real check before calling anything done: execute it and read its output. A syntax-only
+  check, a check that failed to start, or a skipped test is not a check.
 
   1. Gates = the observable results named in the change description (each one a gate), plus the
      standing gates: lint clean · typecheck clean · unit+integration green · audit clean.
@@ -104,17 +106,22 @@ await agent(`
      as an artefact; /impeccable audit output saved (by the "design" owner in .keel/meta.json
      "agents" if set). A "security" owner there audits git diff main...HEAD; a confirmed
      high/critical finding is an unmet gate.
-  3. Levels: code-read | unit | integration | local-browser | staging. NEVER "prod-live" (only a
-     deploy may). A gate whose wording demands a level you did not reach is "partial".
+  3. Levels: code-read | unit | integration | local-browser | staging; not "prod-live" (only a
+     deploy writes it; step 4b rejects it). A gate whose wording demands a level you did not reach
+     is "partial". A check proves a gate only once it has been seen to fail on broken code (failed
+     before the fix, or red when the fix is reverted); record how in "failSeen" ("standing tool"
+     for lint, typecheck, audit, build). A met gate above code-read with no failSeen is "partial".
   4. Write .keel/evidence/${CHG.toLowerCase()}.json:
      {
        "change": "${CHG}", "branch": "chg/{{SLUG}}", "commit": "<short sha>", "date": "<YYYY-MM-DD>",
        "gates": [ { "gate": "...", "level": "...", "artefact": "...", "verifiedBy": "verify-agent",
-                    "status": "met | partial | unmet", "notes": "..." } ],
+                    "status": "met | partial | unmet", "failSeen": "...", "notes": "..." } ],
        "suites": { "<name>": { "files": 0, "passed": 0, "failed": 0, "skipped": [], "report": "<path>" } },
        "impeccable": { "target": null, "p0": 0, "p1": 0, "report": null },
        "security": { "confirmedHighOrCritical": 0, "needsValidation": 0, "report": null }
      }
+  4b. node .keel/doc-size.mjs --evidence .keel/evidence/${CHG.toLowerCase()}.json must print
+     "evidence ok"; fix the record (never the checker) until it does.
   5. git add .keel/evidence && git commit -m "test(${CHG.toLowerCase()}): verify — <met>/<total> gates met"
   Report the gates table. Do not fix code here; unmet is the finding.
 `, { label: 'verify' })

@@ -1,0 +1,24 @@
+{
+  "keelVersion": "2.5.6",
+  "costUsd": 0.7856947999999999,
+  "turns": 18,
+  "segments": 1,
+  "durationMs": 209991,
+  "wallMs": 210641,
+  "inputTokens": 34,
+  "outputTokens": 30223,
+  "cacheRead": 1030088,
+  "cacheWrite": 95097,
+  "isError": false,
+  "subtype": "success",
+  "models": {
+    "claude-sonnet-5-5": {
+      "input": 34,
+      "output": 30223,
+      "cacheRead": 1030088,
+      "cacheWrite": 95097,
+      "costUsd": 0.7856947999999999
+    }
+  },
+  "modelId": "claude-sonnet-5-5"
+}
