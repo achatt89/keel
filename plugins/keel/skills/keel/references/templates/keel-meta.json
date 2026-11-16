@@ -27,6 +27,7 @@
   "skillsInstalled": [],
   "securitySkill": null,
   "agents": {},
+  "rounds": null,
   "updateCheck": true,
   "evidenceRetention": {
     "keepRunsPerBranch": 3,

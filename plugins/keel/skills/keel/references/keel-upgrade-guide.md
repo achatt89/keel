@@ -391,6 +391,11 @@ Every project that will be built:
   → OUTDATED_CONVENTION (Minor; ask the user per entry)
 - [ ] an installed `.claude/hooks/keel-update-check.mjs` reads `release.json` (2.5.3: user-facing releases only) → else OUTDATED_CONVENTION (Minor): replace verbatim
 - [ ] `.claude/hooks/keel-update-check.mjs` + SessionStart entry → MISSING_FEATURE (Optional, opt-in)
+- [ ] Team answers (opt-in, `references/team-answers.md`): no `rounds` in `.keel/meta.json` → nothing
+  to migrate and no gap; it is offered at Phase 0 of the next interview round, never forced. If
+  `.keel/rounds/` exists: `.keel/packet-check.mjs` present and passing → else MISSING_FEATURE
+  (Important): install it verbatim from `templates/keel-packet-check.mjs`; repo public and
+  `.keel/rounds/` not git-ignored → ask the owner (Minor).
 
 ---
 
