@@ -163,5 +163,114 @@
       }
     },
     "success": false
+  },
+  {
+    "name": "inventory-keel-r1-s3",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 0.0317508,
+    "turns": 2,
+    "segments": 1,
+    "durationMs": 10415,
+    "wallMs": 11109,
+    "inputTokens": 4,
+    "outputTokens": 1111,
+    "cacheRead": 42088,
+    "cacheWrite": 4106,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 4,
+        "output": 1111,
+        "cacheRead": 42088,
+        "cacheWrite": 4106,
+        "costUsd": 0.0317508
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 1
+    },
+    "docReads": [
+      "docs/IMPLEMENTATION_PLAN.md",
+      "docs/adr/README.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 15,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock",
+      "p3: history in order with one global seq",
+      "p3: release is recorded; failed changes are not",
+      "p3: reorder report",
+      "p3: reorder point validation"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      },
+      {
+        "phase": 3,
+        "pass": 0,
+        "total": 4,
+        "failed": [
+          "p3: history in order with one global seq",
+          "p3: release is recorded; failed changes are not",
+          "p3: reorder report",
+          "p3: reorder point validation"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "docs/README.md says 'Status: ⬜ no phase built yet', but src/inventory.js implements all of Phase 1; separately, the Phase 1 gate cites a 17/17 test report while the test files define 18 tests."
+    },
+    "judgeCostUsd": 0.3542058,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1107,
+        "cacheRead": 649,
+        "cacheWrite": 41491,
+        "costUsd": 0.3542058
+      }
+    },
+    "success": false
   }
 ]
