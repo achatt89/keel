@@ -1,0 +1,1 @@
+{ "id": "shortlinks", "title": "URL-shortener HTTP service", "tests": "tests", "timeoutMin": 20 }

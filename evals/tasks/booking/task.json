@@ -1,0 +1,1 @@
+{ "id": "booking", "title": "Meeting-room booking library", "tests": "tests", "timeoutMin": 20 }
