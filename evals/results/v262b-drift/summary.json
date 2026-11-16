@@ -1,0 +1,231 @@
+[
+  {
+    "name": "inventory-keel-r1-s1",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 1.0693914000000002,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 5372,
+    "wallMs": 194364,
+    "inputTokens": 128,
+    "outputTokens": 34281,
+    "cacheRead": 1065849,
+    "cacheWrite": 238580,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 128,
+        "output": 34281,
+        "cacheRead": 1065849,
+        "cacheWrite": 238580,
+        "costUsd": 1.0693914000000002
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "pass",
+    "driftFailed": [],
+    "driftReasons": {},
+    "judgeCostUsd": 0.3428298,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1651,
+        "cacheRead": 649,
+        "cacheWrite": 38709,
+        "costUsd": 0.3428298
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r1-s2",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 1.4705157000000006,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 5841,
+    "wallMs": 260494,
+    "inputTokens": 166,
+    "outputTokens": 51211,
+    "cacheRead": 1503107,
+    "cacheWrite": 315766,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 166,
+        "output": 51211,
+        "cacheRead": 1503107,
+        "cacheWrite": 315766,
+        "costUsd": 1.4705157000000006
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "The README error table lists release and fulfil under not_found with the meaning 'no item with that SKU', but in the code release and fulfil raise not_found when no open order exists for the id (openOrder), not for a missing SKU."
+    },
+    "judgeCostUsd": 0.43327380000000004,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1796,
+        "cacheRead": 649,
+        "cacheWrite": 49652,
+        "costUsd": 0.43327380000000004
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r1-s3",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 1.2225779000000003,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 5980,
+    "wallMs": 237824,
+    "inputTokens": 146,
+    "outputTokens": 44086,
+    "cacheRead": 1408099,
+    "cacheWrite": 248477,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 146,
+        "output": 44086,
+        "cacheRead": 1408099,
+        "cacheWrite": 248477,
+        "costUsd": 1.2225779000000003
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 15,
+    "testsTotal": 15,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      },
+      {
+        "phase": 3,
+        "pass": 4,
+        "total": 4,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "pass",
+    "driftFailed": [],
+    "driftReasons": {},
+    "judgeCostUsd": 0.4928618,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1313,
+        "cacheRead": 649,
+        "cacheWrite": 58308,
+        "costUsd": 0.4928618
+      }
+    },
+    "success": true
+  }
+]
