@@ -13,6 +13,15 @@ architecture and low-level design described data shapes the code did not use. Do
 rewrites each affected decision record's status and build-deviation row, compares the design
 documents with the code, and runs the drift check before it hands back.
 
+**What we measured, and what is not covered.** On one three-session test task (our v1 inventory
+task, one tested model, 6 sessions), stale decision records and architecture or low-level design
+contradictions dropped to 0 of 6 sessions, against 6 of 9 sessions with some contradiction on
+2.5.6. That is a small sample and an indication, not proof. The release did **not** meet the pass
+rule we set (contradictions in at most 1 of 9 sessions): 2 of 6 sessions still had a wrong
+statement in the project's own README, an error-code meaning and the numbers in a worked example.
+README accuracy is not covered by this release; making README examples runnable checks is
+planned for 2.6.3.
+
 ### Changed
 - **Doc sync reconciles decision records.** Every record the work touched, or whose phase it
   advanced, gets its Status cell moved to Built and its Build deviation row filled with what was
