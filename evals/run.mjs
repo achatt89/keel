@@ -7,7 +7,7 @@ import { mkdtempSync, mkdirSync, cpSync, writeFileSync, readFileSync, existsSync
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { readTask, claude, resultEvent, CLEAN, EVALS, REPO } from './lib.mjs';
+import { readTask, claude, resultEvent, models, CLEAN, EVALS, REPO } from './lib.mjs';
 import { grade } from './grade.mjs';
 
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > -1 ? process.argv[i + 1] : d; };
@@ -52,7 +52,7 @@ const usage = (r) => r ? {
   costUsd: r.total_cost_usd, turns: r.num_turns, durationMs: r.duration_ms,
   inputTokens: r.usage?.input_tokens, outputTokens: r.usage?.output_tokens,
   cacheRead: r.usage?.cache_read_input_tokens, cacheWrite: r.usage?.cache_creation_input_tokens,
-  isError: r.is_error, subtype: r.subtype,
+  isError: r.is_error, subtype: r.subtype, models: models(r),
 } : { costUsd: 0, isError: true, subtype: 'no-result' };
 
 async function genKeel(id) {
@@ -109,7 +109,7 @@ async function main() {
     const g = await grade(id, d, { judgeModel: JUDGE });
     const row = { name, task: id, cond, rep, model: MODEL, ...usage(res), timedOut: r.timedOut, ...profile(r.stdout),
       testsPass: g.tests.pass, testsTotal: g.tests.total, testsFailed: g.tests.failed,
-      judge: g.judge.verdict, judgeFailed: g.judge.items.filter((i) => !i.pass).map((i) => i.id), judgeCostUsd: g.judge.costUsd, success: g.success };
+      judge: g.judge.verdict, judgeFailed: g.judge.items.filter((i) => !i.pass).map((i) => i.id), judgeCostUsd: g.judge.costUsd, judgeModels: g.judge.models, success: g.success };
     rows.push(row);
     spent += row.costUsd + row.judgeCostUsd;
     writeFileSync(summaryFile, JSON.stringify(rows, null, 2));

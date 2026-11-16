@@ -26,6 +26,11 @@ export function claude(args, { cwd, timeoutMs, input } = {}) {
   });
 }
 
+// Per-model token use from a result event's modelUsage, keyed by the exact model id Claude Code reports.
+export const models = (r) => Object.fromEntries(Object.entries(r?.modelUsage ?? {}).map(([id, u]) => [id, {
+  input: u.inputTokens ?? 0, output: u.outputTokens ?? 0, cacheRead: u.cacheReadInputTokens ?? 0, cacheWrite: u.cacheCreationInputTokens ?? 0, costUsd: u.costUSD ?? 0,
+}]));
+
 // The `result` event of a stream-json transcript, or of a single json output.
 export function resultEvent(stdout) {
   const lines = stdout.trim().split('\n').reverse();

@@ -6,7 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { readdirSync, readFileSync, statSync, existsSync, mkdtempSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
-import { readTask, claude, CLEAN, EVALS } from './lib.mjs';
+import { readTask, claude, models, CLEAN, EVALS } from './lib.mjs';
 
 export function runTests(task, dir) {
   const r = spawnSync(process.execPath, ['--test', '--test-reporter=tap', join(task.dir, task.tests)], {
@@ -66,7 +66,7 @@ Include every rubric id: ${allIds(rubric).join(', ')}.`;
   const missing = allIds(rubric).filter((id) => !byId.has(id));
   // The verdict is computed here from the MUST items, never taken from the model.
   const verdict = items.length && !missing.length && must.every((id) => byId.get(id)?.pass === true) ? 'pass' : 'fail';
-  return { model, verdict, items, missing, costUsd: out?.total_cost_usd ?? 0, error: out ? null : (r.stderr || r.stdout).slice(0, 500) };
+  return { model, verdict, items, missing, costUsd: out?.total_cost_usd ?? 0, models: models(out), error: out ? null : (r.stderr || r.stdout).slice(0, 500) };
 }
 
 export async function grade(taskId, dir, { judgeModel = 'opus', noJudge = false } = {}) {
@@ -87,7 +87,8 @@ async function selftest(ids) {
       const judgeOk = (g.judge.verdict === 'pass') === want;
       ok &&= testsOk && judgeOk;
       const failedItems = g.judge.items.filter((i) => !i.pass).map((i) => i.id).join(',') || '-';
-      console.log(`${testsOk && judgeOk ? 'OK  ' : 'FAIL'} ${id}/${variant}: tests ${g.tests.pass}/${g.tests.total}, judge ${g.judge.verdict} (failed: ${failedItems}) $${g.judge.costUsd.toFixed(3)}`);
+      const tok = Object.entries(g.judge.models).map(([m, u]) => `${m} in ${u.input} out ${u.output} cacheR ${u.cacheRead} cacheW ${u.cacheWrite}`).join('; ') || 'no usage';
+      console.log(`${testsOk && judgeOk ? 'OK  ' : 'FAIL'} ${id}/${variant}: tests ${g.tests.pass}/${g.tests.total}, judge ${g.judge.verdict} (failed: ${failedItems}) $${g.judge.costUsd.toFixed(3)} [${tok}]`);
     }
   }
   process.exit(ok ? 0 : 1);
