@@ -3,6 +3,39 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.5.5] — 2026-11-16
+<!-- audience: internal -->
+
+How Keel treats documentation is now written down, and the docs site has a roadmap page. Nothing
+that `/keel` generates changes in this release; the rules below govern every release after it.
+
+### Changed
+- **The full documentation set stays.** Keel keeps generating every document that fits a project:
+  BRD, PRD, engineering design, architecture, HLD, LLD, ADRs, NFR, design, compliance, threat
+  model, plan, runbook and the rest. No document type is removed without the maintainer's typed
+  approval. Why: a full documentation set per project is Keel's original requirement, and shorter
+  output must not trade it away.
+- **Two tiers of document.** *Execution tier* (AGENTS.md, CLAUDE.md, COMMANDS, IMPLEMENTATION_PLAN,
+  RUNBOOK, DEPLOYMENT, PRODUCT, the docs and ADR indexes): what agents load and act from. Later
+  releases shorten these to facts, pointers and steps, and move "never" rules into hooks and
+  settings that enforce them. *Record tier* (BRD, PRD, ENGINEERING_DESIGN, ARCHITECTURE, HLD, LLD,
+  ADR files, NFR, DESIGN, COMPLIANCE, THREAT_MODEL, CONNECTOR_SPEC, COST_ANALYSIS, SPIKE, AUDIT,
+  FEEDBACK_ROUNDS, CHANGELOG, almanac): kept full and only checked for drift against the code. An
+  oversize record doc may still be split or archived word for word, never cut. Why: execution
+  files are read on every run, so each extra line costs on every run; record documents are opened
+  for one question, and their value is being complete. Nothing leaves an execution file except to
+  a record document or an enforced rule.
+- **Measure before cutting.** Size budgets and leaner output apply to the execution tier only, and
+  only after an evaluation (the same tasks run with no docs, a minimal AGENTS.md and the full Keel
+  set) gives a baseline. Its result may recommend shorter execution documents, never a shorter
+  record document or a missing document type. Why: the evidence that long context files can lower
+  agent success is about always-loaded instructions, and Keel's own effect is not yet measured.
+
+### Added
+- **Roadmap page** on the docs site (`docs/site/19-roadmap.md`, `/docs/roadmap/`): Now, Next and
+  Later with no dates; the two document tiers; team answers (opt-in packet files); how existing
+  projects adopt each change through `/keel upgrade`; and what Keel will not build.
+
 ## [2.5.4] — 2026-10-31
 <!-- headline: Document size checks got clearer. -->
 
