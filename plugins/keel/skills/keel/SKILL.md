@@ -23,7 +23,8 @@ description: >
   version" (report the installed skill version, the version and doc format that last touched
   this project's docs, per-file byte budgets, and whether a newer keel is published — triggers:
   "what version of keel is this", "check keel version", "is my keel up to date", "which keel
-  version generated these docs", "check for keel updates").
+  version generated these docs", "check for keel updates"), and "keel check" (read-only drift
+  check of docs against the repo — triggers: "check my docs for drift", "are my docs stale").
 metadata:
   version: 2.5.6
   userVersion: 2.5.6
@@ -439,7 +440,8 @@ mandatory build loop — worktrees, doc-sync, merge — so the builder never has
    deterministic **Budget** check (`.keel/doc-size.mjs`) that triggers a conditional **Archive**
    step and then a **Split** step for anything still over — this is how auto-archive and
    auto-split work; there is no hook or daemon. Copy `references/templates/keel-doc-size.mjs` to
-   `.keel/doc-size.mjs` (verbatim). Its Sync stage
+   `.keel/doc-size.mjs` (verbatim), and `references/templates/keel-check.mjs` to `.keel/check.mjs`
+   (verbatim; `/keel check` runs it). Its Sync stage
    is the doc-sync loop (delegate → review Report → ≤3 feedback rounds → commit). Set up the
    `doc-sync` role owner per "Role owners" (always — every project has docs to sync).
 3. **For each phase in the generated `IMPLEMENTATION_PLAN.md`**, generate a phase workflow script:
@@ -601,6 +603,7 @@ Load these as needed; you do not need all of them in context at once.
 | `references/templates/workflows/*.js` | Generating phase / change / doc-sync scripts; `/keel phase new`, `/keel change` |
 | `references/templates/agents/*.md` | Writing the repo-local doc-sync / security / design subagent |
 | `references/templates/keel-doc-size.mjs` | Size + split-link check (`.keel/doc-size.mjs`) used by doc-sync, `/keel version`, upgrade, archive |
+| `references/templates/keel-check.mjs` | Read-only drift check (`.keel/check.mjs`) run by `/keel check` |
 | `references/templates/keel-evidence-prune.mjs` | Evidence retention for review runs |
 | `references/templates/keel-update-check.mjs` | The opt-in SessionStart update-check hook |
 | `references/templates/keel-meta.json` | Writing or migrating `.keel/meta.json` (budgets, docFormat, adrLayout) |
@@ -687,6 +690,32 @@ part that holds it (the last one for a row-split table). Write there, never into
 content that fits no part: add a part (next free NN) and its Parts row. Then run
 `node .keel/doc-size.mjs` before committing. ADR files are immutable after acceptance — no mode
 rewrites one, not even a link.
+
+---
+
+## Check Mode — `/keel check`
+
+**Trigger:** user says "keel check", "check my docs for drift", "are my docs stale", "do the docs
+still match the code", or any equivalent phrasing in a keel project.
+
+**Read-only. No permission gate, no edits, no report file.** Nothing is written to the docs or the repo.
+
+1. **Script first.** Run `node .keel/check.mjs` from the project root (no copy yet: run this
+   skill's `references/templates/keel-check.mjs` the same way). It checks, without a model:
+   missing keel files, dead relative links and `#heading` anchors, ADR index vs ADR file (missing,
+   unindexed, Status stage mismatch, superseded by an ADR that does not exist), ✅ phases with open
+   gates or missing evidence, artefact and deliverable paths, non-✅ phases with no workflow
+   script, and runtime dependencies (package.json, requirements.txt, go.mod, Cargo.toml) that no
+   record doc names. Exit 0 = clean, 1 = findings.
+2. **Clean → reply with its first line and stop.** Do not read any doc.
+3. **Findings → read only the cited lines** (file:line), and for each finding say in one line
+   whether it is real drift or a false positive, and which mode fixes it: doc-sync on the next
+   piece of work (status, links, paths), `/keel upgrade` (keel files, format), `/keel archive`
+   (stale detail), or a new ADR / Deferred row (a dependency no record names). An ADR file is
+   never edited: a dead link in one is fixed at its target.
+
+Output: the script's summary line, then the findings grouped by kind, each with its verdict and the
+fixing mode. No report file.
 
 ---
 
@@ -849,7 +878,8 @@ CLAUDE.md *or* AGENTS.md with keel-standard headings. If not detected, respond:
 0. **Install the checker first, from any version.** Copy this skill's
    `references/templates/keel-doc-size.mjs` to `.keel/doc-size.mjs` verbatim on **every** upgrade
    (whatever `keelVersion` says, even 1.x or 2.0 with no copy yet) and use it for every size and
-   link measurement below. It is read-only until `--split` / `--move-out` is called.
+   link measurement below. It is read-only until `--split` / `--move-out` is called. Copy
+   `references/templates/keel-check.mjs` to `.keel/check.mjs` verbatim too (read-only, always).
    **Keystone headroom:** before adding any keystone text this release brings (a Pre-PR line, a
    workflow step), compare its byte cost with `AGENTS.md`'s headroom in the checker output. If it
    does not fit, propose in U3 which whole `## ` section to move out first

@@ -18,7 +18,7 @@
 ## Workflow tooling
 
 - Phase scripts run via the Workflow tool or `claude --workflow .claude/workflows/phase-N-<slug>.js`; task agents open with `/goal` and the exit strategy in IMPLEMENTATION_PLAN "Standing rules".
-- Keel modes: `/keel phase new <slug>` · `/keel change <slug>` · `/keel closeout` · `/keel archive` · `/keel upgrade` · `/keel version`.
+- Keel modes: `/keel phase new <slug>` · `/keel change <slug>` · `/keel closeout` · `/keel archive` · `/keel upgrade` · `/keel version` · `/keel check`.
 - Browser verification for UI work is `claude-in-chrome`; its transcript path is the artefact cited in the evidence file.
 
 ## Review subagents *(remove rows for roles not set up)*
