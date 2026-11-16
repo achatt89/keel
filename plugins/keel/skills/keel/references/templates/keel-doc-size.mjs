@@ -374,7 +374,7 @@ export function closeout(planText) {
   const rows = (sec) => sections(planText, 2).filter(s => s.title && s.title.startsWith(sec))
     .flatMap(s => s.text.split('\n')).filter(l => /^\|/.test(l) && !/^\|[\s:|-]+\|\s*$/.test(l))
     .map(l => l.replace(/^\||\|\s*$/g, '').split('|').map(c => c.trim()))
-  const open = rows('Deferred items').filter(c => c.at(-1) === '⬜' && !/^[*_]/.test(c[0]))
+  const open = rows('Deferred items').filter(c => c.at(-1) === '⬜' && !/^[*_]\(.*\)[*_]$/.test(c[0]))   // only a wholly italic "(…)" cell is the placeholder; **bold** items are real
   const phases = sections(planText, 2).flatMap(s => s.text.split('\n'))
     .map(l => l.match(/^\|\s*(?:Phase\s+)?(\d+(?:\.[\da-z]+)?)\b[^|]*\|\s*([^|\s]+)/i)).filter(Boolean)
     .map(m => ({ id: m[1], status: m[2] }))
@@ -539,9 +539,9 @@ if (process.argv.includes('--self-test')) {
   const planOf = (rows, deferred) => `# Plan\n\n## How to read\n\n| Phase | Status | Deploy state |\n|---|---|---|\n${rows}\n## Deferred items\n\n| Item | From | Reason | Owner | Trigger | Target | Status |\n|---|---|---|---|---|---|---|\n${deferred}\n## Changes\n\n| a | b |\n|---|---|\n| x | ⬜ |\n`
   const tpl = readFileSync(new URL('./IMPLEMENTATION_PLAN.md', import.meta.url), 'utf8')
   const k1 = closeout(planOf('| 4 — A | ✅ | — |\n| 5 — B | ✅ | — |\n| 6 — C | ⬜ | — |\n', '| *(none yet — items added by doc-sync workflow as work progresses)* | — | — | — | — | — | ⬜ |\n'))
-  const k2 = closeout(planOf('| 5 — B | 🔄 | — |\n| 5.5 — Closeout | ✅ | — |\n| 5.15 — Closeout | ✅ | — |\n', '| real | 3 | r | eng | t | — | ⬜ |\n| done | 2 | r | eng | t | 4 | ✅ |\n'))
+  const k2 = closeout(planOf('| 5 — B | 🔄 | — |\n| 5.5 — Closeout | ✅ | — |\n| 5.15 — Closeout | ✅ | — |\n', '| real | 3 | r | eng | t | — | ⬜ |\n| **Bold** item | 3 | r | eng | t | — | ⬜ |\n| _Italic_ lead | 3 | r | eng | t | — | ⬜ |\n| done | 2 | r | eng | t | 4 | ✅ |\n'))
   const k3 = closeout(tpl)
-  if (!(k1.phase === "5.5" && k1.open.length === 0 && k2.phase === "5.16" && k2.open.length === 1 && k3.open.length === 0))
+  if (!(k1.phase === "5.5" && k1.open.length === 0 && k2.phase === "5.16" && k2.open.length === 3 && k3.open.length === 0))
     fail("closeout", { k1, k2, k3 })
   console.log('ok'); process.exit(0)
 }

@@ -37,7 +37,7 @@ Nothing leaves a working document without going somewhere: to a record document 
 
 ## Now
 
-**Fix the known bugs.** Three fixes already waiting: the split tool refuses paths outside the project (a security fix), references to numbered sections are repointed when a document is split, and closeout phases are numbered correctly.
+**Fix the known bugs** (done in Keel 2.5.6). The split tool refuses paths outside the project (a security fix). References to a numbered section, such as section 9 of the architecture document, follow that section when a document is split. Closeout phases are numbered correctly, and the empty placeholder row in the deferred items table is no longer counted as open work.
 
 **Measure Keel.** A small test: the same few greenfield tasks, run by the same agent three ways (no documents, one short instructions file, the full Keel set). The end state is graded, and success, cost and length of context are recorded. The grader is itself tested on broken work, so a pass means something. This first run is the baseline, taken before anything below changes, and it is repeated after. The result can recommend shorter working documents, never a shorter record document and never a missing one: any proposal to remove a document type needs the written approval of Keel's maintainer.
 
