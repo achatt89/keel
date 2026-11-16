@@ -1,0 +1,8 @@
+{
+  "name": "filestore",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "File-storage metadata service core. Node.js 20+, standard library only.",
+  "scripts": { "test": "node --test" }
+}

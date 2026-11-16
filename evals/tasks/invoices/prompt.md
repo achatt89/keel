@@ -1,0 +1,1 @@
+Add CSV export to this project. `exportCsv({ from, to })` on the object returned by `createLedger()` returns the CSV text of the invoices issued between `from` and `to` (both dates, `YYYY-MM-DD`). Keep the existing tests passing, add tests for the export, and update the README.
