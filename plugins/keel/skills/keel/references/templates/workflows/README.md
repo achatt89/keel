@@ -37,13 +37,15 @@ Or paste the path into the Workflow tool inside a Claude Code session.
 | Setup | no | phase branch; reserved `docs/adr/ADR-NNN-<slug>.md` stubs (Proposed) | — |
 | Build (per worktree) | yes, for itself | code + tests; fills its reserved ADR stub | no |
 | Integrate | re-runs failing task tests only | merges; numbers `ADR-N-pending-*` stubs; renumbers colliding migrations | no |
-| **Verify** | **yes — once, for evidence** | `.keel/evidence/phase-N.json` (+ raw reports, browser transcripts) | **no** |
+| **Verify** | **yes — once, for evidence** | `.keel/evidence/phase-N.json` (+ raw reports, browser transcripts) | **no** (`doc-size.mjs --evidence` rejects it) |
 | Doc Sync | **no — cites Verify** | exit-gate table, status table, ADR statuses, deferred, CHANGELOG `[on-branch]` | no |
 | Merge | no | merge commit; flips `[on-branch]` → `[merged <sha>]` | no |
 | Deploy (DEPLOYMENT.md procedure, outside these scripts) | post-deploy checklist | deploy log row; CHANGELOG `[deployed vNN]` → `[live-verified]` | **yes** |
 
 Evidence levels: `code-read < unit < integration < local-browser < staging < prod-live`.
 A gate whose wording demands a level Verify did not reach is `partial`, and the phase stays 🔄.
+Verify runs a real check before calling anything done, and a check counts only once it has been
+seen to fail on broken code (`failSeen` in the record; conventions "Evidence ladder").
 
 ## Rules
 

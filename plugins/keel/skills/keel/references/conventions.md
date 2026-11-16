@@ -88,6 +88,16 @@ claim, and doc-sync treats it as a lint failure.
 | `staging` | exercised on a deployed non-prod environment | env + deploy id + check performed |
 | `prod-live` | observed on production, by a human or a scripted check | env + deploy id + check performed |
 
+**Check proven to fail** is the rung every executed level (`unit` and up) stands on: a check
+counts as evidence only once it has been seen to fail on broken code (the test failed before the
+fix, or went red when the fix was reverted or the assertion broken). Verify records how in each
+gate's `failSeen`; a standing tool gate (lint, typecheck, audit, build) says `standing tool`. A met
+gate above `code-read` with no `failSeen` is `partial`. Verify runs a real check before calling
+anything done; a syntax-only check, one that failed to start, or a skipped test is not a check.
+
+Verify writes `code-read` to `staging` only; `node .keel/doc-size.mjs --evidence <record>` rejects
+`prod-live` and an unproven met gate in the record Verify writes. `prod-live` comes from a deploy.
+
 Rules: the level is the **lowest** that the claim actually rests on, never the highest available.
 Evidence inherited from an earlier phase is cited as inherited (`inherited: Phase 3 integration`),
 not restated as this phase's own. A gate whose mechanism is tested but whose stated outcome was

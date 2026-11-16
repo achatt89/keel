@@ -199,6 +199,8 @@ await agent(`
   Produce evidence for every exit gate of IMPLEMENTATION_PLAN.md Phase {{N}} and write it to
   .keel/evidence/phase-{{N}}.json. You run the checks yourself, once. Do not trust the Build
   agents' summaries — reproduce.
+  Run a real check before calling anything done: execute it and read its output. A syntax-only
+  check, a check that failed to start, or a skipped test is not a check.
 
   1. Read IMPLEMENTATION_PLAN.md Phase {{N}} — list every exit gate verbatim (the Gate column of
      its exit-gate table, or the bullets if not yet tabular).
@@ -213,7 +215,11 @@ await agent(`
        local-browser  — a real claude-in-chrome pass on the local stack (save the transcript to
                         .keel/evidence/phase-{{N}}/browser-<gate-slug>.md)
        staging        — observed on a deployed staging env
-     NEVER write "prod-live" here — only a deploy (DEPLOYMENT.md deploy log) can claim that.
+     Not "prod-live": only a deploy (DEPLOYMENT.md deploy log) writes it; step 5b rejects it.
+     A check proves a gate only once it has been seen to fail on broken code: the test failed
+     before the fix, or went red when you reverted the fix or broke the assertion. Record how in
+     "failSeen" (a standing tool gate such as lint, typecheck, audit or build: "standing tool").
+     A met gate above code-read with no failSeen is "partial".
      If a gate's own wording demands a level you did not reach (e.g. it says "in a browser" and
      you only have unit tests), status is "partial", not "met". Say what is missing in notes.
   4. UI phases: run the claude-in-chrome golden path + key edge cases against the local stack,
@@ -235,6 +241,7 @@ await agent(`
            "artefact": "<commit sha | .keel/evidence/phase-{{N}}/<file> | CI run URL | browser transcript path>",
            "verifiedBy": "verify-agent",
            "status": "met | partial | unmet",
+           "failSeen": "<how the check was seen to fail on broken code; empty for code-read>",
            "notes": "<what was observed; for partial/unmet, exactly what is missing>"
          }
        ],
@@ -245,6 +252,8 @@ await agent(`
        "security": { "confirmedHighOrCritical": <int>, "needsValidation": <int>, "report": "<path or null>" }
      }
      Every gate in the plan appears exactly once. Unknown = "unmet", never omitted.
+  5b. node .keel/doc-size.mjs --evidence .keel/evidence/phase-{{N}}.json must print "evidence ok";
+     fix the record (never the checker) until it does.
   6. Commit: git add .keel/evidence && git commit -m "test(phase-{{N}}): verify — <met>/<total> gates met"
 
   Report: the gates table (gate · level · status) and any suite failures. Do NOT fix code here —
