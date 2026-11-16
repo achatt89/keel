@@ -395,6 +395,9 @@ Every project that will be built:
   named section (never compress)
 - [ ] `.keel/meta.json` has no `budgetExceptions` (moved to `waivers` with `reason` + `reviewed`)
   → OUTDATED_CONVENTION (Minor; ask the user per entry)
+- [ ] `.keel/check.mjs` present (2.6.0: `/keel check`, read-only drift check) → MISSING_FEATURE (Optional).
+  U1 installs it verbatim on every upgrade; no document changes. Run it once at U2 and list its findings in the
+  report as information (doc-sync or the named mode fixes them; the upgrade itself does not)
 - [ ] an installed `.claude/hooks/keel-update-check.mjs` reads `release.json` (2.5.3: user-facing releases only) → else OUTDATED_CONVENTION (Minor): replace verbatim
 - [ ] `.claude/hooks/keel-update-check.mjs` + SessionStart entry → MISSING_FEATURE (Optional, opt-in)
 
