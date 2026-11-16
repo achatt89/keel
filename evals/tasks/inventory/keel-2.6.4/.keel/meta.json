@@ -1,0 +1,30 @@
+{
+  "keelVersion": "2.6.4",
+  "docFormat": 2,
+  "generatedAt": "2026-11-17",
+  "lastUpgraded": null,
+  "lastArchived": null,
+  "archivedEntries": 0,
+  "adrLayout": "per-file",
+  "goalExitStrategy": "bounded-retries-then-escalate",
+  "budgets": {
+    "AGENTS.md": 12288,
+    "CLAUDE.md": 12288,
+    "docs/IMPLEMENTATION_PLAN.md": 65536,
+    "docs/adr/README.md": 16384
+  },
+  "defaultBudget": 32768,
+  "waivers": {},
+  "waiverReviewDays": 90,
+  "evidenceDir": ".keel/evidence",
+  "closeout": { "maxOpenDeferred": 8, "everyNPhases": 5 },
+  "deployLogKeep": 10,
+  "lastArchiveTrigger": null,
+  "documentsGenerated": ["AGENTS.md","CLAUDE.md","CHANGELOG.md","docs/README.md","docs/BRD.md","docs/PRD.md","docs/ENGINEERING_DESIGN.md","docs/ARCHITECTURE.md","docs/LLD.md","docs/NFR.md","docs/COMMANDS.md","docs/IMPLEMENTATION_PLAN.md","docs/keel-transcript.md","docs/adr/README.md","docs/adr/ADR-001-runtime-and-test-stack.md","docs/adr/ADR-002-error-contract.md","docs/adr/ADR-003-validate-then-commit.md","docs/HLD.md (stub)","docs/DESIGN.md (stub)","docs/DEPLOYMENT.md (stub)","docs/RUNBOOK.md (stub)","docs/FEEDBACK_ROUNDS.md (stub)","docs/COMPLIANCE.md (stub)","docs/THREAT_MODEL.md (stub)","docs/CONTRACT_SPEC.md (stub)","almanac/README.md (stub)"],
+  "skillsInstalled": [],
+  "securitySkill": "never",
+  "agents": { "doc-sync": { "type": "subagent", "path": ".claude/agents/doc-sync.md" } },
+  "rounds": null,
+  "updateCheck": true,
+  "evidenceRetention": { "keepRunsPerBranch": 3, "pruneMergedAfterDays": 30 }
+}
