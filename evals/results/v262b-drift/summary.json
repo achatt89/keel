@@ -227,5 +227,236 @@
       }
     },
     "success": true
+  },
+  {
+    "name": "inventory-keel-r2-s1",
+    "run": "inventory-keel-r2",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 2,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 1.0623748999999998,
+    "turns": 7,
+    "segments": 2,
+    "durationMs": 9359,
+    "wallMs": 206876,
+    "inputTokens": 140,
+    "outputTokens": 35494,
+    "cacheRead": 1218214,
+    "cacheWrite": 223787,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 140,
+        "output": 35494,
+        "cacheRead": 1218214,
+        "cacheWrite": 223787,
+        "costUsd": 1.0623748999999998
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 2
+    },
+    "docReads": [
+      "docs/IMPLEMENTATION_PLAN.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "pass",
+    "driftFailed": [],
+    "driftReasons": {},
+    "judgeCostUsd": 0.3389618,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1886,
+        "cacheRead": 649,
+        "cacheWrite": 37638,
+        "costUsd": 0.3389618
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r2-s2",
+    "run": "inventory-keel-r2",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 2,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 1.1139262000000003,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 6306,
+    "wallMs": 202627,
+    "inputTokens": 128,
+    "outputTokens": 38705,
+    "cacheRead": 1122517,
+    "cacheWrite": 237831,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 128,
+        "output": 38705,
+        "cacheRead": 1122517,
+        "cacheWrite": 237831,
+        "costUsd": 1.1139262000000003
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "pass",
+    "driftFailed": [],
+    "driftReasons": {},
+    "judgeCostUsd": 0.40878180000000003,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1679,
+        "cacheRead": 649,
+        "cacheWrite": 46883,
+        "costUsd": 0.40878180000000003
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r2-s3",
+    "run": "inventory-keel-r2",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 2,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 1.4816902,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 7012,
+    "wallMs": 295309,
+    "inputTokens": 166,
+    "outputTokens": 53271,
+    "cacheRead": 1631177,
+    "cacheWrite": 305937,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 166,
+        "output": 53271,
+        "cacheRead": 1631177,
+        "cacheWrite": 305937,
+        "costUsd": 1.4816902
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 15,
+    "testsTotal": 15,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      },
+      {
+        "phase": 3,
+        "pass": 4,
+        "total": 4,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "The README History example is a continuation of the Usage session (the Reorder example's available 3 depends on it), yet it lists seq 2 as the reserve, while the code would record the earlier ship of 3 as seq 2 and the reserve as seq 3."
+    },
+    "judgeCostUsd": 0.4822058,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1801,
+        "cacheRead": 649,
+        "cacheWrite": 55756,
+        "costUsd": 0.4822058
+      }
+    },
+    "success": true
   }
 ]
