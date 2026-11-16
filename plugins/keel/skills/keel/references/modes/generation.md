@@ -112,30 +112,34 @@ doc 32KB) — they go in `.keel/meta.json` and doc-sync enforces them (archive, 
 When the interview has genuinely covered the ground (you can describe the product, its users, its
 shape, and its risks without guessing), stop and propose the doc suite.
 
-1. Consult `references/document-catalog.md`. It maps each document to its purpose, its inclusion
-   triggers, its dependencies, and the ID convention it owns.
+1. Read `references/document-catalog.md` now, in full (do not choose the set from memory). It maps
+   each document to its purpose, its inclusion triggers, its dependencies, and the ID convention it
+   owns, and its "Stubs" table lists every type with its stub trigger.
 2. Decide **layout** (this was deferred to the interview by design):
    - Default: `AGENTS.md` (canonical keystone) + `CLAUDE.md` (`@AGENTS.md` + Claude-only
      sections) + `CHANGELOG.md` at root; formal docs under `docs/`; ADRs one file each under
      `docs/adr/ADR-NNN-<slug>.md` with `docs/adr/README.md` as the index (a single `ADR.md` is
      the legacy format-1 layout — never generate it fresh).
-   - Add a numbered `almanac/` knowledge base **only if** the project has a meaningful product /
-     positioning / GTM / AI-reference dimension worth a topology-stable knowledge base that
-     outlives the sprint cadence (see `references/almanac-guide.md`). Most engineering-only tools
-     do *not* need an almanac; products with marketing, methodology, or LLM-reference data do.
-3. Present the proposed set as a table: **doc · include? · why (or why not)**. Show what you are
-   *deliberately omitting* and the trigger that would bring it back later. Get explicit sign-off
-   and adjust to the user's wishes before generating anything. Inclusion rules for the docs added
-   in keel 2.0 (full triggers in the catalog):
+   - Write a numbered `almanac/` knowledge base in full **only if** the project has a meaningful
+     product / positioning / GTM / AI-reference dimension worth a topology-stable knowledge base
+     that outlives the sprint cadence (see `references/almanac-guide.md`); otherwise
+     `almanac/README.md` is a stub. Most engineering-only tools keep the stub; products with
+     marketing, methodology, or LLM-reference data write it in full.
+3. Present every document type as a table: **doc · full or stub · why**. Each stub row names the
+   reason from the interview and its trigger (the catalog's "Stubs" table). No type is left out;
+   removing one needs the Keel maintainer's typed approval. Get explicit sign-off and adjust to
+   the user's wishes before generating anything. Write each stub from
+   `references/templates/STUB.md` at the type's usual path and list it in the AGENTS.md document
+   map as "(stub)". Rules for the docs added in keel 2.0 (full triggers in the catalog):
    - `CHANGELOG.md` — **always.** Fed by doc-sync; the single home of deploy state per change.
    - `docs/keel-transcript.md` — **always.** The interview itself, so the reasoning behind the
      suite survives the session.
-   - `docs/DEPLOYMENT.md` — **any operated system** (anything with a remote environment). Replaces
+   - `docs/DEPLOYMENT.md` — **in full for any operated system** (anything with a remote environment), else a stub. Replaces
      the environments / deploy / rollback sections RUNBOOK used to carry.
-   - `docs/FEEDBACK_ROUNDS.md` — **client-facing or user-tested products** (a founder, client, or
-     pilot user will hand back batches of feedback that spawn work).
+   - `docs/FEEDBACK_ROUNDS.md` — **in full for client-facing or user-tested products** (a founder,
+     client, or pilot user will hand back batches of feedback that spawn work), else a stub.
    - `docs/SPIKE_<slug>.md`, `docs/COST_ANALYSIS.md`, `docs/AUDIT_<kind>_<date>.md` — **on demand,
-     never at generation.** Name them in the "deliberately omitting" list with their trigger (an
+     never at generation, never stubbed.** Name them below the table with their trigger (an
      investigation before a decision; a usage-metered cost question; a dated UI/security audit).
 4. For **UI projects** where skills integration was opted-in during the Designer round: include
    `PRODUCT.md`, `.claude/hooks/modern-web-guidance-hook.mjs`, and `.claude/settings.json` in
@@ -453,7 +457,9 @@ platform handling sensitive data gets the full fan-out with adversarial verifica
 1. Run a consistency pass: every cross-reference resolves, every ID is unique, AGENTS.md's
    document map matches the files on disk, no document contradicts another, `CLAUDE.md` opens
    with `@AGENTS.md` and duplicates nothing from it, no ✅ anywhere lacks an evidence level, and
-   `node .keel/doc-size.mjs` passes with no breach. A generated doc over its budget is **split
+   `node .keel/doc-size.mjs` passes with no breach, and `node .keel/check.mjs` is clean (every
+   document type present in full or as a stub; every ADR that names paths cited by an area
+   rule). A generated doc over its budget is **split
    now** (`node .keel/doc-size.mjs --split <doc>`, then add the Parts table's IDs column) (keel-archive-guide "Splitting an oversize doc": `docs/<name>/NN-<slug>.md` parts, the
    parent a slim index linking every part, each part linking back) — never handed over oversize.
 2. Write `docs/README.md` (or root README) as the index: the document map table, reading order by

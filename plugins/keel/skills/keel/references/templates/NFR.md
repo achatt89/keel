@@ -6,7 +6,7 @@
   VERIFICATION METHOD. Plus the build-time gates that make controls un-skippable. These
   targets drive RUNBOOK alert thresholds and IMPLEMENTATION_PLAN exit gates.
 
-  WHEN TO INCLUDE: Product tier and up. The security group scales heavily with data
+  WHEN TO INCLUDE: Product tier and up; otherwise a stub (STUB.md, trigger mvp). The security group scales heavily with data
   sensitivity. (document-catalog.md)
 
   DEPENDS ON: ARCHITECTURE.md (components, trust boundaries), ENGINEERING_DESIGN.md (data

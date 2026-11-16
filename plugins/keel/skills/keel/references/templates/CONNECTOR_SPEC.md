@@ -5,7 +5,7 @@
         universal test suite every implementation must pass.
   INCLUDE WHEN: ONLY when the system has a real extension/plugin ecosystem — multiple
         implementations of one interface, added without touching core. If there's no
-        plug-in dimension, omit this file entirely.
+        plug-in dimension, write docs/CONTRACT_SPEC.md as a stub (STUB.md, trigger extensible).
   DEPENDS ON: {{LLD}} (types), {{ARCHITECTURE}} (where the extension point sits, trust
         boundaries).
   OWNS: The {{EXTENSION_POINT}} interface contract. Rename "{{EXTENSION_POINT}}"

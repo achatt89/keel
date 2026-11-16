@@ -23,6 +23,7 @@ Internal ledger for Keel evaluation v0. Every number comes from Claude Code's `m
 | 2.6.0 regression: first try of ledger-keel-r3 (killed when the temp was stopped; transcript not saved) | 1 | not recorded | - | not recorded | re-run is in the 27 |
 | 2.6.0 regression: D1 live checks (/keel version, check, change) | 3 | 0.606 | - | 0.606 | `regression-2.6.0.md` |
 | **2.6.0 regression recorded total** | | **7.259** | **2.830** | **10.089** | of the USD 25 approved |
+| 2.6.1 check: ledger generation with stubs (feat/keel-2.6.1-stubs 1ebce61) | 1 | 0.778 | - | 0.778 | below |
 
 The temp sessions' own tokens (the agents that ran the harness) are not in these records; the orchestrator meters those.
 
@@ -269,3 +270,13 @@ The temp sessions' own tokens (the agents that ran the harness) are not in these
 | /keel version | agent | `claude-sonnet-5-5` | 6 | 815 | 113,003 | 47,263 | 0.209 |
 | /keel check | agent | `claude-sonnet-5-5` | 6 | 219 | 116,015 | 42,506 | 0.184 |
 | /keel change fix-rounding-note | agent | `claude-sonnet-5-5` | 8 | 1,413 | 174,960 | 45,411 | 0.213 |
+
+## 2.6.1 generation check (ledger, prototype tier)
+
+Fixture not committed (the eval fixtures stay pinned to 2.6.0); kept in `~/HarnessAgents/eval-raw/keel-261/`.
+Result: every catalog type present (9 full, 14 stubs quoting founder-answers), `.keel/check.mjs` clean, 3 area-rules files,
+catalog read in full, no `[NEEDS DECISION]`, no `{{`. AGENTS.md + CLAUDE.md 5,816 B (2.6.0 ledger: 5,669 B).
+
+| run | role | model id | input | output | cache read | cache write | cost $ |
+|---|---|---|---|---|---|---|---|
+| gen ledger 2.6.1 | agent | `claude-sonnet-5-5` | 30 | 27,176 | 981,729 | 102,036 | 0.778 |

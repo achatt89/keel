@@ -9,10 +9,10 @@
     them" — narrative where ARCHITECTURE is reference.
 
   WHEN TO INCLUDE (catalog adaptivity trigger):
-    Product tier and up, OPTIONAL. Include when the system has several interacting
+    Product tier and up; otherwise a stub (STUB.md, trigger multi-component). Include when the system has several interacting
     components/services and the end-to-end data flow is not obvious from
-    ARCHITECTURE alone. FOLD INTO ARCHITECTURE for simple systems — if the flows
-    fit in ARCHITECTURE §2, skip this doc entirely.
+    ARCHITECTURE alone. For simple systems the flows stay in ARCHITECTURE
+    §2 and this doc is a stub pointing there.
 
   DEPENDS ON:
     ARCHITECTURE.md (components, trust boundaries, schema). Adds nothing the

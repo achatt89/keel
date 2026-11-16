@@ -12,8 +12,8 @@ description: >
   phases"); "keel version" ("is my keel up to date"); "keel check" ("check my docs for drift");
   "keel answer" / "keel merge" (team answers).
 metadata:
-  version: 2.6.0
-  userVersion: 2.6.0
+  version: 2.6.1
+  userVersion: 2.6.1
 license: MIT
 ---
 
@@ -42,10 +42,12 @@ The output is optimized to be handed to Claude Code as the source of truth for t
 1. **Interview before you write.** Never generate a document from a one-line idea. The quality of
    the docs is capped by the quality of the interview. Dig until you genuinely understand the
    problem, the user, the constraints, and the risks.
-2. **Adaptive scope.** Select documents to match the project (see
-   `references/document-catalog.md`). Generating an NFR + THREAT_MODEL + COMPLIANCE suite for a
-   static marketing site is malpractice; so is shipping a multi-tenant fintech platform with only
-   a README. Propose the set, justify each inclusion and each omission, and let the user adjust.
+2. **Adaptive depth, full set.** Every project gets every document type (see
+   `references/document-catalog.md`); the project sets each one's depth. A type that does not
+   apply yet is a short stub saying why and when to write it, never an omission. A full NFR +
+   THREAT_MODEL + COMPLIANCE suite for a static marketing site is malpractice; so is a
+   multi-tenant fintech platform with stubs where its security docs should be. Propose which
+   documents are full and which are stubs, justify each, and let the user adjust.
 3. **One fact, one home.** Every fact lives in exactly one document and is *referenced* elsewhere,
    never copy-pasted. Requirements get stable IDs; decisions get ADRs; everything cross-links.
 4. **Traceability is the point.** A requirement (BRD) → a feature (PRD) → a decision (ADR) → a

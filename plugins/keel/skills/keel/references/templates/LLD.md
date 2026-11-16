@@ -9,8 +9,8 @@
     builds against, module by module.
 
   WHEN TO INCLUDE (catalog adaptivity trigger):
-    Product tier and up. Include for anything built module-by-module against a
-    shared type contract. Skip for a pure script/one-file library where
+    Product tier and up (otherwise a stub, STUB.md, trigger mvp). Include for anything built module-by-module against a
+    shared type contract. A stub for a pure script/one-file library where
     ARCHITECTURE already says enough.
 
   DEPENDS ON:

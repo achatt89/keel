@@ -7,7 +7,7 @@
   ARCHITECTURE.md §6 owns the controls-by-category map.
 
   WHEN TO INCLUDE: Platform/regulated tier, OR any project where a breach is high-impact.
-  Skip for low-stakes tools — a system with no sensitive assets does not need this doc.
+  A low-stakes tool with no sensitive assets gets a stub (STUB.md, trigger high-risk).
   (document-catalog.md)
 
   DEPENDS ON: ARCHITECTURE.md trust boundaries (§5); the Security interview round.

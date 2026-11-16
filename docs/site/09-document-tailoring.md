@@ -1,17 +1,23 @@
 ---
 title: "Document Tailoring"
-lead: "Keel does not stamp out the same fifteen files every time. It proposes a doc set matched to your project's real complexity."
+lead: "Every project gets every document type. Keel matches each document's depth to your project, and a type that does not apply yet is a short stub that says why."
 group: "How It Works"
 order: 9
 slug: document-tailoring
 anchor: document-tailoring
 ---
 
-## By how far the project goes
+## Every type, in full or as a stub
 
-- **Prototype:** `CLAUDE.md` + `README`, possibly a lightweight PRD if the idea needs clarifying before building.
-- **MVP:** full requirements suite (`BRD`, `PRD`), architecture, engineering design, and an implementation plan with concrete exit gates.
-- **Platform:** everything above plus `NFR`, `COMPLIANCE`, `THREAT_MODEL`, `RUNBOOK`, and optionally an `almanac/` knowledge base.
+Keel writes every document type for every project. How far the project goes decides which ones are written in full:
+
+- **Prototype:** `AGENTS.md` and `CLAUDE.md`, a short `BRD` and `ARCHITECTURE`, decision records, the implementation plan, the changelog and the interview transcript.
+- **MVP:** everything above plus `PRD`, engineering design, `HLD`, `LLD`, `NFR`, `COMMANDS`, `DEPLOYMENT` and `RUNBOOK` where they apply, and `DESIGN` if there is a UI.
+- **Platform:** everything above plus `COMPLIANCE`, `THREAT_MODEL`, extension contracts and, where it helps, an `almanac/` knowledge base.
+
+Every other type is a **stub**: a short file at the usual path that says why it does not apply yet, what would make it apply, and where those facts live for now. A prototype run from a laptop, for example, gets a `DEPLOYMENT.md` stub that quotes your answer ("no remote environment") and says to write the full document once the project deploys. During the interview Keel shows every type as full or stub, with the reason, and you can change any of them.
+
+`/keel check` reports a stub whose reason no longer holds, for example a `Dockerfile` appearing next to a `DEPLOYMENT.md` stub. `/keel upgrade` offers stubs for any type an older project is missing.
 
 ## Cross-references and stable IDs
 

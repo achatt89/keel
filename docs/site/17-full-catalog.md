@@ -1,6 +1,6 @@
 ---
 title: "The Full Catalog"
-lead: "Every document Keel can generate, and the question it answers."
+lead: "Every document type Keel writes, and the question it answers. A type that does not apply to your project yet is a short stub that says why."
 group: "Document Reference"
 order: 17
 slug: full-catalog
@@ -29,7 +29,7 @@ anchor: full-catalog
 | FEEDBACK_ROUNDS.md | External feedback batches (client, founder, user tests) and where each item went: a Phase, a Change, or a deferred row. Generated for client-facing products. |
 | SPIKE_\<slug>.md / AUDIT_\<kind>_\<date>.md / COST_ANALYSIS.md | On-demand records: an investigation (what exists, what does not, negative-result searches), a dated audit snapshot with disposition, and measured unit economics with the methodology to reproduce them. |
 | docs/keel-transcript.md | The interview itself, kept with the docs it produced. |
-| almanac/ | Optional topology-stable knowledge base: positioning, methodology, go-to-market strategy, AI training data. Useful for products with strong editorial or brand dimensions. |
+| almanac/ | Topology-stable knowledge base (a stub for projects without a product or brand dimension): positioning, methodology, go-to-market strategy, AI training data. Useful for products with strong editorial or brand dimensions. |
 | docs/\<name>/ | Parts of a doc that outgrew its size budget (for example `docs/design/01-foundations.md`). The parent doc becomes an index linking every part; each part links back. Created by doc-sync or `/keel upgrade`, never at the start unless a generated doc is already over budget. |
 | .claude/agents/*.md | Repo-local subagents for the doc-sync, security and design roles, only where the project has no full-time agent for the role. Each ends with the fixed Report block it returns to its caller. |
 | PHASE_ARCHIVE.md | Relocated detail for finished or superseded work: completed phases, resolved deferred items, superseded decisions. Created by `/keel archive` or by doc-sync's automatic budget trigger, never at initial generation. |
