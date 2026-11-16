@@ -611,3 +611,31 @@ The v1 inventory fixture was regenerated with 2.6.3 (`evals/tasks/inventory/keel
 | inventory / keel | judge | `claude-opus-5-5` | 3 | 6 | 3,145 | 1,947 | 147,126 | 1.240 |
 | task inventory | agent | `claude-sonnet-5-5` | 3 | 544 | 166,465 | 5,282,893 | 853,069 | 4.385 |
 | task inventory | judge | `claude-opus-5-5` | 3 | 6 | 3,145 | 1,947 | 147,126 | 1.240 |
+
+## eval v2 (USD 25 line, founder-approved 16 Nov) — 2.6.4 attempt 1, paused after rep 1
+
+Paused by Keel: session 2 stopped to ask (Phase 1 merged as 3/5 gates), so later reps would measure that stall, not drift. A rep-2 session was killed at start: not recorded, estimated under USD 0.05. Recorded total USD 3.341 (generation 1.097 + sessions and judges 2.244).
+
+### Generation
+
+| run | role | model id | input | output | cache read | cache write | cost $ |
+|---|---|---|---|---|---|---|---|
+| gen inventory (2.6.4) | generator | `claude-sonnet-5-5` | 42 | 43,250 | 1,712,819 | 123,326 | 1.097 |
+
+### Per run
+
+| run | role | model id | runs | input | output | cache read | cache write | cost $ |
+|---|---|---|---|---|---|---|---|---|
+| inventory-keel-r1-s1 | agent | `claude-sonnet-5-5` |  | 134 | 37,603 | 1,215,750 | 237,851 | 1.119 |
+| inventory-keel-r1-s1 | judge | `claude-opus-5-5` |  | 2 | 935 | 649 | 41,491 | 0.351 |
+| inventory-keel-r1-s2 | agent | `claude-sonnet-5-5` |  | 2 | 727 | 13,278 | 7,766 | 0.040 |
+| inventory-keel-r1-s2 | judge | `claude-opus-5-5` |  | 2 | 832 | 649 | 41,489 | 0.349 |
+| inventory-keel-r1-s3 | agent | `claude-sonnet-5-5` |  | 4 | 1,111 | 42,088 | 4,106 | 0.032 |
+| inventory-keel-r1-s3 | judge | `claude-opus-5-5` |  | 2 | 1,107 | 649 | 41,491 | 0.354 |
+
+### Totals
+
+| group | role | model id | runs | input | output | cache read | cache write | cost $ |
+|---|---|---|---|---|---|---|---|---|
+| ALL | agent | `claude-sonnet-5-5` | 3 | 140 | 39,441 | 1,271,116 | 249,723 | 1.190 |
+| ALL | judge | `claude-opus-5-5` | 3 | 6 | 2,874 | 1,947 | 124,471 | 1.054 |
