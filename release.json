@@ -3,17 +3,21 @@
   "schemaVersion": 1,
   "name": "keel",
   "repository": "https://github.com/achatt89/keel",
-  "version": "2.5.5",
-  "latest": "2.5.4",
-  "date": "2026-10-31",
-  "headline": "Document size checks got clearer.",
-  "summary": "The doc-size checker no longer overrides an explicit ADR index budget silently.",
+  "version": "2.5.6",
+  "latest": "2.5.6",
+  "date": "2026-11-16",
+  "headline": "Four fixes to splitting and closeout.",
+  "summary": "Four fixes from real projects: the split tool stays inside your project, references to numbered sections follow a split, and closeout phases are numbered and counted correctly.",
   "highlights": [
-    "ADR index budget explained"
+    "Split stays inside the project",
+    "Numbered-section references follow a split",
+    "Closeout numbering",
+    "Placeholder row not counted",
+    "Parked note: hosted answer link"
   ],
-  "tag": "keel--v2.5.4",
-  "tagUrl": "https://github.com/achatt89/keel/tree/keel--v2.5.4",
-  "compareUrl": "https://github.com/achatt89/keel/compare/keel--v2.5.3...keel--v2.5.4",
+  "tag": "keel--v2.5.6",
+  "tagUrl": "https://github.com/achatt89/keel/tree/keel--v2.5.6",
+  "compareUrl": "https://github.com/achatt89/keel/compare/keel--v2.5.5...keel--v2.5.6",
   "install": {
     "commands": [
       "/plugin marketplace add achatt89/keel",
@@ -70,6 +74,24 @@
     "node": ">=18, for the .keel/*.mjs helper scripts keel installs in a project"
   },
   "versions": [
+    {
+      "version": "2.5.6",
+      "date": "2026-11-16",
+      "audience": "user",
+      "headline": "Four fixes to splitting and closeout.",
+      "summary": "Four fixes from real projects: the split tool stays inside your project, references to numbered sections follow a split, and closeout phases are numbered and counted correctly.",
+      "highlights": [
+        "Split stays inside the project",
+        "Numbered-section references follow a split",
+        "Closeout numbering",
+        "Placeholder row not counted",
+        "Parked note: hosted answer link"
+      ],
+      "notes": "Four fixes from real projects: the split tool stays inside your project, references to numbered\nsections follow a split, and closeout phases are numbered and counted correctly.\n\n### Fixed\n- **Split stays inside the project.** `node .keel/doc-size.mjs --split` follows a part's\n  \"Part of\" link to its parent. It now refuses a link that points outside the project, or to a\n  parent whose folder the part is not in, and writes nothing. Security fix.\n- **Numbered-section references follow a split.** Plain references such as\n  `docs/ARCHITECTURE.md §9.2` (also backticked, bare `ARCHITECTURE.md §9`, or file-relative) are\n  repointed to the part that now holds that section, or its nearest numbered parent section.\n  Decision records are still never rewritten.\n- **Closeout numbering.** A closeout phase is `N.5`, or the next free `N.x` when `N.5` exists\n  (`N.15` → `N.16`); no phase is renumbered. `node .keel/doc-size.mjs --closeout\n  docs/IMPLEMENTATION_PLAN.md` prints the number and the open deferred rows, split plans included.\n  A closeout scope branch may start from a branch that carries an unmerged `/keel upgrade`.\n- **Placeholder row not counted.** The italic `*(none yet …)*` row in the Deferred items table is\n  no longer counted as open work, and new plans give it status `—` instead of ⬜.\n\nRun `/keel upgrade` to pick these up: it reinstalls `.keel/doc-size.mjs` first. No document\nchanges are needed; an old placeholder row with ⬜ is offered a one-cell fix.\n\n### Added\n- **Parked note: hosted answer link** (`docs/discussions/hosted-answer-link.md`): why a web link\n  for team answers is parked, what would unpark it, and its constraints.",
+      "tag": "keel--v2.5.6",
+      "tagUrl": "https://github.com/achatt89/keel/tree/keel--v2.5.6",
+      "compareUrl": "https://github.com/achatt89/keel/compare/keel--v2.5.5...keel--v2.5.6"
+    },
     {
       "version": "2.5.5",
       "date": "2026-11-16",

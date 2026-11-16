@@ -54,6 +54,8 @@ keel documents projects using the templates in references/templates/. The docume
 ## Current status
 Docs site cutover (no plugin version): `site/` (React, TLA DS from GitHub Packages) deploys to keel.thelogicatelier.com via `.github/workflows/pages.yml`; old `docs/index.html` single page retired.
 
+v2.5.6 — backlog fixes: `--split` refuses a "Part of" link outside the project or its folder (security); plain `FILE.md §N` refs repointed on split; `--closeout` prints open deferred rows (italic placeholder row never counted; template status `—`) and the closeout number (N.5, else next free N.x); scope branch may start off an unmerged upgrade branch. Self-test case per fix. Parked note `docs/discussions/hosted-answer-link.md`. On branch fix/keel-2.5.6.
+
 v2.5.5 (internal) — documentation policy + docs-site Roadmap page (docs/site/19-roadmap.md): full doc set always generated; execution tier (AGENTS/CLAUDE.md, COMMANDS, plan, runbook, deployment) may be shortened, record tier (BRD, PRD, ADRs, HLD, LLD, NFR, threat model…) stays full and drift-checked; no doc type removed without typed founder OK. No /keel behaviour change; userVersion stays 2.5.4. Merged to main.
 
 v2.5.4 — ADR index budget: the verdict reason says when 320 B × ADRs overrides an explicit `budgets` entry (the entry is a floor). Merged to main.

@@ -3,6 +3,34 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.5.6] — 2026-11-16
+<!-- headline: Four fixes to splitting and closeout. -->
+
+Four fixes from real projects: the split tool stays inside your project, references to numbered
+sections follow a split, and closeout phases are numbered and counted correctly.
+
+### Fixed
+- **Split stays inside the project.** `node .keel/doc-size.mjs --split` follows a part's
+  "Part of" link to its parent. It now refuses a link that points outside the project, or to a
+  parent whose folder the part is not in, and writes nothing. Security fix.
+- **Numbered-section references follow a split.** Plain references such as
+  `docs/ARCHITECTURE.md §9.2` (also backticked, bare `ARCHITECTURE.md §9`, or file-relative) are
+  repointed to the part that now holds that section, or its nearest numbered parent section.
+  Decision records are still never rewritten.
+- **Closeout numbering.** A closeout phase is `N.5`, or the next free `N.x` when `N.5` exists
+  (`N.15` → `N.16`); no phase is renumbered. `node .keel/doc-size.mjs --closeout
+  docs/IMPLEMENTATION_PLAN.md` prints the number and the open deferred rows, split plans included.
+  A closeout scope branch may start from a branch that carries an unmerged `/keel upgrade`.
+- **Placeholder row not counted.** The italic `*(none yet …)*` row in the Deferred items table is
+  no longer counted as open work, and new plans give it status `—` instead of ⬜.
+
+Run `/keel upgrade` to pick these up: it reinstalls `.keel/doc-size.mjs` first. No document
+changes are needed; an old placeholder row with ⬜ is offered a one-cell fix.
+
+### Added
+- **Parked note: hosted answer link** (`docs/discussions/hosted-answer-link.md`): why a web link
+  for team answers is parked, what would unpark it, and its constraints.
+
 ## [2.5.5] — 2026-11-16
 <!-- audience: internal -->
 

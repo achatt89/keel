@@ -4,6 +4,7 @@
 //        node .keel/doc-size.mjs --split <doc.md>             split one oversize doc or part (writes files)
 //        node .keel/doc-size.mjs --where <doc.md> "<section>"   print the file that holds <section>
 //        node .keel/doc-size.mjs --move-out <AGENTS.md|CLAUDE.md> "<## section>"   keystone → docs/agents/
+//        node .keel/doc-size.mjs --closeout <IMPLEMENTATION_PLAN.md>   open deferred rows + the closeout phase number
 //        node .keel/doc-size.mjs --self-test
 // One VERDICT per doc, with the reason:
 //   ok      within budget; or an archive (append-only history) or a redirect stub — never budgeted, never split
@@ -44,6 +45,9 @@ const read = (root, f) => readFileSync(join(root, f), 'utf8')
 const bytes = s => Buffer.byteLength(s)
 const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 const day = 864e5
+const outside = p => posix.isAbsolute(p) || p === '..' || p.startsWith('../')   // after posix.normalize
+// Numbered heading "## 9. Security" / "## §9 Security" / "### 9.2 Keys" → "9" / "9.2"
+const secNum = t => (t.match(/^§?\s*(\d+(?:\.\d+)*)[.)]?(?:\s|$)/) || [])[1]
 // GitHub heading anchor: lowercase, drop punctuation (keep word chars, "-", space), each space → "-"
 const slug = t => t.toLowerCase().replace(/[`*[\]()]/g, '').replace(/[^\p{L}\p{N}_\s-]/gu, '').trim().replace(/\s/g, '-')
 const loadMeta = root => { try { return JSON.parse(read(root, '.keel/meta.json')) } catch { return {} } }
@@ -209,11 +213,15 @@ export function where(root, doc, section) {
 // Inbound NAME.md#anchor links — markdown links and backticked `path#anchor` — are repointed
 // everywhere except ADR files (immutable); the index lists every moved anchor under "Moved sections".
 export function split(root, doc, budget, depth = 0) {
+  if (outside(posix.normalize(doc))) throw new Error(`${doc}: outside the project — refused`)
   const text = read(root, doc)
   const pm = text.match(PART_OF)
   const isPart = !!pm
   const parentRel = isPart ? posix.join(dirname(doc), pm[1]) : doc
   const folder = folderOf(parentRel), parentBase = basename(parentRel)
+  // a part's "Part of" link is followed only to its own parent: inside the project, and the part sits in that parent's folder
+  if (isPart && (outside(parentRel) || folder !== dirname(doc)))
+    throw new Error(`${doc}: its "Part of" link points to ${parentRel}, ${outside(parentRel) ? 'outside the project' : `whose parts live in ${folder}/, not ${dirname(doc)}/`} — refused`)
   const parentText = isPart ? read(root, parentRel) : text
   const docTitle = (parentText.match(/^# (.+)$/m) || [, basename(parentRel, '.md')])[1].trim()
   const backLink = relative(folder, parentRel)
@@ -253,7 +261,7 @@ export function split(root, doc, budget, depth = 0) {
     for (;;) { const pre = myPrefix + (li < 26 ? letters[li] : 'z' + letters[li - 26] ); li++
       if (!existing.some(f => f.startsWith(pre + '-'))) return `${pre}-${s}` }
   }
-  const made = [], moved = {}
+  const made = [], moved = {}, movedNum = {}
   for (const g of pieces) {
     const name = `${nextName(slug(g.title).slice(0, 40) || 'part')}.md`
     const body = g.text.replace(/^\n+/, '')
@@ -261,7 +269,10 @@ export function split(root, doc, budget, depth = 0) {
     writeFileSync(join(root, folder, name),
       `# ${docTitle} — ${g.title}\n> Part of [${parentBase}](${backLink}) · all parts listed there.\n${head}\n${body}`)
     made.push({ path: posix.join(folder, name), covers: g.covers })
-    for (const m of g.text.matchAll(/^#{2,6} (.+)$/gm)) moved[slug(m[1])] = posix.join(folder, name)
+    for (const m of g.text.matchAll(/^#{2,6} (.+)$/gm)) {
+      moved[slug(m[1])] = posix.join(folder, name)
+      const n = secNum(m[1].trim()); if (n && !(n in movedNum)) movedNum[n] = posix.join(folder, name)
+    }
   }
   const rowOf = m => `| [${basename(m.path, '.md')}](${relative(dirname(parentRel), m.path)}) | ${m.covers} |\n`
   const addRows = (pt, after) => {
@@ -300,7 +311,20 @@ export function split(root, doc, budget, depth = 0) {
       rewired++
       return `${open}${hit === 'file' ? relative(dirname(f), to) : to}#${anchor}${close}`
     }
+    // plain "FILE.md §9.2" refs: the part holding §9.2, else its nearest numbered ancestor (§9)
+    const fixSec = (all, tick, target, gap, num) => {
+      const fileRel = posix.join(dirname(f), target), rootRel = posix.normalize(target.replace(/^\//, ''))
+      const hit = targets.has(fileRel) ? 'file' : targets.has(rootRel) ? 'root'
+        : !target.includes('/') && [...targets].some(t => basename(t) === target) ? 'bare' : null
+      let n = num; while (hit && n && !movedNum[n]) n = n.includes('.') ? n.replace(/\.\d+$/, '') : ''
+      const to = hit && n && movedNum[n]
+      if (!to) return all
+      if (ADR_FILE.test(f)) { adrSkipped++; return all }
+      rewired++
+      return `${tick}${hit === 'root' ? to : relative(dirname(f), to)}${gap}${num}`
+    }
     const out = src.replace(/(\]\()([^)\s#]+?)#([^)\s]+)(\))/g, fix).replace(/(`)([^`\s#]+?\.md)#([^`\s]+)(`)/g, fix)
+      .replace(/(?<![\w./-])(`?)([\w./-]+\.md)(`?\s*§\s*)(\d+(?:\.\d+)*)/g, fixSec)
     if (out !== src) writeFileSync(join(root, f), out)
   }
   if (adrSkipped) {          // anchors ADRs still cite: list them on the index so a reader finds the part
@@ -340,6 +364,25 @@ export function moveOut(root, keystone, title) {
   writeFileSync(join(root, keystone), tbl ? rest.replace(tbl[0], tbl[0] + row)
     : rest.trimEnd() + `\n\n## Parts\n\nRead a part when its row applies to your task.\n\n| Part | Covers |\n|---|---|\n${row}`)
   return path
+}
+
+// ── Closeout ────────────────────────────────────────────────────────────────────────────────
+// Reads the plan (and its parts, if split). Open = Deferred-items rows whose last cell is ⬜; an
+// italic placeholder row ("*(none yet — …)*") is never a row. Phase = N.5 after the 🔄 phase (else the
+// last ✅), or, if N.5 exists, the next free N.x after the highest one — never renumbers.
+export function closeout(planText) {
+  const rows = (sec) => sections(planText, 2).filter(s => s.title && s.title.startsWith(sec))
+    .flatMap(s => s.text.split('\n')).filter(l => /^\|/.test(l) && !/^\|[\s:|-]+\|\s*$/.test(l))
+    .map(l => l.replace(/^\||\|\s*$/g, '').split('|').map(c => c.trim()))
+  const open = rows('Deferred items').filter(c => c.at(-1) === '⬜' && !/^[*_]/.test(c[0]))
+  const phases = sections(planText, 2).flatMap(s => s.text.split('\n'))
+    .map(l => l.match(/^\|\s*(?:Phase\s+)?(\d+(?:\.[\da-z]+)?)\b[^|]*\|\s*([^|\s]+)/i)).filter(Boolean)
+    .map(m => ({ id: m[1], status: m[2] }))
+  const anchor = phases.filter(p => p.status === '🔄').at(-1) || phases.filter(p => p.status === '✅').at(-1)
+  if (!anchor) return { open, phase: null }
+  const n = parseInt(anchor.id, 10)
+  const minors = phases.map(p => p.id.match(new RegExp(`^${n}\\.(\\d+)$`))).filter(Boolean).map(m => +m[1])
+  return { open, phase: minors.includes(5) ? `${n}.${Math.max(...minors) + 1}` : `${n}.5` }
 }
 
 if (process.argv.includes('--self-test')) {
@@ -469,6 +512,37 @@ if (process.argv.includes('--self-test')) {
   if (!(tv.verdict === 'split' && c5.ok && c5.breaches.length === 0 && s5.parts.length >= 2 &&
     s5.parts.every(f => read(r4, f).includes('| # | Item | Owner |')) && read(r4, last).includes('| 120 |') &&
     where(r4, 'docs/IMPLEMENTATION_PLAN.md', 'Deferred items') === last)) fail('rows/where', { tv, s5, c5, last })
+
+  // 6. 2.5.6 fix 1: --split never follows a "Part of" link out of the project or out of its folder
+  const [r5, w5] = fixture()
+  w5('docs/x/01-a.md', '# X — A\n> Part of [X.md](../../../../../../etc/X.md)\n' + sec('A', 400) + sec('B', 400))
+  w5('docs/y/01-a.md', '# Y — A\n> Part of [OTHER.md](../OTHER.md)\n' + sec('A', 400) + sec('B', 400))
+  w5('docs/OTHER.md', '# Other\n\n## Parts\n')
+  const refused = ['docs/x/01-a.md', 'docs/y/01-a.md', '../escape.md'].map(d => { try { split(r5, d, 1000); return null } catch (e) { return e.message } })
+  if (!(/outside the project/.test(refused[0]) && /parts live in docs\/other\//.test(refused[1]) && /outside the project/.test(refused[2]) &&
+    !existsSync(join(r5, 'docs/other')) && read(r5, 'docs/OTHER.md') === '# Other\n\n## Parts\n')) fail('path guard', refused)
+
+  // 7. 2.5.6 fix 2: plain "FILE.md §N" refs follow their section into the part (ADRs untouched)
+  const [r6, w6] = fixture()
+  w6('docs/ARCHITECTURE.md', '# Arch\n\n' + sec('1. Overview', 200) + sec('9. Security', 200) + sec('9.2 Keys', 50, 3))
+  w6('AGENTS.md', 'See docs/ARCHITECTURE.md §9.2 and `docs/ARCHITECTURE.md` §1, and ARCHITECTURE.md §9 (bare).\n')
+  w6('docs/NFR.md', 'Per ARCHITECTURE.md §9 and ./ARCHITECTURE.md §1.\n')
+  w6('docs/adr/ADR-001-x.md', 'See docs/ARCHITECTURE.md §9.\n')
+  const adr6 = read(r6, 'docs/adr/ADR-001-x.md')
+  const s6 = split(r6, 'docs/ARCHITECTURE.md', 3000)
+  const a6 = read(r6, 'AGENTS.md'), n6 = read(r6, 'docs/NFR.md'), sec9 = s6.parts.find(p => /9-security/.test(p))
+  if (!(sec9 && a6.includes(`${sec9} §9.2`) && a6.includes(`${relative('.', sec9)} §9 (bare)`) && /docs\/architecture\/01-1-overview\.md` §1/.test(a6) &&
+    n6.includes(`${relative('docs', sec9)} §9`) && n6.includes('architecture/01-1-overview.md §1') &&
+    read(r6, 'docs/adr/ADR-001-x.md') === adr6 && check(r6).ok)) fail('§N repoint', { s6, a6, n6 })
+
+  // 8. 2.5.6 fixes 3+4: closeout numbering (N.5, else next free N.x) and the italic placeholder row is not open
+  const planOf = (rows, deferred) => `# Plan\n\n## How to read\n\n| Phase | Status | Deploy state |\n|---|---|---|\n${rows}\n## Deferred items\n\n| Item | From | Reason | Owner | Trigger | Target | Status |\n|---|---|---|---|---|---|---|\n${deferred}\n## Changes\n\n| a | b |\n|---|---|\n| x | ⬜ |\n`
+  const tpl = readFileSync(new URL('./IMPLEMENTATION_PLAN.md', import.meta.url), 'utf8')
+  const k1 = closeout(planOf('| 4 — A | ✅ | — |\n| 5 — B | ✅ | — |\n| 6 — C | ⬜ | — |\n', '| *(none yet — items added by doc-sync workflow as work progresses)* | — | — | — | — | — | ⬜ |\n'))
+  const k2 = closeout(planOf('| 5 — B | 🔄 | — |\n| 5.5 — Closeout | ✅ | — |\n| 5.15 — Closeout | ✅ | — |\n', '| real | 3 | r | eng | t | — | ⬜ |\n| done | 2 | r | eng | t | 4 | ✅ |\n'))
+  const k3 = closeout(tpl)
+  if (!(k1.phase === "5.5" && k1.open.length === 0 && k2.phase === "5.16" && k2.open.length === 1 && k3.open.length === 0))
+    fail("closeout", { k1, k2, k3 })
   console.log('ok'); process.exit(0)
 }
 
@@ -478,6 +552,14 @@ const refuse = (doc, m) => { console.error(`${doc}: not done — ${m}`); process
 if (process.argv.includes('--where')) {
   const i = process.argv.indexOf('--where')
   console.log(where('.', process.argv[i + 1], process.argv[i + 2] || '')); process.exit(0)
+}
+if (process.argv.includes('--closeout')) {
+  const plan0 = arg('--closeout') || 'docs/IMPLEMENTATION_PLAN.md', fo = folderOf(plan0)
+  const all = [plan0, ...(hasParts(read('.', plan0)) && isDir('.', fo) ? walk('.', fo).sort() : [])].map(f => read('.', f)).join('\n')
+  const c = closeout(all)
+  console.log(`closeout phase: ${c.phase ?? 'none (no 🔄 or ✅ phase yet)'} · open deferred rows: ${c.open.length}`)
+  for (const o of c.open) console.log(`  ⬜ ${o[0]} · owner ${o[3] ?? '?'} · trigger ${o[4] ?? '?'}`)
+  process.exit(0)
 }
 if (process.argv.includes('--move-out')) {
   const i = process.argv.indexOf('--move-out'), ks = process.argv[i + 1]

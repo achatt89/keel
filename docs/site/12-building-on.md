@@ -11,7 +11,7 @@ anchor: building-on
 
 - **Phase**: A gated milestone. `/keel phase new <slug>` scopes it: a plan block with an exit-gate table, reserved ADR stubs (so parallel worktrees never collide on numbers), a workflow script, and a CHANGELOG line. Insert with `--after N`, split with `--split N`; existing numbers never change.
 - **Change**: Hotfix-weight work. `/keel change <slug>` gives it a `chg/` branch, a `CHG-xxx` row, and a CHANGELOG line. No phase block, no fan-out script. Phases stop being the unit for one-line fixes.
-- **Closeout**: `/keel closeout` generates a phase whose scope is exactly the open deferred items, once the table grows past a threshold or every N phases.
+- **Closeout**: `/keel closeout` generates a phase whose scope is exactly the open deferred items, once the table grows past a threshold or every N phases. It is numbered N.5 after the current phase, or the next free number if N.5 is taken; existing phases are never renumbered.
 
 ## Claims carry evidence
 

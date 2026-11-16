@@ -194,7 +194,7 @@ Phases are inserted as `N.1`, split as `N.1/N.2`; never renumbered.
 
 | Item | Deferred from | Reason | Owner | Revisit trigger | Target | Status |
 |---|---|---|---|---|---|---|
-| *(none yet — items added by doc-sync workflow as work progresses)* | — | — | — | — | — | ⬜ |
+| *(none yet — items added by doc-sync workflow as work progresses)* | — | — | — | — | — | — |
 
 <!-- Keel guidance: Owner is founder / engineering / legal — who can close it. Revisit trigger is
      the observable condition, not a date. When the table exceeds {{K}} open rows, `/keel closeout`
