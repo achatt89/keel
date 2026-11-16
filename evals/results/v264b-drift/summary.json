@@ -539,5 +539,82 @@
       }
     },
     "success": true
+  },
+  {
+    "name": "inventory-keel-r3-s2",
+    "run": "inventory-keel-r3",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 3,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 1.7616921999999993,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 7697,
+    "wallMs": 364652,
+    "inputTokens": 216,
+    "outputTokens": 66077,
+    "cacheRead": 2052087,
+    "cacheWrite": 351176,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 216,
+        "output": 66077,
+        "cacheRead": 2052087,
+        "cacheWrite": 351176,
+        "costUsd": 1.7616921999999993
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [
+      "AGENTS.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "pass",
+    "driftFailed": [],
+    "driftReasons": {},
+    "judgeCostUsd": 0.46180580000000004,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 2287,
+        "cacheRead": 649,
+        "cacheWrite": 51991,
+        "costUsd": 0.46180580000000004
+      }
+    },
+    "success": true
   }
 ]
