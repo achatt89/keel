@@ -14,8 +14,9 @@ plugins/keel/
 ├── .claude-plugin/
 │   └── plugin.json          # plugin manifest (name, version, author)
 └── skills/keel/
-    ├── SKILL.md              # the instructions the agent follows
+    ├── SKILL.md              # the router: principles, mode table, shared rules
     └── references/
+        ├── modes/            # one file per mode (generation, upgrade, change …)
         ├── personas.md        # interview persona definitions
         ├── catalog.md         # document catalog and selection rules
         ├── conventions.md     # ID schemes, cross-reference syntax

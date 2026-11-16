@@ -1,7 +1,7 @@
 # Team answers (opt-in)
 
 Load this file only when the user turns team mode on in Phase 0, or runs `/keel answer` or
-`/keel merge`. Without team mode, Keel runs the single-person interview exactly as SKILL.md says.
+`/keel merge`. Without team mode, Keel runs the single-person interview exactly as `modes/generation.md` says.
 
 **What changes:** the Phase 1 rounds are handed out as packet files under `.keel/rounds/`, answered by
 the people who know them best, and merged back before Phase 2. **What stays:** personas, question
@@ -9,12 +9,12 @@ banks, tiers, Phase 2 and Phase 3, every template. The full document set is stil
 
 ## 1. Phase 0 in team mode
 
-After the tier is confirmed (SKILL.md Phase 0 step 3), ask with `AskUserQuestion`:
+After the tier is confirmed (`modes/generation.md` Phase 0 step 3), ask with `AskUserQuestion`:
 *"Answer the interview yourself (default), or hand rounds to your team?"* Solo → stop reading this
 file. Team → continue:
 
 1. **Owner.** Ask who owns the project. It can be the person running Keel or anyone else.
-2. **Rounds.** Decide which rounds the project needs (SKILL.md Phase 1 rules: BA + PM + Architect
+2. **Rounds.** Decide which rounds the project needs (`modes/generation.md` Phase 1 rules: BA + PM + Architect
    always; the others by trigger). For each round, ask who answers it. A round may have several
    respondents; a person may hold several rounds. Claude may be assigned a round only if the owner
    says so, and then every answer is marked `Claude, for <owner>`.
