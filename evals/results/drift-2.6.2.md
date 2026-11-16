@@ -14,7 +14,7 @@
 | r1-s2 | 11/11 | fail | ADR-002 Build deviation still says "Phase 2–3 methods not built"; root README lists the reserve error checks in a different order from the code | 1.325 | 0.431 |
 | r1-s3 | 15/15 | fail | root README says the Phase 3 methods are not exported yet; same check-order mismatch | 1.207 | 0.474 |
 
-**Spend:** USD 5.242 recorded. Rep 2 session 1 was stopped mid-run: its cost was charged but not recorded (no transcript). That leaves at most about USD 9.7 of the 15 cap, minus that unrecorded part.
+**Spend:** USD 5.242 recorded. Rep 2 session 1 was stopped mid-run: its cost was charged but not recorded, since no transcript or result event was written. **Estimate: about USD 0.3–0.6.** It ran about 1–2 minutes of a session that takes about 4–5 minutes (rep 1 sessions: 222–292 s at USD 1.21–1.46). The hard upper bound is USD 5, its `--max-budget-usd`. For budget accounting, count it as USD 0.6. That leaves at most about USD 9.7 of the 15 cap, minus that unrecorded part.
 
 ## What improved against 2.5.6 (rep 1 only, n=1: an indication, not a result)
 

@@ -518,7 +518,7 @@ Source `v1-full/summary.json`. Tested model `claude-sonnet-5-5` and judge `claud
 
 ## 2.6.2 drift measurement (16 Nov 2026, cap USD 15)
 
-Task v1 inventory, keel condition, 2.5.6 docs plus the 2.6.2 doc-sync overlay. Stopped after rep 1 (verdict already decided: 2 of 9 sessions failed). Rep 2 session 1 was killed mid-run: its transcript was never written, so its tokens and cost are **not recorded**. Recorded spend: USD 5.242 (agent 3.987 + judge 1.255).
+Task v1 inventory, keel condition, 2.5.6 docs plus the 2.6.2 doc-sync overlay. Stopped after rep 1 (verdict already decided: 2 of 9 sessions failed). Rep 2 session 1 was killed mid-run: its transcript was never written, so its tokens and cost are **not recorded**: estimated at USD 0.3–0.6 (about 1–2 of 4–5 minutes), upper bound USD 5; counted as USD 0.6 for the budget. Recorded spend: USD 5.242 (agent 3.987 + judge 1.255).
 
 ### Per run
 
