@@ -259,7 +259,9 @@ await agent(`
        "impeccable": { "target": "<path or null>", "p0": <int>, "p1": <int>, "report": "<path or null>" },
        "security": { "confirmedHighOrCritical": <int>, "needsValidation": <int>, "report": "<path or null>" }
      }
-     Every gate in the plan appears exactly once. Unknown = "unmet", never omitted.
+     Every gate in the plan appears exactly once. Unknown = "unmet", never omitted. The
+     "Doc-sync commit present" gate is not yours: record it "pending-merge"; the Merge stage
+     ticks it once the docs: sync commit exists.
   5b. node .keel/doc-size.mjs --evidence .keel/evidence/phase-{{N}}.json must print "evidence ok";
      fix the record (never the checker) until it does.
   6. Commit: git add .keel/evidence && git commit -m "test(phase-{{N}}): verify — <met>/<total> gates met"
@@ -296,8 +298,14 @@ await agent(`
        [merged <short sha of the merge commit>]
      - IMPLEMENTATION_PLAN.md phase status table (split docs: write to the file \`node .keel/doc-size.mjs --where docs/IMPLEMENTATION_PLAN.md "<section>"\` prints — never the index), Phase {{N}} row, Deploy state column:
        "on \`phase-{{N}}-{{SLUG}}\`" → "merged <sha>"
-     - AGENTS.md / CLAUDE.md status table, Last completed cell: same substitution.
-     All three edits go in this ONE commit — none may be left for later:
+     - AGENTS.md / CLAUDE.md status table, Last completed cell: same substitution; and any
+       docs/README.md or README.md status line for Phase {{N}} ("not built", "no phase built yet", ⬜).
+     - Phase {{N}} exit gates: tick "Doc-sync commit present" ✅ (\`code-read\`, the docs: sync sha).
+       If every gate is now ✅, set the Phase {{N}} Status to ✅. Otherwise each gate still open
+       becomes a Deferred items row (what, why open, when to revisit) and the Status reads
+       "✅ merged, N gate(s) deferred (D-xx)". The AGENTS.md "Now" row names the next phase,
+       never "close Phase {{N}}": a merged phase is finished; its leftovers are deferred rows.
+     All these edits go in this ONE commit — none may be left for later:
      git add -u && git commit -m "docs: phase {{N}} merged"
      Then, if .keel/check.mjs exists: node .keel/check.mjs. A status-lag finding means a status
      cell still says "on \`phase-{{N}}-{{SLUG}}\`": fix it, git commit --amend --no-edit, re-run.

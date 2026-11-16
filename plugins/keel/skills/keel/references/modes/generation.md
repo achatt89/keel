@@ -181,7 +181,11 @@ default to the current working directory). For each document:
 - **IMPLEMENTATION_PLAN exit gates are a table**, not bullets: `Gate · Evidence level · Artefact ·
   Verified by · Status`. At generation every row is `⬜` with the *required* evidence level filled
   in (what the gate demands, e.g. `prod-live` for a launch gate) — the Verify stage of the phase
-  script fills the rest from `.keel/evidence/phase-N.json`.
+  script fills the rest from `.keel/evidence/phase-N.json`. Every gate must be checkable in this
+  repo's own environment (a run on another runtime version, device or service is a CI or deploy
+  gate, written as such, or a Deferred items row). The `Doc-sync commit present` gate is ticked by
+  the Merge stage, never by Verify. A Stop-and-ask line never blocks a phase on the previous one
+  being "finished": a merged phase is finished, and its open gates are Deferred items rows.
 - **Docs under test.** A phase whose deliverables include a README or usage doc says so in its
   deliverable line ("README: examples in `examples/`, error table under test") and gets the exit
   gate `README examples and error table pass` · `unit` · `examples.test.*`. The phase script's

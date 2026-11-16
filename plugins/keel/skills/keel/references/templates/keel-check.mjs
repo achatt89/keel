@@ -237,6 +237,12 @@ export function check(root) {
     }
   }
 
+  for (const f of ['README.md', 'docs/README.md'].filter(exists)) if (merged.size) {
+    const text = read(f)
+    for (const m of prose(text).matchAll(/^.*\b(no phases? (?:is |are )?built(?: yet)?|nothing (?:is )?built yet|Phases? (\d+(?:\.\d+)?) (?:is )?not (?:yet )?(?:built|started))\b.*$/gim))
+      if (!m[2] || merged.has(m[2])) add('status-lag', f, lineOf(text, m.index), `says "${m[1]}" but the plan shows Phase ${[...merged].join(', ')} merged: update it in the merge commit`)
+  }
+
   // BRD assumptions name a source (2.6.4): only where the Assumptions table has a Source column.
   for (const f of docs.filter(f => /(^|\/)BRD(\.md$|\/)/i.test(f))) {
     const text = texts.get(f), lines = text.split('\n')
@@ -443,9 +449,10 @@ if (process.argv.includes('--self-test')) {
     'docs/BRD.md': brd('| A-01 | Names are unique | transcript Q3 |\n| A-02 | Stock never negative | [ADR-001](adr/ADR-001-store.md) |\n| A-03 | Ten users | unvalidated |\n') }
   const lOkRes = check(mk(lOk)).findings.filter(f => f.kind === 'status-lag' || f.kind === 'brd-unsourced')
   assert(lOkRes.length === 0, `status/BRD clean fixture has findings:\n${lOkRes.map(f => `${f.file}:${f.line} ${f.msg}`).join('\n')}`)
-  const lBad = check(mk({ ...lOk, 'AGENTS.md': status('Phase 0 — Guardrails · on `phase-0-guardrails`', 'Phase 1 — Core, on `phase-1-core`'),
+  const lBad = check(mk({ ...lOk, 'docs/README.md': '# Docs\n\nStatus: ⬜ no phase built yet\n', 'AGENTS.md': status('Phase 0 — Guardrails · on `phase-0-guardrails`', 'Phase 1 — Core, on `phase-1-core`'),
     'docs/BRD.md': brd('| A-01 | Names are unique | transcript Q3 |\n| A-02 | The stored name is trimmed |  |\n| A-03 | Ten users | — |\n') })).findings.filter(f => f.kind === 'status-lag' || f.kind === 'brd-unsourced')
-  const lWant = [/status-lag AGENTS\.md:5 .*Phase 0 is on `phase-0-guardrails`/, /brd-unsourced docs\/BRD\.md:8 A-02 has no Source/, /brd-unsourced docs\/BRD\.md:9 A-03 has no Source/]
+  assert(!check(mk({ ...lOk, 'docs/README.md': '# Docs\n\nStatus: Phase 1 not built yet.\n' })).findings.some(f => f.kind === 'status-lag'), 'an unmerged phase called not built is not lag')
+  const lWant = [/status-lag AGENTS\.md:5 .*Phase 0 is on `phase-0-guardrails`/, /status-lag docs\/README\.md:3 says "no phase built yet"/, /brd-unsourced docs\/BRD\.md:8 A-02 has no Source/, /brd-unsourced docs\/BRD\.md:9 A-03 has no Source/]
   for (const re of lWant) assert(lBad.some(f => re.test(`${f.kind} ${f.file}:${f.line} ${f.msg}`)), `expected ${re}\n${lBad.map(f => `${f.kind} ${f.file}:${f.line} ${f.msg}`).join('\n')}`)
   assert(lBad.length === lWant.length, `expected ${lWant.length} status/BRD findings, got ${lBad.length}\n${lBad.map(f => `${f.kind} ${f.file}:${f.line} ${f.msg}`).join('\n')}`)
   console.log(`keel check self-test: ok (clean fixtures clean; ${want.length + tWant.length + sWant.length + dWant.length + lWant.length} planted drifts each reported once)`)

@@ -152,7 +152,7 @@ await agent(`
      - CHANGELOG.md [Unreleased] lines referencing ${CHG}: [on-branch] → [merged <merge sha>]
      - IMPLEMENTATION_PLAN.md Changes table (split docs: write to the file \`node .keel/doc-size.mjs --where docs/IMPLEMENTATION_PLAN.md "<section>"\` prints — never the index), ${CHG} row, deploy state: "on \`chg/{{SLUG}}\`" → "merged <sha>"
      - AGENTS.md / CLAUDE.md status table Last completed cell: same substitution.
-     All three edits go in this ONE commit:
+     All these edits go in this ONE commit:
      git add -u && git commit -m "docs: ${CHG.toLowerCase()} merged"
      Then, if .keel/check.mjs exists, run it; fix any status-lag finding (a cell still
      "on \`chg/{{SLUG}}\`"), git commit --amend --no-edit, re-run.

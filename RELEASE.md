@@ -37,7 +37,8 @@ measured yet.
 - **A Source column in the BRD Assumptions table** (new projects), and guidance that risk
   mitigations naming code structure cite their decision record.
 - **`/keel check` reports two more kinds of drift:** `status-lag`, a status line in `AGENTS.md` or
-  `CLAUDE.md` still saying a phase is on its branch after the plan shows it merged; and
+  `CLAUDE.md` still saying a phase is on its branch after the plan shows it merged, or a README
+  still saying no phase is built; and
   `brd-unsourced`, an assumption with no source, in a BRD whose table has a Source column.
 
 ### Changed
@@ -46,7 +47,11 @@ measured yet.
   the decision record's build deviation, as "superseded by the build" after the original text, or
   as an open decision for you when you were the one who said it. No row is removed.
 - **The merge step** of phase and change scripts makes all its status edits in one commit and
-  runs `node .keel/check.mjs` afterwards.
+  runs `node .keel/check.mjs` afterwards. It also ticks the "doc-sync commit present" gate, which
+  Verify cannot see yet, and marks the phase done. Any gate still open becomes a deferred item, so
+  a merged phase never leaves the next session told to "close" it first.
+- **Exit gates** must be checkable in the project's own environment; a run on another runtime
+  version or service is written as a CI or deploy gate, or deferred.
 
 ### Upgrading
 - `/keel upgrade` offers the Source column for an existing BRD, with sources proposed from the
