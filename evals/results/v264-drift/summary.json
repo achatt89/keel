@@ -1,0 +1,78 @@
+[
+  {
+    "name": "inventory-keel-r1-s1",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 1.1189574999999998,
+    "turns": 8,
+    "segments": 2,
+    "durationMs": 11241,
+    "wallMs": 233922,
+    "inputTokens": 134,
+    "outputTokens": 37603,
+    "cacheRead": 1215750,
+    "cacheWrite": 237851,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 134,
+        "output": 37603,
+        "cacheRead": 1215750,
+        "cacheWrite": 237851,
+        "costUsd": 1.1189574999999998
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3,
+      "Skill": 1,
+      "Workflow": 1
+    },
+    "docReads": [
+      "AGENTS.md",
+      "docs/COMMANDS.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "docs/README.md says 'Status: ⬜ no phase built yet' and the Phase 1 deliverables checklist leaves package.json and src/inventory.js unchecked, but the code already implements all Phase 1 functions, files and error codes."
+    },
+    "judgeCostUsd": 0.3507658,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 935,
+        "cacheRead": 649,
+        "cacheWrite": 41491,
+        "costUsd": 0.3507658
+      }
+    },
+    "success": true
+  }
+]
