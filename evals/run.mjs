@@ -2,12 +2,13 @@
 // Run tasks x conditions x reps with `claude -p`, grade each, stop at the spend cap.
 //   node evals/run.mjs --tasks ledger --conds none,min,keel --reps 1 --cap-usd 20
 //   node evals/run.mjs --gen-keel ledger         one-off: generate the Keel doc set fixture for a task
-// Options: --model sonnet (agent), --judge opus, --effort <level>, --out <dir under results/raw>.
+// Options: --model sonnet (agent), --judge opus, --effort <level>, --out <dir under results/raw>,
+//   --rescore (with --out: recompute usage fields from saved transcripts, no model calls).
 import { mkdtempSync, mkdirSync, cpSync, writeFileSync, readFileSync, existsSync, rmSync, readdirSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { readTask, claude, resultEvent, models, CLEAN, EVALS, REPO, RAW } from './lib.mjs';
+import { readTask, claude, resultEvent, resultEvents, models, CLEAN, EVALS, REPO, RAW } from './lib.mjs';
 import { grade } from './grade.mjs';
 
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > -1 ? process.argv[i + 1] : d; };
@@ -34,28 +35,38 @@ const conditions = {
 };
 
 // What the transcript says the agent did: turns, tool calls, which doc files it opened.
-function profile(stdout) {
-  const tools = {}, docReads = new Set();
+// docReads = main agent (Read, or a doc path named in a Bash command); subDocReads = subagents (e.g. Keel's doc-sync).
+const DOC = /(^|\/)(AGENTS|CLAUDE)\.md$|(^|\/)docs\//;
+const DOC_IN_CMD = /(?:^|[\s'"=/])((?:docs\/[\w./-]+\.md)|AGENTS\.md|CLAUDE\.md)/g;
+export function profile(stdout) {
+  const tools = {}, main = new Set(), sub = new Set();
   let modelId;
   for (const l of stdout.split('\n')) {
     let e; try { e = JSON.parse(l); } catch { continue; }
-    if (e.type === 'system' && e.subtype === 'init') modelId = e.model;
+    if (e.type === 'system' && e.subtype === 'init') modelId ??= e.model;
     for (const c of e.message?.content ?? []) {
       if (c.type !== 'tool_use') continue;
       tools[c.name] = (tools[c.name] ?? 0) + 1;
+      const into = e.parent_tool_use_id ? sub : main;
       const f = c.input?.file_path ?? '';
-      if (c.name === 'Read' && /(^|\/)(AGENTS|CLAUDE)\.md$|\/docs\//.test(f)) docReads.add(f.replace(/.*keel-eval-[^/]+\//, ''));
+      if (c.name === 'Read' && DOC.test(f)) into.add(f.replace(/.*keel-eval-[^/]+\//, ''));
+      if (c.name === 'Bash') for (const m of (c.input?.command ?? '').matchAll(DOC_IN_CMD)) into.add(m[1]);
     }
   }
-  return { modelId, tools, docReads: [...docReads].sort() };
+  return { modelId, tools, docReads: [...main].sort(), subDocReads: [...sub].sort() };
 }
 
-const usage = (r) => r ? {
-  costUsd: r.total_cost_usd, turns: r.num_turns, durationMs: r.duration_ms,
-  inputTokens: r.usage?.input_tokens, outputTokens: r.usage?.output_tokens,
-  cacheRead: r.usage?.cache_read_input_tokens, cacheWrite: r.usage?.cache_creation_input_tokens,
-  isError: r.is_error, subtype: r.subtype, models: models(r),
-} : { costUsd: 0, isError: true, subtype: 'no-result' };
+// Tokens come from modelUsage (cumulative over the whole run, subagents included); turns are summed
+// over all result events. The top-level `usage` covers only the last segment, so it is not used.
+export const usage = (r, all = [r], wallMs) => {
+  if (!r) return { costUsd: 0, isError: true, subtype: 'no-result', wallMs };
+  const ms = models(r), sum = (k) => Object.values(ms).reduce((a, u) => a + u[k], 0);
+  return {
+    costUsd: r.total_cost_usd, turns: all.reduce((a, e) => a + (e.num_turns ?? 0), 0), segments: all.length, durationMs: r.duration_ms, wallMs,
+    inputTokens: sum('input'), outputTokens: sum('output'), cacheRead: sum('cacheRead'), cacheWrite: sum('cacheWrite'),
+    isError: r.is_error, subtype: r.subtype, models: ms,
+  };
+};
 
 async function genKeel(id) {
   const task = readTask(id);
@@ -74,12 +85,12 @@ ${readFileSync(join(task.dir, 'founder-answers.md'), 'utf8')}`;
   const raw = join(RAW, `gen-${id}-${Date.now()}`);
   mkdirSync(raw, { recursive: true });
   writeFileSync(join(raw, 'transcript.jsonl'), r.stdout);
-  writeFileSync(join(raw, 'usage.json'), JSON.stringify({ ...usage(res), ...profile(r.stdout), stderr: r.stderr.slice(-2000) }, null, 2));
+  writeFileSync(join(raw, 'usage.json'), JSON.stringify({ ...usage(res, resultEvents(r.stdout), r.wallMs), ...profile(r.stdout), stderr: r.stderr.slice(-2000) }, null, 2));
   const fx = join(task.dir, 'keel');
   rmSync(fx, { recursive: true, force: true });
   cpSync(d, fx, { recursive: true, filter: (s) => !/\/\.git(\/|$)/.test(s) });
-  writeFileSync(join(task.dir, 'keel-gen-usage.json'), JSON.stringify({ keelVersion: JSON.parse(readFileSync(join(fx, '.keel/meta.json'), 'utf8')).keelVersion, ...usage(res), modelId: profile(r.stdout).modelId }, null, 2));
-  console.log(JSON.stringify(usage(res)), `\nfixture: ${readdirSync(fx).join(' ')}\nlog: ${raw}`);
+  writeFileSync(join(task.dir, 'keel-gen-usage.json'), JSON.stringify({ keelVersion: JSON.parse(readFileSync(join(fx, '.keel/meta.json'), 'utf8')).keelVersion, ...usage(res, resultEvents(r.stdout), r.wallMs), modelId: profile(r.stdout).modelId }, null, 2));
+  console.log(JSON.stringify(usage(res, resultEvents(r.stdout), r.wallMs)), `\nfixture: ${readdirSync(fx).join(' ')}\nlog: ${raw}`);
 }
 
 async function main() {
@@ -92,6 +103,11 @@ async function main() {
   mkdirSync(outDir, { recursive: true });
   const summaryFile = join(outDir, 'summary.json');
   const rows = existsSync(summaryFile) ? JSON.parse(readFileSync(summaryFile, 'utf8')) : [];
+  if (process.argv.includes('--rescore')) { // recompute usage fields from the saved transcripts; no model calls
+    for (const [i, row] of rows.entries()) { const t = readFileSync(join(outDir, `${row.name}.jsonl`), 'utf8'); rows[i] = { ...row, ...usage(resultEvent(t), resultEvents(t), row.wallMs), ...profile(t) }; }
+    writeFileSync(summaryFile, JSON.stringify(rows, null, 2));
+    return finish(rows, outDir);
+  }
   let spent = rows.reduce((s, r) => s + r.costUsd + (r.judgeCostUsd ?? 0), 0);
 
   for (let rep = 1; rep <= reps; rep++) for (const id of tasks) for (const cond of conds) {
@@ -110,7 +126,7 @@ async function main() {
     writeFileSync(join(outDir, `${name}.jsonl`), r.stdout);
     cpSync(d, join(outDir, name), { recursive: true, filter: (s) => !/\/(\.git|node_modules)(\/|$)/.test(s) });
     const g = await grade(id, d, { judgeModel: JUDGE });
-    const row = { name, task: id, cond, rep, model: MODEL, ...usage(res), timedOut: r.timedOut, ...profile(r.stdout),
+    const row = { name, task: id, cond, rep, model: MODEL, ...usage(res, resultEvents(r.stdout), r.wallMs), timedOut: r.timedOut, ...profile(r.stdout),
       testsPass: g.tests.pass, testsTotal: g.tests.total, testsFailed: g.tests.failed,
       judge: g.judge.verdict, judgeFailed: g.judge.items.filter((i) => !i.pass).map((i) => i.id), judgeCostUsd: g.judge.costUsd, judgeModels: g.judge.models, success: g.success };
     rows.push(row);
@@ -122,10 +138,10 @@ async function main() {
 }
 
 function finish(rows, outDir) {
-  const lines = ['| run | success | tests | judge | cost $ | turns | out tok | cache read | doc reads |', '|---|---|---|---|---|---|---|---|---|'];
-  for (const r of rows) lines.push(`| ${r.name} | ${r.success ? 'yes' : 'no'} | ${r.testsPass}/${r.testsTotal} | ${r.judge}${r.judgeFailed.length ? ` (${r.judgeFailed.join(', ')})` : ''} | ${r.costUsd?.toFixed(2)} | ${r.turns} | ${r.outputTokens} | ${r.cacheRead} | ${r.docReads.length} |`);
+  const lines = ['| run | success | tests | judge | cost $ | turns | wall s | out tok | cache read | doc reads (sub) |', '|---|---|---|---|---|---|---|---|---|---|'];
+  for (const r of rows) lines.push(`| ${r.name} | ${r.success ? 'yes' : 'no'} | ${r.testsPass}/${r.testsTotal} | ${r.judge}${r.judgeFailed.length ? ` (${r.judgeFailed.join(', ')})` : ''} | ${r.costUsd?.toFixed(2)} | ${r.turns} | ${r.wallMs ? Math.round(r.wallMs / 1000) : '-'} | ${r.outputTokens} | ${r.cacheRead} | ${r.docReads.length} (${r.subDocReads?.length ?? 0}) |`);
   writeFileSync(join(outDir, 'summary.md'), lines.join('\n') + '\n');
   console.log(lines.join('\n'));
 }
 
-await main();
+if (import.meta.url === `file://${process.argv[1]}`) await main();

@@ -26,7 +26,7 @@ export function claude(args, { cwd, timeoutMs, input, label = 'claude -p' } = {}
     p.stdout.on('data', (d) => (stdout += d));
     p.stderr.on('data', (d) => (stderr += d));
     const t = timeoutMs && setTimeout(() => { timedOut = true; p.kill('SIGTERM'); }, timeoutMs);
-    p.on('close', (code) => { clearTimeout(t); clearInterval(beat); resolve({ code, stdout, stderr, timedOut }); });
+    p.on('close', (code) => { clearTimeout(t); clearInterval(beat); resolve({ code, stdout, stderr, timedOut, wallMs: Date.now() - t0 }); });
     p.stdin.end(input ?? '');
   });
 }
@@ -35,6 +35,10 @@ export function claude(args, { cwd, timeoutMs, input, label = 'claude -p' } = {}
 export const models = (r) => Object.fromEntries(Object.entries(r?.modelUsage ?? {}).map(([id, u]) => [id, {
   input: u.inputTokens ?? 0, output: u.outputTokens ?? 0, cacheRead: u.cacheReadInputTokens ?? 0, cacheWrite: u.cacheCreationInputTokens ?? 0, costUsd: u.costUSD ?? 0,
 }]));
+
+// Every `result` event. A run that waits on a background subagent emits one per resumed turn:
+// only the LAST carries cumulative cost and modelUsage; num_turns and usage are per segment.
+export const resultEvents = (stdout) => stdout.split('\n').flatMap((l) => { try { const e = JSON.parse(l); return e.type === 'result' ? [e] : []; } catch { return []; } });
 
 // The `result` event of a stream-json transcript, or of a single json output.
 export function resultEvent(stdout) {
