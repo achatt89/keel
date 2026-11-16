@@ -54,7 +54,7 @@ keel documents projects using the templates in references/templates/. The docume
 ## Current status
 Docs site cutover (no plugin version): `site/` (React, TLA DS from GitHub Packages) deploys to keel.thelogicatelier.com via `.github/workflows/pages.yml`; old `docs/index.html` single page retired.
 
-v2.6.1 — every document type in every project: a type that does not apply yet is a stub (templates/STUB.md: reason, trigger, where the facts live; `<!-- keel:stub trigger=… -->`); catalog Stubs table; generation reads the catalog in full; /keel check missing-type, stub-triggered, rules-missing; upgrade proposes stubs (MISSING_DOC). Founder-approved 16 Nov. On branch feat/keel-2.6.1-stubs.
+v2.6.1 — every document type in every project: a type that does not apply yet is a stub (templates/STUB.md: reason, trigger, where the facts live; `<!-- keel:stub trigger=… -->`); catalog Stubs table; generation reads the catalog in full; /keel check missing-type, stub-triggered, rules-missing; upgrade proposes stubs (MISSING_DOC). Founder-approved 16 Nov. Merged to main.
 
 v2.6.0 — leaner output, full doc set kept: slim keystone (fresh load 16.1 → 8.7 KB), proportional doc sync, keel-gates Stop hook, Stops + end-of-run report; slim SKILL.md router + references/modes/ (100 → 11.5 KB); .claude/rules/ by path + header on new ADRs only; /keel check (read-only drift); Verify real check + failSeen + --evidence; split relinks ToC anchors (--relink); team answers (opt-in). Evals: v0 baseline + 2.6.0 regression. Merged to main.
 
