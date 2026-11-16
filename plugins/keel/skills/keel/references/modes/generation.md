@@ -182,6 +182,10 @@ default to the current working directory). For each document:
   Verified by · Status`. At generation every row is `⬜` with the *required* evidence level filled
   in (what the gate demands, e.g. `prod-live` for a launch gate) — the Verify stage of the phase
   script fills the rest from `.keel/evidence/phase-N.json`.
+- **Docs under test.** A phase whose deliverables include a README or usage doc says so in its
+  deliverable line ("README: examples in `examples/`, error table under test") and gets the exit
+  gate `README examples and error table pass` · `unit` · `examples.test.*`. The phase script's
+  task that writes the README names the same (conventions "Docs under test").
 - **Keystone pair.** `AGENTS.md` from `references/templates/AGENTS.md` is the full keystone
   (document map, invariants as `Rule · Enforced by · Gap · Source`, status as a two-row table,
   pre-PR checklist). `CLAUDE.md` from `references/templates/CLAUDE.md` opens with `@AGENTS.md`

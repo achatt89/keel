@@ -7,7 +7,7 @@
 // Conditions: none, min, answers (min + founder-answers.md), spec (answers + idea.md), keel. A task with "base" starts every condition from that code.
 // A task with "sessions" runs them in order in the same folder, one fresh `claude -p` each; one row per session.
 // Options: --model sonnet (agent), --judge opus, --effort <level>, --out <dir under results/raw>,
-//   --keel-overlay <dir> (files copied over the keel fixture), --rescore (with --out: recompute usage fields from saved transcripts, no model calls).
+//   --judge-reserve-usd <n> (default 0.6, held back from each session's budget for its judge calls), --keel-fixture <name> (default keel), --keel-overlay <dir> (files copied over the keel fixture), --rescore (with --out: recompute usage fields from saved transcripts, no model calls).
 import { mkdtempSync, mkdirSync, cpSync, writeFileSync, readFileSync, existsSync, rmSync, readdirSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { join, resolve } from 'node:path';
@@ -18,6 +18,7 @@ import { grade, driftJudge } from './grade.mjs';
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > -1 ? process.argv[i + 1] : d; };
 const MODEL = arg('model', 'sonnet');
 const JUDGE = arg('judge', 'opus');
+const FIXTURE = arg('keel-fixture', 'keel'); // the keel condition's doc set under the task dir (generated there by --gen-keel)
 const EFFORT = arg('effort');
 const AGENT = ['--model', MODEL, ...(EFFORT ? ['--effort', EFFORT] : []), '--output-format', 'stream-json', '--verbose', '--dangerously-skip-permissions', ...CLEAN];
 
@@ -55,7 +56,7 @@ const conditions = {
     writeFileSync(join(d, 'AGENTS.md'), readFileSync(join(d, 'AGENTS.md'), 'utf8') + '- The founder\'s full specification, all phases (the "specification above" the answers refer to): `idea.md`.\n');
   },
   keel: (task, d) => {
-    const fx = join(task.dir, 'keel');
+    const fx = join(task.dir, FIXTURE);
     if (!existsSync(fx)) throw new Error(`no Keel fixture for ${task.id}: run --gen-keel ${task.id} first`);
     cpSync(fx, d, { recursive: true });
     const ov = arg('keel-overlay'); // files copied over the fixture, e.g. a newer doc-sync as /keel upgrade would install it
@@ -118,11 +119,11 @@ ${readFileSync(join(task.dir, 'founder-answers.md'), 'utf8')}`;
   mkdirSync(raw, { recursive: true });
   writeFileSync(join(raw, 'transcript.jsonl'), r.stdout);
   writeFileSync(join(raw, 'usage.json'), JSON.stringify({ ...usage(res, resultEvents(r.stdout), r.wallMs), ...profile(r.stdout), stderr: r.stderr.slice(-2000) }, null, 2));
-  const fx = join(task.dir, 'keel');
+  const fx = join(task.dir, FIXTURE);
   rmSync(fx, { recursive: true, force: true });
   cpSync(d, fx, { recursive: true, filter: (s) => !/\/\.git(\/|$)/.test(s) });
   const meta = join(fx, '.keel/meta.json');
-  writeFileSync(join(task.dir, 'keel-gen-usage.json'), JSON.stringify({ keelVersion: existsSync(meta) ? JSON.parse(readFileSync(meta, 'utf8')).keelVersion : null, pluginSkillVersion: skillVersion, pluginSource: arg('plugin-source', pluginDir), ...usage(res, resultEvents(r.stdout), r.wallMs), modelId: profile(r.stdout).modelId }, null, 2));
+  writeFileSync(join(task.dir, `${FIXTURE}-gen-usage.json`), JSON.stringify({ keelVersion: existsSync(meta) ? JSON.parse(readFileSync(meta, 'utf8')).keelVersion : null, pluginSkillVersion: skillVersion, pluginSource: arg('plugin-source', pluginDir), ...usage(res, resultEvents(r.stdout), r.wallMs), modelId: profile(r.stdout).modelId }, null, 2));
   console.log(JSON.stringify(usage(res, resultEvents(r.stdout), r.wallMs)), `\nfixture: ${readdirSync(fx).join(' ')}\nlog: ${raw}`);
 }
 
@@ -156,7 +157,11 @@ async function main() {
     else { cpSync(join(outDir, nameOf(first)), d, { recursive: true }); commit(d, `after session ${first} (restored)`); }
     for (let k = first + 1; k <= sessions.length; k++) {
       const name = nameOf(k);
-      const left = cap - spent;
+      // Reserve the judge calls that run after the session (outside its --max-budget-usd), plus the small
+      // overshoot claude allows past its own budget, so cap - spent never goes negative (2.6.3 run: +0.009).
+      const judgeSeen = Math.max(0, ...rows.map((r) => r.judgeCostUsd ?? 0));
+      const reserve = Math.max(Number(arg('judge-reserve-usd', '0.6')), judgeSeen * 1.25) + 0.05;
+      const left = cap - spent - reserve;
       if (left < 0.5) { console.log(`STOP: spend cap ${cap} reached (${spent.toFixed(2)} spent)`); return finish(rows, outDir); }
       const prompt = readFileSync(join(task.dir, sessions[k - 1].prompt), 'utf8');
       process.stdout.write(`${name} ... `);

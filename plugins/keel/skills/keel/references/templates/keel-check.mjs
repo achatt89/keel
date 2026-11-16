@@ -261,6 +261,26 @@ export function check(root) {
   }
   for (const [f, t] of stubs) if (signals[t]) add('stub-triggered', f, 0, `stub says "not needed yet" (trigger: ${t}) but the repo shows ${signals[t]}: write the full document`)
 
+  // Docs under test (2.6.3+): README code examples and error tables carry a marker naming the file that tests them.
+  if (exists('README.md')) {
+    const text = read('README.md'), lines = text.split('\n')
+    const marked = /<!--\s*keel:(example|asserts)\s+(\S+)\s*-->/
+    if (marked.test(text) || (/^\d+\.\d+\.\d+/.test(ver) && atLeast(ver, '2.6.3'))) {
+      const RUN = /^(js|javascript|mjs|cjs|jsx|ts|typescript|tsx|py|python|go|rb|ruby|rs|rust|java|kotlin|swift|php)$/i
+      const markerAbove = i => { for (let k = i - 1; k >= Math.max(0, i - 2); k--) { const m = lines[k].match(marked); if (m) return m; if (lines[k].trim()) return null } return null }
+      let fence = null
+      lines.forEach((l, i) => {
+        const f = l.match(/^\s*(```|~~~)\s*([\w+-]*)/)
+        if (fence) { if (f && f[1] === fence) fence = null; return }
+        if (f) { fence = f[1]; if (RUN.test(f[2]) && !markerAbove(i)) add('docs-untested', 'README.md', i + 1, `${f[2]} example with no <!-- keel:example examples/<file> --> above it: put it in examples/ and run it in a test`); return }
+        const cells = /^\s*\|/.test(l) && /^\s*\|[\s:-]+\|/.test(lines[i + 1] ?? '') ? l.split('|').map(c => c.trim()) : null
+        if (cells && cells.some(c => /\b(code|error)\b/i.test(c)) && cells.some(c => /^(when|meaning|means|cause|thrown when|raised when)\b/i.test(c)) && !markerAbove(i))
+          add('docs-untested', 'README.md', i + 1, 'error table with no <!-- keel:asserts <test file> --> above it: a test should trigger each row')
+      })
+      for (const m of text.matchAll(new RegExp(marked.source, 'g'))) if (!exists(m[2])) add('docs-untested', 'README.md', lineOf(text, m.index), `keel:${m[1]} names ${m[2]}, which does not exist`)
+    }
+  }
+
   // An ADR that names paths needs an area rule citing it.
   const cited = new Set(rules.flatMap(f => [...read(f).matchAll(/\bADR-(\d+)\b/g)].map(m => norm(`ADR-${m[1]}`))))
   for (const [key, file] of adrFiles) {
@@ -380,7 +400,18 @@ if (process.argv.includes('--self-test')) {
   assert(sRes.findings.length === sWant.length, `expected ${sWant.length} status findings, got ${sRes.findings.length}\n${report(sRes)}`)
   const merged = check(mk({ ...sOk, 'docs/IMPLEMENTATION_PLAN.md': plan('✅', '✅').replace('| 1 — Core | ⬜ |', '| 1 — Core | 🔄 2/3 gates met · on `phase-1-core` |') })).findings
   assert(merged.length === 2 && merged.every(f => f.kind === 'adr-status-stale' && /Phase 1 built/.test(f.msg)), `a merged phase counts as built:\n${merged.map(f => f.msg).join('\n')}`)
-  console.log(`keel check self-test: ok (clean fixtures clean; ${want.length + tWant.length + sWant.length} planted drifts each reported once)`)
+  // 2.6.3 docs under test: marked README is clean; unmarked example, unmarked error table, missing file reported.
+  const readme = (a, b, c) => `# Lib\n\n${a}\n\`\`\`js\nconsole.log(add(1, 2)) // 3\n\`\`\`\n\n\`\`\`sh\nnpm test\n\`\`\`\n\n${b}\n| Code | When |\n|---|---|\n| not_found | unknown order id |\n\n${c}\n`
+  const dOk = { ...clean, '.keel/meta.json': '{"keelVersion":"2.6.3"}', 'examples/add.mjs': '', 'test/errors.test.mjs': '',
+    'README.md': readme('<!-- keel:example examples/add.mjs -->', '<!-- keel:asserts test/errors.test.mjs -->', '') }
+  const dOkRes = check(mk(dOk)).findings.filter(f => f.kind === 'docs-untested')
+  assert(dOkRes.length === 0, `marked README has docs-untested:\n${dOkRes.map(f => f.msg).join('\n')}`)
+  const dBad = check(mk({ ...dOk, 'README.md': readme('', '', '<!-- keel:example examples/gone.mjs -->') })).findings.filter(f => f.kind === 'docs-untested')
+  const dWant = [/README\.md:4 js example/, /README\.md:13 error table/, /keel:example names examples\/gone\.mjs/]
+  for (const re of dWant) assert(dBad.some(f => re.test(`${f.file}:${f.line} ${f.msg}`)), `expected [docs-untested] ${re}\n${dBad.map(f => `${f.file}:${f.line} ${f.msg}`).join('\n')}`)
+  assert(dBad.length === dWant.length, `expected ${dWant.length} docs-untested, got ${dBad.length}\n${dBad.map(f => `${f.line} ${f.msg}`).join('\n')}`)
+  assert(!check(mk({ ...clean, '.keel/meta.json': '{"keelVersion":"2.6.2"}', 'README.md': readme('', '', '') })).findings.some(f => f.kind === 'docs-untested'), 'a pre-2.6.3 project with no marker must not get docs-untested')
+  console.log(`keel check self-test: ok (clean fixtures clean; ${want.length + tWant.length + sWant.length + dWant.length} planted drifts each reported once)`)
   process.exit(0)
 }
 

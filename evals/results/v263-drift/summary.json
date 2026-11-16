@@ -1,0 +1,238 @@
+[
+  {
+    "name": "inventory-keel-r1-s1",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 1.6644933000000006,
+    "turns": 9,
+    "segments": 2,
+    "durationMs": 13656,
+    "wallMs": 327015,
+    "inputTokens": 194,
+    "outputTokens": 64639,
+    "cacheRead": 1831443,
+    "cacheWrite": 323911,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 194,
+        "output": 64639,
+        "cacheRead": 1831443,
+        "cacheWrite": 323911,
+        "costUsd": 1.6644933000000006
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 4
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "BRD A-06 says the stored name is the trimmed value, but src/inventory.js stores and returns `name` untrimmed (`items.set(sku, { name, ... })` and `return { sku, name }`)."
+    },
+    "judgeCostUsd": 0.3411298,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 978,
+        "cacheRead": 649,
+        "cacheWrite": 40179,
+        "costUsd": 0.3411298
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r1-s2",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 1.4087844999999999,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 7681,
+    "wallMs": 237215,
+    "inputTokens": 188,
+    "outputTokens": 52880,
+    "cacheRead": 1885850,
+    "cacheWrite": 268547,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 188,
+        "output": 52880,
+        "cacheRead": 1885850,
+        "cacheWrite": 268547,
+        "costUsd": 1.4087844999999999
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "BRD assumption A-06 says the stored name is the trimmed value, but addItem in src/inventory.js stores and returns the untrimmed name; separately, CHANGELOG and the plan show Phase 2 as merged 3edf9be while AGENTS.md says it is still on phase-2-reservations without its doc-sync commit."
+    },
+    "judgeCostUsd": 0.41876579999999997,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1019,
+        "cacheRead": 649,
+        "cacheWrite": 49781,
+        "costUsd": 0.41876579999999997
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r1-s3",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 1.3115890000000003,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 5321,
+    "wallMs": 291666,
+    "inputTokens": 162,
+    "outputTokens": 48946,
+    "cacheRead": 1565600,
+    "cacheWrite": 260611,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 162,
+        "output": 48946,
+        "cacheRead": 1565600,
+        "cacheWrite": 260611,
+        "costUsd": 1.3115890000000003
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 15,
+    "testsTotal": 15,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      },
+      {
+        "phase": 3,
+        "pass": 4,
+        "total": 4,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "BRD A-06 says the stored name is the trimmed value, but `addItem` stores and returns `name` untrimmed. BRD RSK-001 also says `ship` and `fulfil` share a stock-decrease helper, but `src/inventory.js` decrements `onHand` inline in each."
+    },
+    "judgeCostUsd": 0.4804258,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1148,
+        "cacheRead": 649,
+        "cacheWrite": 57166,
+        "costUsd": 0.4804258
+      }
+    },
+    "success": true
+  }
+]

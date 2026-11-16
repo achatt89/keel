@@ -234,6 +234,24 @@ ledger lives at `.keel/evidence/security/ledger/`.
   doc-sync subagent — doc-sync.js's Prune stage). Git history keeps
   everything pruned.
 
+## Docs under test
+
+A README or usage doc that a phase or change delivers keeps its checkable statements under test, so
+a wrong one fails Verify instead of waiting for a reader (2.6.3; execution tier: no record document
+changes).
+
+- **Examples.** Each code example lives in `examples/<name>.<ext>` and states its expected output
+  (a trailing comment or an `examples/<name>.out` file). The README copies it word for word under
+  `<!-- keel:example examples/<name>.<ext> -->`. One test (`examples.test.*`, in the project's own
+  runner) runs every example and compares its output.
+- **Error tables.** A table of error codes (code · when or meaning) carries
+  `<!-- keel:asserts <test file> -->` on the line above its header. That test file triggers each
+  row's code, on that row's method and in that row's situation.
+- Change the example file or the test first, then copy it into the README. A README statement
+  with no example or test behind it is a claim at `code-read` level at best.
+- `node .keel/check.mjs` reports a runnable block or an error table with no marker as
+  `docs-untested` (projects on 2.6.3, or with a marker).
+
 ## Negative results are recorded
 
 "Confirmed not a bug", "re-benchmarked, still deferred", "investigated, no change needed" each get

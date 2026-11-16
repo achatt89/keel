@@ -70,6 +70,10 @@ await agent(`
   and say so in your report. If the decision is not yours to make (founder / legal), add an Open
   decisions row with a Decider tag instead — never invent one.
 
+  README or usage doc edits: docs under test (conventions "Docs under test"). Examples live in
+  examples/ and run in examples.test.*; an error table has a keel:asserts test. Change the
+  example or test first, run it, then copy it into the README.
+
   ── If this touches UI ─────────────────────────────────────────────────────
   - modern-web-guidance search before any new pattern; /impeccable audit <target> after
     (zero P0/P1); manual claude-in-chrome pass on the real path.

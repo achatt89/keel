@@ -130,6 +130,9 @@ const SYNC_RULES = `
   this phase's work is built even though the plan row still says "on <branch>". Where the doc no longer matches, fix the doc to describe the code. If the
   code broke a recorded decision rather than a detail, write the ADR's Build deviation row (or
   a new ADR), never silently re-word the decision.
+  README examples and error tables: one with no keel:example / keel:asserts marker (check.mjs
+  reports docs-untested) is a gap. Add the example file or test and the marker, run it, and
+  report it; never fix the README text alone.
 
   Step 8 — Evidence-ladder lint (before committing): in every file you edited, grep for
   "✅", "verified", "live-verified", "confirmed", "proven". Each occurrence YOU wrote must be in a
