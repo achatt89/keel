@@ -25,6 +25,7 @@ It is read-only: no permission prompt, no edits, nothing written. Run it any tim
 - keel files every project needs (`AGENTS.md`, `CLAUDE.md`, `.keel/meta.json`, `.keel/doc-size.mjs`);
 - relative links and `#heading` anchors that lead nowhere;
 - the ADR index against the ADR files: a row with no file, a file with no row, a status that differs, or a supersession by an ADR that does not exist;
+- the header on a new ADR (an id or status that disagrees with the file), and area rules in `.claude/rules/` with no paths or naming a record that does not exist;
 - the plan: a finished phase with an open gate, or whose evidence, artefact or deliverable path is gone, and an unfinished phase with no workflow script;
 - runtime dependencies in `package.json`, `requirements.txt`, `go.mod` or `Cargo.toml` that no design or decision doc names.
 

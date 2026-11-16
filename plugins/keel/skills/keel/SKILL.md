@@ -272,7 +272,13 @@ default to the current working directory). For each document:
   `references/templates/adr/ADR-NNN-slug.md`; `docs/adr/README.md` (from
   `references/templates/adr/README.md`) is the index and the home of the **Open decisions** table
   (one row per *question*, with a Locations column — never one row per `[NEEDS DECISION]`
-  marker). Every ADR carries `Deciders` tagged `founder` / `engineering` / `legal`.
+  marker). Every ADR carries `Deciders` tagged `founder` / `engineering` / `legal`, and opens with
+  the template's frontmatter header (`id`, `status`, `paths`, `check`).
+- **Area rules.** After ADRs and NFR, write `.claude/rules/<area>.md` from
+  `references/templates/rules/area.md`: `paths:` frontmatter with the area's globs, then one or two
+  lines per rule ending in the ADR or NFR ID that holds the reason. Build them from the ADR
+  headers' `paths` and from NFRs that name a code path; never copy record text. An area with no
+  known path gets no file (list it in the handoff instead of guessing a glob).
 - **IMPLEMENTATION_PLAN exit gates are a table**, not bullets: `Gate · Evidence level · Artefact ·
   Verified by · Status`. At generation every row is `⬜` with the *required* evidence level filled
   in (what the gate demands, e.g. `prod-live` for a launch gate) — the Verify stage of the phase
@@ -610,6 +616,7 @@ Load these as needed; you do not need all of them in context at once.
 | `references/almanac-guide.md` | Deciding on / building an almanac knowledge base |
 | `references/templates/*.md`, `templates/adr/*.md` | Generating a specific document — its structural skeleton |
 | `references/templates/workflows/*.js` | Generating phase / change / doc-sync scripts; `/keel phase new`, `/keel change` |
+| `references/templates/rules/area.md` | Writing a path-scoped `.claude/rules/<area>.md` (generation, upgrade) |
 | `references/templates/agents/*.md` | Writing the repo-local doc-sync / security / design subagent |
 | `references/templates/keel-doc-size.mjs` | Size + split-link check (`.keel/doc-size.mjs`) used by doc-sync, `/keel version`, upgrade, archive |
 | `references/templates/keel-check.mjs` | Read-only drift check (`.keel/check.mjs`) run by `/keel check` |
@@ -713,7 +720,9 @@ still match the code", or any equivalent phrasing in a keel project.
 1. **Script first.** Run `node .keel/check.mjs` from the project root (no copy yet: run this
    skill's `references/templates/keel-check.mjs` the same way). It checks, without a model:
    missing keel files, dead relative links and `#heading` anchors, ADR index vs ADR file (missing,
-   unindexed, Status stage mismatch, superseded by an ADR that does not exist), ✅ phases with open
+   unindexed, Status stage mismatch, superseded by an ADR that does not exist), a new ADR's header
+   (id or status that disagrees with the file), area rules (`.claude/rules/` without `paths:`, or
+   citing an ADR/NFR that does not exist), ✅ phases with open
    gates or missing evidence, artefact and deliverable paths, non-✅ phases with no workflow
    script, and runtime dependencies (package.json, requirements.txt, go.mod, Cargo.toml) that no
    record doc names. Exit 0 = clean, 1 = findings.
@@ -766,7 +775,8 @@ ritual. It scopes; it does not build (the generated script does that).
    gate, traceability line. Add the phase-status row (⬜, Deploy state `—`).
 4. **Reserve ADR stubs.** For each decision named in step 2, create
    `docs/adr/ADR-NNN-<slug>.md` from `references/templates/adr/ADR-NNN-slug.md` with Status
-   `Proposed`, the Context filled from what is known, Options left for the build — and add the
+   `Proposed` (header `status: Proposed`, `paths` from the scope or `[]`), the Context filled from
+   what is known, Options left for the build — and add the
    row to `docs/adr/README.md`'s index. Numbers are the next free ones across `docs/adr/` (and
    legacy `ADR.md` if it still exists). This is what stops parallel worktrees colliding on
    `ADR-NNN`; the phase script's Setup step re-checks the reservation, it does not re-do it.
@@ -914,7 +924,7 @@ CLAUDE.md *or* AGENTS.md with keel-standard headings. If not detected, respond:
    .claude/workflows/phase-*.js · .keel/evidence/
 
    *Hook config:* .claude/settings.json · .claude/hooks/modern-web-guidance-hook.mjs ·
-   .claude/hooks/keel-update-check.mjs · .claude/hooks/keel-gates.mjs
+   .claude/hooks/keel-update-check.mjs · .claude/hooks/keel-gates.mjs · .claude/rules/*.md
 
    *Security & agents:* the security-audit skill (global or project — see "Security skill" step 1)
    · a full-time doc / security / design agent, or `.claude/agents/{doc-sync,security,design}.md` ·
@@ -1035,6 +1045,12 @@ check for every absent doc. Produce a structured gap list.
    already lives, checks that home holds it word for word (or moves it there verbatim first),
    then offers the one-line pointer; the `keel-gates` Stop hook, the new modern-web-guidance hook
    and the plain-word subagent descriptions are separate offers. Never compress wording in place.
+
+   **Area rules (keel 2.6)** — any 2.x project with ADRs: run `references/keel-upgrade-guide.md`
+   "Area rules and ADR header (2.6)". Propose `.claude/rules/<area>.md` files built by reading the
+   existing ADRs and NFRs (paths only where their text names one; ask for the rest), and the
+   AGENTS.md "Area rules load by path" line. Existing ADR files are never given a header or edited;
+   only ADRs written after the upgrade use the 2.6 template.
 
 5. **Update-check hook** — if `.claude/hooks/keel-update-check.mjs` is absent, offer it (same
    wording as Phase 3's "Update-check hook").

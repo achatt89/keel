@@ -235,6 +235,8 @@ Required (format 2):
   `Build deviation`, DEPLOYMENT deploy log, CHANGELOG, RUNBOOK postmortems, or FEEDBACK_ROUNDS)
 - [ ] No `[NEEDS DECISION]` markers in other docs that lack a row in Open decisions
 - [ ] Index file ≤ budget (default 16384 bytes)
+- [ ] ADRs written from 2.6 on open with the frontmatter header (`id`, `status`, `paths`, `check`);
+  older ADRs have none and are never given one (not a gap)
 
 Outdated indicators:
 - Single `ADR.md` with prose entries → FORMAT_MIGRATION (Critical); count the addenda for the
@@ -451,6 +453,33 @@ and offer to keep one entry in `settings.json`.
 **Proportional doc sync.** `.claude/workflows/doc-sync.js` is replaced verbatim, as on every
 upgrade (it gains the status-only triage). Offer the matching Standing-rules sentence and the
 doc-sync subagent description.
+
+### Area rules and ADR header (2.6)
+
+Keel 2.6 adds path-scoped area rules: `.claude/rules/<area>.md` files that Claude Code loads only
+when matching files are touched, each line pointing to the ADR or NFR that holds the reason. New
+ADRs also open with a small frontmatter header (`id`, `status`, `paths`, `check`). Both are offers;
+nothing is applied without approval.
+
+**ADR files are record tier and are never rewritten.** Existing ADRs get no header, now or later.
+A missing header on an ADR written before the upgrade is not a gap; do not report it. Only ADRs
+written after the upgrade use the 2.6 template (doc-sync and `/keel phase new` do this).
+
+**How to offer the rules files.**
+1. Read each ADR (Accepted or Built; skip Superseded) and the NFR table. Collect the code paths
+   their text names: module names, folders, file globs. Never invent a glob: an ADR whose text
+   names no path is listed as "no path found" and the user may supply one or skip it.
+2. Group by area (one file per module, layer or boundary). For each rule write one or two lines:
+   what to do or never do there, ending in the ID. Never paste the ADR's or NFR's text.
+3. Show each proposed file in full (frontmatter + lines) with the ADR/NFR each line came from.
+   Write only the approved files, from `templates/rules/area.md`.
+4. Offer the AGENTS.md sentence "Area rules load by path: …" from the 2.6 template, in place of
+   "read the relevant one *before* touching code". Only if at least one rules file was written.
+5. Run `node .keel/check.mjs` (installed on every upgrade): it must report no `rule-ref` finding.
+
+**Second run.** Rules files that already exist are compared, not rewritten: offer only the lines
+for ADRs/NFRs added since (a new ADR's header `paths` makes this exact). Running upgrade twice
+changes nothing the second time.
 
 ## Gap severity reference
 

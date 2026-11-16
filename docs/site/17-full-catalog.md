@@ -16,6 +16,7 @@ anchor: full-catalog
 | ARCHITECTURE.md | System components, data flows, trust boundaries, security controls, and accepted risks. |
 | HLD.md / LLD.md | High- and low-level design: sequence flows, module map, API interfaces, and key types. |
 | docs/adr/ | Architecture Decision Records, one table-based file per decision: Y-statement decision, options with a verdict, consequences, revisit trigger, lifecycle status with commits. `adr/README.md` is the index and the open-decisions register. |
+| .claude/rules/ | Area rules: one file per area of the code, loaded only when matching files are touched. Each rule names the decision record or NFR that holds the reason. |
 | NFR.md | Non-functional requirements: performance, security, cost, and scalability targets, each with a concrete verification method. |
 | DESIGN.md | UX and UI design system: tokens, component patterns, accessibility requirements, and brand feel. Generated only if the project has a UI. |
 | COMPLIANCE.md | Data protection obligations, retention schedules, consent requirements, and lawful basis for processing. Generated only if the project holds sensitive data. |

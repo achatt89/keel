@@ -24,8 +24,11 @@
      feature velocity"). No marketing. No detail that lives elsewhere. -->
 {{PROJECT_NAME}} is {{ONE_LINE_DESCRIPTION}} ({{STACK_SUMMARY}}). {{OVERRIDING_PRINCIPLE}}.
 
-This file is deliberately light. The documents below are the source of truth — read the
-relevant one *before* touching code.
+<!-- Keel guidance: keep the "Area rules" sentence only when `.claude/rules/` files exist;
+     otherwise end the paragraph with "— read the relevant one *before* touching code." -->
+This file is deliberately light. The documents below are the source of truth. Area rules load
+by path: `.claude/rules/<area>.md` names the ADR or NFR to read before touching that code (agents
+without path loading open the file whose `paths:` match).
 
 ## Document map
 

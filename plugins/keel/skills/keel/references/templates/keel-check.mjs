@@ -9,12 +9,14 @@
 //   adr-missing      an unlinked ADR index row (not Reserved) with no docs/adr/ADR-NNN-*.md file (a linked one is a dead-link)
 //   adr-unindexed    an ADR file with no row in docs/adr/README.md
 //   adr-status       index Status stage ≠ the file's latest Status stage, or "Superseded by" an ADR that does not exist
+//   adr-header       an ADR frontmatter header (2.6+, new ADRs only) whose id ≠ the file or status ≠ the Status cell
+//   rule-ref         a .claude/rules/*.md with no paths: frontmatter, or citing an ADR/NFR ID that does not exist
 //   phase-gates-open a ✅ phase whose exit-gate table still has a ⬜ or 🔄 row
 //   phase-path       a path cited by a ✅ phase (Evidence, ✅ gate artefact, [x] deliverable) or a non-✅
 //                    phase's Workflow script that does not exist
 //   stack-undocumented  a runtime dependency (package.json dependencies, requirements.txt, go.mod, Cargo.toml)
 //                    named in no record doc (ARCHITECTURE, HLD, LLD, ENGINEERING_DESIGN, NFR, ADRs, AGENTS.md)
-// Scanned: AGENTS.md, CLAUDE.md, root CHANGELOG/COMMANDS/RUNBOOK.md, docs/**.md. Archives (ARCHIVE in the
+// Scanned: .claude/rules/**.md, AGENTS.md, CLAUDE.md, root CHANGELOG/COMMANDS/RUNBOOK.md, docs/**.md. Archives (ARCHIVE in the
 // name, LEGACY_*, archive/ folders) are history: never scanned, only link targets. Fenced code, inline code
 // and HTML comments are skipped, as is anything holding {{.
 import { readdirSync, readFileSync, existsSync, statSync, writeFileSync, mkdirSync, mkdtempSync } from 'fs'
@@ -38,6 +40,8 @@ const stage = s => s.split(/\s·\s/).reduce((best, seg) => {
 // Blank out code fences, inline code and HTML comments, keeping line numbers.
 const blank = s => s.replace(/[^\n]/g, ' ')
 const prose = t => t.replace(/```[\s\S]*?```|~~~[\s\S]*?~~~|<!--[\s\S]*?-->/g, blank).replace(/`[^`\n]*`/g, blank)
+// YAML frontmatter only at the very start of the file (a later --- is a rule, not a header).
+const front = t => t.match(/^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/)?.[1]
 const lineOf = (text, i) => text.slice(0, i).split('\n').length
 export const slug = h => h.trim().toLowerCase().replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/`/g, '')
   .replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/ /g, '-')
@@ -116,6 +120,30 @@ export function check(root) {
       if (!adrFiles.has(norm(m[1])) && !indexed.has(norm(m[1]))) add('adr-status', f, lineOf(text, m.index), `superseded by ${m[1]}, which does not exist`)
   }
 
+  // ADR header (2.6+, new ADRs only; older ADRs have none and are never given one).
+  const cellOf = text => text.match(/^\|\s*\*\*Status\*\*\s*\|([^\n]*)\|/m)?.[1] ?? ''
+  for (const [key, file] of adrFiles) {
+    const text = read(file), fm = front(text)
+    if (!fm) continue
+    const id = fm.match(/^id:\s*(\S+)/m)?.[1]
+    if (id && norm(id) !== key) add('adr-header', file, 2, `header id ${id} ≠ ${key} (the file name)`)
+    const a = stage(fm.match(/^status:\s*(.*)$/m)?.[1] ?? ''), b = stage(cellOf(text))
+    if (a >= 0 && b >= 0 && a !== b) add('adr-header', file, 3, `header status ${STAGES[a]} ≠ Status cell ${STAGES[b]}`)
+  }
+
+  // Area rules: path-scoped, pointing at IDs that exist (the rule never copies the record).
+  const nfrText = docs.filter(f => /(^|\/)nfr(\.md$|\/)/i.test(f)).map(f => texts.get(f)).join('\n')
+  const legacyAdr = texts.get('docs/ADR.md') ?? ''
+  const rules = walk(root, '.claude/rules')
+  for (const f of rules) {
+    const text = read(f)
+    if (!/^paths:/m.test(front(text) ?? '')) add('rule-ref', f, 1, 'no paths: frontmatter, so it loads in every session')
+    for (const m of prose(text).matchAll(/\b(ADR-\d+|NFR-[A-Z]+-\d+)\b/g)) {
+      const id = m[1], known = id.startsWith('ADR') ? adrFiles.has(norm(id)) || new RegExp(`\\b${id}\\b`).test(legacyAdr) : new RegExp(`\\b${id}\\b`).test(nfrText)
+      if (!known) add('rule-ref', f, lineOf(text, m.index), `${id} does not exist`)
+    }
+  }
+
   // Plan: phase status vs phase blocks and the paths they cite.
   const planFiles = docs.filter(f => f === 'docs/IMPLEMENTATION_PLAN.md' || f.startsWith('docs/implementation-plan/'))
   const status = new Map(), blocks = []
@@ -164,11 +192,11 @@ export function check(root) {
       add('stack-undocumented', manifest, 0, `dependency "${d}" is named in no record doc (ARCHITECTURE, HLD, LLD, ENGINEERING_DESIGN, NFR, ADRs, AGENTS.md)`)
   }
 
-  return { findings, scanned: { docs: docs.length, links, adrs: adrFiles.size, phases: status.size, deps: deps.length } }
+  return { findings, scanned: { docs: docs.length, links, adrs: adrFiles.size, rules: rules.length, phases: status.size, deps: deps.length } }
 }
 
 export function report({ findings, scanned }) {
-  const head = `keel check: ${findings.length ? `${findings.length} finding(s)` : 'clean'} — ${scanned.docs} docs, ${scanned.links} links, ${scanned.adrs} ADRs, ${scanned.phases} phases, ${scanned.deps} dependencies checked (read-only; nothing written)`
+  const head = `keel check: ${findings.length ? `${findings.length} finding(s)` : 'clean'} — ${scanned.docs} docs, ${scanned.links} links, ${scanned.adrs} ADRs, ${scanned.rules} rules files, ${scanned.phases} phases, ${scanned.deps} dependencies checked (read-only; nothing written)`
   return [head, ...findings.map(f => `[${f.kind}] ${f.file}${f.line ? `:${f.line}` : ''} ${f.msg}`)].join('\n')
 }
 
@@ -187,16 +215,19 @@ if (process.argv.includes('--self-test')) {
     'package.json': JSON.stringify({ dependencies: { express: '4', '@prisma/client': '5' }, devDependencies: { vitest: '1' } }),
     'docs/HLD.md': '# HLD\n\n## Data — `pg` only\n\nPrisma over Postgres ([ADR-001](adr/ADR-001-store.md)). `[x](missing.md)` in code is ignored.\n\n<!-- [y](gone.md) -->\n',
     'docs/IMPLEMENTATION_PLAN.md': plan('✅', '✅'),
-    'docs/adr/README.md': '# ADRs\n\n| ADR | Title | Status | Deciders | Date |\n|---|---|---|---|---|\n| [ADR-001](./ADR-001-store.md) | Store — Postgres | Built | eng | 2026-01-01 |\n| [ADR-006](./ADR-006-log.md) | Log — pino | Accepted | eng | 2026-01-06 |\n| ADR-002 | Reserved (Phase 1) — cache | Proposed | — | — |\n',
+    'docs/adr/README.md': '# ADRs\n\n| ADR | Title | Status | Deciders | Date |\n|---|---|---|---|---|\n| [ADR-001](./ADR-001-store.md) | Store — Postgres | Built | eng | 2026-01-01 |\n| [ADR-006](./ADR-006-log.md) | Log — pino | Accepted | eng | 2026-01-06 |\n| ADR-002 | Reserved (Phase 1) — cache | Proposed | — | — |\n| [ADR-007](./ADR-007-pay.md) | Pay — ledger | Accepted | eng | 2026-01-07 |\n',
     'docs/adr/ADR-001-store.md': adr('Proposed 2026-01-01 · Accepted 2026-01-02 · Built `abc` 2026-01-09'),
     'docs/adr/ADR-006-log.md': adr('Accepted (implemented). Merged; built via 3 agents · —'),
     'docs/PHASE_ARCHIVE.md': '[dead](nowhere.md)\n',
     'tests/rules.test.js': '', '.claude/workflows/phase-0-guardrails.js': '', '.claude/workflows/phase-1-core.js': '',
     '.keel/evidence/phase-0.json': '{}',
+    'docs/adr/ADR-007-pay.md': '---\nid: ADR-007\nstatus: Accepted\npaths: ["src/pay/**"]\ncheck: none\n---\n' + adr('Proposed 2026-01-06 · Accepted 2026-01-07') + '\n---\n',
+    'docs/NFR.md': '# NFR\n\n| NFR-PERF-001 | p95 < 200 ms |\n',
+    '.claude/rules/pay.md': '---\npaths:\n  - "src/pay/**"\n---\n\n# Pay rules\n\n- Money only via the ledger: ADR-007. Budget: NFR-PERF-001.\n',
   }
   const ok = check(mk(clean))
   assert(ok.findings.length === 0, `clean fixture has findings:\n${report(ok)}`)
-  assert(ok.scanned.links === 5 && ok.scanned.adrs === 2 && ok.scanned.phases === 2 && ok.scanned.deps === 2, `scanned counts ${JSON.stringify(ok.scanned)}`)
+  assert(ok.scanned.links === 6 && ok.scanned.adrs === 3 && ok.scanned.rules === 1 && ok.scanned.phases === 2 && ok.scanned.deps === 2, `scanned counts ${JSON.stringify(ok.scanned)}`)
 
   // Break each thing once; each must be reported with the right kind (a check proven to fail).
   const broken = { ...clean,
@@ -208,6 +239,9 @@ if (process.argv.includes('--self-test')) {
     'docs/adr/ADR-001-store.md': adr('Proposed 2026-01-01 · Accepted 2026-01-02 · ⚠️ Superseded by ADR-009 2026-02-01'),
     'docs/adr/ADR-004-orphan.md': adr('Accepted 2026-01-04'),
     'tests/rules.test.js': undefined, '.claude/workflows/phase-1-core.js': undefined, '.keel/evidence/phase-0.json': undefined,
+    'docs/adr/ADR-007-pay.md': clean['docs/adr/ADR-007-pay.md'].replace('id: ADR-007', 'id: ADR-070').replace('status: Accepted', 'status: Built'),
+    '.claude/rules/pay.md': clean['.claude/rules/pay.md'].replace('NFR-PERF-001', 'NFR-PERF-009'),
+    '.claude/rules/api.md': '# API rules\n\n- Validate at the edge: ADR-042.\n',
   }
   const res = check(mk(Object.fromEntries(Object.entries(broken).filter(([, v]) => v !== undefined))))
   const has = (kind, re) => res.findings.some(f => f.kind === kind && re.test(`${f.file}:${f.line} ${f.msg}`))
@@ -225,6 +259,11 @@ if (process.argv.includes('--self-test')) {
     ['phase-path', /evidence `\.keel\/evidence\/phase-0\.json`/],
     ['phase-path', /Phase 1 \(⬜\) workflow/],
     ['stack-undocumented', /"zod"/],
+    ['adr-header', /ADR-007-pay\.md:2 header id ADR-070/],
+    ['adr-header', /ADR-007-pay\.md:3 header status built ≠ Status cell accepted/],
+    ['rule-ref', /pay\.md:\d+ NFR-PERF-009 does not exist/],
+    ['rule-ref', /api\.md:1 no paths:/],
+    ['rule-ref', /api\.md:\d+ ADR-042 does not exist/],
   ]
   for (const [k, re] of want) assert(has(k, re), `expected [${k}] ${re}\n${report(res)}`)
   assert(res.findings.length === want.length, `expected ${want.length} findings, got ${res.findings.length}\n${report(res)}`)

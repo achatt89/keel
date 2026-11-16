@@ -155,6 +155,12 @@ a one-line justification per inclusion and per omission, and adjust.
   the role and no file is written). Recorded in `.keel/meta.json` `agents`.
 - **Owns:** Nothing. Rules: doc-sync → `.claude/workflows/doc-sync.js`; delegation → AGENTS.md.
 
+### `.claude/rules/<area>.md` — path-scoped area rules *(every project with ADRs or NFRs that name code paths)*
+- **Purpose:** Loads only when matching files are touched: `paths:` frontmatter, then one or two
+  lines per rule ending in the ADR or NFR ID. From `references/templates/rules/area.md`.
+- **Include:** One per area that a decision or NFR governs; none for an area with no known path.
+- **Owns:** Nothing. The ADR / NFR is the home; `/keel check` flags dead IDs and missing `paths:`.
+
 ### `COMPLIANCE.md` — data protection & compliance *(regulated / PII)*
 - **Purpose:** Data inventory (keyed to the data classification), data-minimization stance, data-
   subject rights implementation, consent, retention schedule, subprocessors, breach response,
@@ -286,7 +292,7 @@ a one-line justification per inclusion and per omission, and adjust.
 
 1. **Requirements spine:** `BRD` → `PRD` → `ENGINEERING_DESIGN`
 2. **Technical:** `ARCHITECTURE` → `HLD` → `LLD` → `ADR` → `NFR` (+ `THREAT_MODEL`, `COMPLIANCE`,
-   plug-in specs)
+   plug-in specs), then `.claude/rules/<area>.md` from the ADR headers and NFRs
 3. **Experience:** `DESIGN` (alongside PRD)
    3a. **FE skill infrastructure** (if skills integration): `PRODUCT.md` + `.claude/hooks/modern-web-guidance-hook.mjs` + `.claude/settings.json` — generated immediately after `DESIGN.md`, before operational docs.
 4. **Operational:** `IMPLEMENTATION_PLAN` → `COMMANDS` → `DEPLOYMENT` → `RUNBOOK` → `CHANGELOG`

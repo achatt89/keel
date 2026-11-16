@@ -126,7 +126,9 @@ publishes release notes to users (a release feed, a docs badge, an update notice
 
 `Proposed` (written at phase scope, before build) → `Accepted` → `Built` (build confirmed, with
 deviations recorded) → `⚠️ Superseded by ADR-xxx`. The Status cell carries the lifecycle with
-commit + date for each transition.
+commit + date for each transition. ADRs written from keel 2.6 also open with a frontmatter header
+(`id`, `status`, `paths`, `check`) whose `status` moves with the Status cell; ADRs written earlier
+have no header and are never given one (`.claude/rules/` maps their paths instead).
 
 - **No addenda.** The only post-acceptance edit is filling the single `Build deviation` row in
   the Consequences table. A deviation that doesn't fit one row is a new ADR that supersedes.

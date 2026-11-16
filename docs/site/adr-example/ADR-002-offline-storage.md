@@ -1,3 +1,9 @@
+---
+id: ADR-002
+status: Built
+paths: ["app/storage/**", "app/sync/**"]
+check: tests/storage/offline.test.ts
+---
 # ADR-002 — Offline storage — SQLite on device, sync on reconnect
 
 | | |
