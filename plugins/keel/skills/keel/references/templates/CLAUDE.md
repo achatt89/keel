@@ -21,63 +21,8 @@
 - Keel modes: `/keel phase new <slug>` · `/keel change <slug>` · `/keel closeout` · `/keel archive` · `/keel upgrade` · `/keel version` · `/keel check`.
 - Browser verification for UI work is `claude-in-chrome`; its transcript path is the artefact cited in the evidence file.
 
-## Review subagents *(remove rows for roles not set up)*
+Review roles: `.claude/agents/` ({{ROLES — security, design, doc-sync; or the full-time agents in .keel/meta.json "agents"}}); when they run: AGENTS.md steps 5 and 9. Delegate with the Agent tool (`subagent_type: <role>`) and read its `## Report`; hand roles the work rather than running their skills ad hoc.
 
-| Role | Who (`.keel/meta.json` `agents`) | Owns | Runs |
-|---|---|---|---|
-| security | {{`security` subagent (.claude/agents/security.md) or the full-time agent's name}} | security-audit skill (cloudflare/security-audit-skill @ {{SECURITY_SKILL_REF}}, global) | after any task that changed code, on the branch diff, before "done"; Verify stage |
-| design | {{`design` subagent (.claude/agents/design.md) or the full-time agent's name}} | impeccable + modern-web-guidance | before UI work (shape), after UI edits (critique/audit), Verify stage |
-| doc-sync | {{`doc-sync` subagent (.claude/agents/doc-sync.md) or the full-time doc agent's name}} | the doc rules in `.claude/workflows/doc-sync.js` | after any piece of work, before its commit; ≤3 feedback rounds |
-
-The hard rules are AGENTS.md workflow steps 5 and 9; the caller/subagent contract is AGENTS.md
-"Delegation". Delegate with the Agent tool (`subagent_type: <role>`), read the `## Report` block,
-decide the next step. Hand these roles the work; don't run their skills ad hoc.
-
-## Active skills *(UI projects — remove this section if no UI or skills integration was skipped)*
-
-<!-- Keel guidance: these skills provide continuous quality gates on all UI work. The hooks
-     fire automatically — the developer never needs to remember to invoke them for routine checks.
-     This section is the quick-reference; full command lifecycle is in DESIGN.md §12. -->
-
-### impeccable — visual quality gates
-
-PostToolUse hook fires after every UI file edit and surfaces design/a11y findings as system reminders.
-**Activate once:** run `/impeccable hooks on` in Claude Code after the skill is installed.
-
-**Quick-reference by intent:**
-
-| I want to… | Command |
-|---|---|
-| Start a new UI feature | `/impeccable shape {{feature}}` |
-| Build a feature with quality baked in | `/impeccable craft {{feature}}` |
-| Review UX after feature complete | `/impeccable critique {{target}}` |
-| Technical quality gate (a11y, perf, responsive) | `/impeccable audit {{target}}` |
-| Final pass before shipping | `/impeccable polish {{target}}` |
-| Bland design → more conviction | `/impeccable bolder {{target}}` |
-| Noisy design → more clarity | `/impeccable quieter {{target}}` |
-| Add motion intentionally | `/impeccable animate {{target}}` |
-| Fix type hierarchy | `/impeccable typeset {{target}}` |
-| Add strategic colour | `/impeccable colorize {{target}}` |
-| Fix layout/spacing | `/impeccable layout {{target}}` |
-| Fix responsive/mobile | `/impeccable adapt {{target}}` |
-| Error states + edge cases | `/impeccable harden {{target}}` |
-| First-run + empty states | `/impeccable onboard {{target}}` |
-| Fix UI performance | `/impeccable optimize {{target}}` |
-| Add personality/delight | `/impeccable delight {{target}}` |
-| Iterate live in browser | `/impeccable live` |
-| Manage hook on/off/status | `/impeccable hooks on|off|status` |
-
-See DESIGN.md §12.1 for the full lifecycle map (when to use each command, in what order).
-
-### modern-web-guidance — modern web platform patterns
-
-PostToolUse reminder fires after every FE file edit, prompting to check before implementing new UI patterns.
-
-**Three functions — use in sequence:**
-1. `npx -y modern-web-guidance@latest search "<what you want to do>"` — before any new UI pattern
-2. `npx -y modern-web-guidance@latest retrieve "<id>"` — get the full guide and implementation code
-3. `npx -y modern-web-guidance@latest list` — browse all guides when search is vague
-
-**Always search before:** dialogs · popovers · scroll animations · page transitions · form autofill · image loading · responsive layouts · custom selects · any "I'd reach for a library" moment.
-
-See DESIGN.md §12.2 for the full function map, query examples, and browser support policy.
+<!-- Keel guidance: UI projects with skills integration only; otherwise delete the line below.
+     The full command map lives once, in DESIGN.md §12 — never copy it here. -->
+UI work: design subagent; impeccable (activate once: `/impeccable hooks on`) and modern-web-guidance hooks fire on UI edits; commands in DESIGN.md §12.

@@ -68,7 +68,7 @@ Record the detection in the report ("format 1 by 5/12 indicators").
 ### AGENTS.md / CLAUDE.md (the keystone pair)
 
 Format 2 shape: `AGENTS.md` is the keystone; `CLAUDE.md`'s first non-comment line is `@AGENTS.md`
-and it holds only Claude-only sections (Active skills, workflow-tool notes). In format 1 the
+and it holds only Claude-only lines (workflow tooling, review roles, UI-skills pointer). In format 1 the
 checklist below applies to `CLAUDE.md` itself.
 
 Required sections (check by heading presence):
@@ -87,15 +87,15 @@ Required sections (check by heading presence):
   - [ ] Has doc-sync step (run doc-sync.js before every merge) ← new in v0.3+
   - [ ] Has decisions/ADR capture step ← new in v0.3+
 - [ ] Working agreements (conventional commits, branch per feature)
-- [ ] Active skills *(UI projects only — new in v0.3+)*
-  - [ ] impeccable section with command quick-reference table
-  - [ ] modern-web-guidance section with 3-function usage
+- [ ] UI-skills pointer *(UI projects only)*: CLAUDE.md "UI work" line pointing to DESIGN.md §12
+  (2.6); an older "Active skills" section is also accepted, and is offered the 2.6 pointer (see
+  "Slim keystone and hooks (2.6)" below)
 
 Outdated indicators → gap category:
 - "Git workflow" section present but no workflow script references → OUTDATED_CONVENTION (Important)
 - No doc-sync step in the workflow section → MISSING_FEATURE (Important)
-- No Active skills section in a UI project → MISSING_FEATURE (Important)
-- Active skills section present but only lists "audit" command → OUTDATED_CONVENTION (Important)
+- Neither a "UI work" pointer nor an Active skills section in a UI project → MISSING_FEATURE (Important)
+- DESIGN.md §12 missing or holding only the "audit" command → OUTDATED_CONVENTION (Important)
 - Status section is prose / > 2 lines, or invariants are a numbered list without `Enforced by`
   → FORMAT_MIGRATION (Critical — this is the file every session reads first)
 - `AGENTS.md` exists as a copy of `CLAUDE.md` (not an import), or differs from it → FORMAT_MIGRATION
@@ -366,14 +366,14 @@ Every project that will be built:
 - [ ] `agents` entry written by keel 2.1 as an orchestrator request (not a `.claude/agents/` path,
   not `type: full-time` for an agent that exists) → OUTDATED_CONVENTION (Important): replace per
   SKILL.md "Migrating keel 2.1 agent requests".
-- [ ] A role is set up → AGENTS.md workflow step 9 *Review before done* + its Pre-PR line present →
+- [ ] A role is set up → AGENTS.md workflow step 9 *Review before done* present (2.6: one line; older: + its Pre-PR line) →
   MISSING_FEATURE (Important)
 - [ ] A role is set up → `.keel/prune-evidence.mjs` + `evidenceRetention` in meta.json →
   MISSING_FEATURE (Optional)
 - [ ] (every project) `doc-sync` role has an owner (full-time doc agent, else
   `.claude/agents/doc-sync.md`) in `agents."doc-sync"`; `doc-sync.js` has the delegate → review →
   ≤3-round loop; phase scripts' Doc Sync stage calls `doc-sync.js`; AGENTS.md has workflow step 5
-  (doc sync before the completing commit), the "Delegation" section and the doc-sync Pre-PR line →
+  (doc sync before the completing commit) and the Delegation section or (2.6) its pointer to `.claude/workflows/README.md` →
   OUTDATED_CONVENTION (Important). Fix: SKILL.md "Migrating to keel 2.3".
 - [ ] Every role subagent file ends with the `## Report` block and the caller-only rule →
   OUTDATED_CONVENTION (Important)
@@ -404,8 +404,53 @@ Every project that will be built:
   report as information (doc-sync or the named mode fixes them; the upgrade itself does not)
 - [ ] an installed `.claude/hooks/keel-update-check.mjs` reads `release.json` (2.5.3: user-facing releases only) → else OUTDATED_CONVENTION (Minor): replace verbatim
 - [ ] `.claude/hooks/keel-update-check.mjs` + SessionStart entry → MISSING_FEATURE (Optional, opt-in)
+- [ ] Slim keystone and hooks (2.6) → see the section below; every item is OUTDATED_CONVENTION
+  (Minor) and an offer, never applied without approval
 
 ---
+
+### Slim keystone and hooks (2.6)
+
+Keel 2.6 cuts the always-loaded keystone (fresh project 16.1 KB → under 9.5 KB) by moving
+detail to the one home it already has (`references/conventions.md` "Placement rule"). Execution
+tier only: record documents are never shortened or rewritten. Each item is its own offer and,
+if approved, its own commit. Never compress wording in place; a section that cannot be matched
+to its home stays as it is.
+
+**How to offer a keystone cut (C1–C4).** For each section below: (1) show the section, (2) show
+the home and grep it for each rule the section states, (3) if the home holds it word for word,
+offer the one-line pointer from the 2.6 template; if a sentence is missing from the home, first
+offer to move that sentence there verbatim (execution-tier homes only: IMPLEMENTATION_PLAN
+"Standing rules", `.claude/workflows/README.md`), then the pointer. Show the byte saving.
+
+| # | Keystone section | Home that must hold it | 2.6 replacement |
+|---|---|---|---|
+| C1 | CLAUDE.md "Active skills" (impeccable table, modern-web-guidance) | DESIGN.md §12.1 / §12.2 (record, read only; if §12 is missing, keep the section) | the "UI work" line |
+| C2 | AGENTS.md "Git & working workflow" steps 0–9 (multi-line) | IMPLEMENTATION_PLAN "Standing rules" + `.claude/workflows/README.md` (Stages, Rules) | one line per step + the "Rules and rationale" pointer. Step 9's text goes into Standing rules as the "Review before done" bullet if absent; step 5 gains the proportional-sync sentence there |
+| C3 | CLAUDE.md "Review subagents" table | AGENTS.md steps 5 and 9 + `.claude/agents/*.md` | the "Review roles" line |
+| C4 | AGENTS.md "Delegation" section | `.claude/workflows/README.md` "Delegation" (append the section verbatim if absent) + each agent's Report block | the Delegation pointer line |
+
+**C5: standing gates → hook.** Offer `.claude/hooks/keel-gates.mjs` (from
+`templates/keel-gates-hook.mjs`, verbatim) and the `Stop` entry from `templates/hooks-settings.json`.
+Once installed, offer to drop the Pre-PR boxes it and steps 5–9 cover (tests line, decision line,
+security/design reviewer, doc-sync Report, doc-sync commit + size check); the invariant boxes and
+the COMMANDS/DEPLOYMENT/RUNBOOK box stay.
+
+**C6: subagent descriptions.** For each `.claude/agents/{design,security,doc-sync}.md` whose
+`description:` still says "MUST BE USED PROACTIVELY": offer the 2.6 template description (plain
+trigger conditions). Leave a hand-edited description alone unless the user approves; never touch a
+full-time agent's definition.
+
+**C7: modern-web-guidance hook.** If `.claude/hooks/modern-web-guidance-hook.mjs` matches
+`.js/.mjs/.ts` or has no once-per-session marker: offer the 2.6 file (verbatim) and the matching
+DESIGN.md §12.2 trigger sentence (a factual correction, shown as a diff, applied only on
+approval). **Duplicate registration:** if the same hook command appears more than once across
+`.claude/settings.json` and `.claude/settings.local.json` (any hook, not only this one), report it
+and offer to keep one entry in `settings.json`.
+
+**Proportional doc sync.** `.claude/workflows/doc-sync.js` is replaced verbatim, as on every
+upgrade (it gains the status-only triage). Offer the matching Standing-rules sentence and the
+doc-sync subagent description.
 
 ## Gap severity reference
 
@@ -435,7 +480,7 @@ Every project that will be built:
 | IMPLEMENTATION_PLAN missing deferred items table | Important |
 | IMPLEMENTATION_PLAN missing Workflow: line per phase | Important |
 | Phase workflow scripts missing from .claude/workflows/ | Important |
-| CLAUDE.md Active skills section missing (UI project) | Important |
+| CLAUDE.md UI-skills pointer (or older Active skills section) missing (UI project) | Important |
 | Skill files (impeccable/modern-web-guidance) not installed (UI) | Important |
 | Unfilled `{{PLACEHOLDER}}` or `[NEEDS DECISION]` in any doc | Important |
 | Missing cross-references between docs | Optional |
@@ -458,7 +503,7 @@ Every project that will be built:
 3. **Appending.** These sections are added at the end of the doc when absent:
    - DESIGN.md §12 (before the `*End of DESIGN.md*` line)
    - IMPLEMENTATION_PLAN deferred items table + workflow scripts index (before `*End of*` line)
-   - CLAUDE.md Active skills section (at end of file)
+   - CLAUDE.md "UI work" line (at end of file)
 
 4. **Placeholder fill.** After every edit, grep the modified doc for `{{[A-Z_]+}}` and fill
    each from project context established during this session. Report any that couldn't be filled.

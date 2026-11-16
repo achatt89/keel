@@ -2,8 +2,10 @@
   Keel template — AGENTS.md (the keystone index — CANONICAL)
   WHAT: The entry point every coding agent (Claude Code, Codex, Cursor, …) and every new
         contributor reads first. A LIGHT file: one-line description, a document-map table,
-        the hard-invariants table, the working workflow, a two-row status table, and the
-        pre-PR checklist. `CLAUDE.md` is `@AGENTS.md` plus Claude-only sections — never a copy.
+        the hard-invariants table, the workflow as one line per step, a two-row status table,
+        and the pre-PR checklist (invariants only).
+  PLACEMENT: each instruction has one home (references/conventions.md "Placement rule"). The
+        keystone holds pointers and one-line rules; detail lives in the doc or script it names. `CLAUDE.md` is `@AGENTS.md` plus Claude-only sections — never a copy.
   INCLUDE WHEN: Always — every Keel-generated suite has exactly one AGENTS.md.
   DEPENDS ON: Everything; written last so it indexes only docs that actually exist.
   OWNS: No IDs. References every other doc. When this file and a referenced doc
@@ -70,35 +72,24 @@ relevant one *before* touching code.
 
 ## Git & working workflow (mandatory — the build loop)
 
-<!-- Keel guidance: these are non-negotiables, not suggestions. The workflow scripts in
-     .claude/workflows/ encode this loop — use them to run every phase. Detail and rationale
-     in IMPLEMENTATION_PLAN "Standing rules". -->
+<!-- Keel guidance: one line per step; the keystone loads every session. The detail lives once:
+     IMPLEMENTATION_PLAN "Standing rules" (the rules) and `.claude/workflows/README.md` (the
+     mechanics, stages, delegation). Never expand a step here — fix its home instead.
+     Placeholders: owner = `doc-sync`/`security`/`design` subagent (.claude/agents/<role>.md) or the
+     full-time agent named in .keel/meta.json "agents". Drop step 9 only if neither role is set up. -->
 
-0. **Version control from commit one.** If this folder isn't a git repo yet, `git init` and make an initial commit (the generated docs are the first commit) before any feature work.
-1. **Two units of work.** A **Phase** (gated milestone) runs its workflow script on `phase-N-<slug>` off `main` — the single integration branch for everything in that phase. A **Change** (`CHG-xxx`: hotfix, copy/config fix, client-feedback item) is `/keel change <slug>` → `chg/<slug>` off `main`, a Changes-table row and a CHANGELOG line — no phase block, no script. Never commit directly to `main`. New phases are scoped with `/keel phase new <slug>`.
-2. **Run the phase workflow script** for any planned phase of work:
-   `claude --workflow .claude/workflows/phase-N-<slug>.js`
-   Or invoke via the Workflow tool inside a Claude Code session. The script reserves this phase's ADR IDs, checks out the phase branch, then fans out divisible tasks as parallel agents in separate `git worktree`s branched off it — one worktree per task, agents never share a working copy. Each task agent opens with `/goal` (code, tests, lint, `verify`, and a manual `claude-in-chrome` pass for UI work — it won't stop early); exit-strategy-when-stuck policy is in IMPLEMENTATION_PLAN "Standing rules". Task branches merge back into the phase branch, never straight to `main`. A **Verify** stage then writes `.keel/evidence/phase-N.json` (gate → evidence level → artefact) — only the phase branch, carrying every task plus the evidence file plus the doc-sync commit, ever merges to `main`.
-3. **Write tests with the code, never after.** Unit tests for logic/edge paths; integration tests for cross-module behaviour; smoke tests for wiring. Security- and isolation-critical behaviour is *proven by a test*. "No test needed" is a stated judgement, not a default.
-4. **Definition of done per change:** {{DOD_GATES}} (details: IMPLEMENTATION_PLAN "Standing rules").
-5. **Doc sync before the commit that completes any piece of work** (and so before every merge to `main`). Delegate it to the **doc-sync** role ({{DOC_SYNC_OWNER — `doc-sync` subagent (.claude/agents/doc-sync.md), or the full-time doc agent named in .keel/meta.json "agents"}}): it updates this file's status table · IMPLEMENTATION_PLAN tables · `docs/adr/` · CHANGELOG `[Unreleased]` · any doc the work touched — citing the evidence file, never re-deriving it — and returns a Report. You check the Report against what you actually did (`git log`, `git diff main --name-only`, the evidence file); anything missing goes back as specific feedback. **Hard cap: 3 rounds.** After round 3, record each remaining gap as a Deferred items row (`Doc sync incomplete: …`) and proceed — never loop further. Then commit. `.claude/workflows/doc-sync.js` runs exactly this loop (phase and change scripts call it), then auto-archives if this file breaches its 12 KB budget and prunes old review evidence. Wording is state-neutral (no "merged"/"deployed" pre-written). A branch without the doc-sync commit is not done, whatever its tests say.
-6. **Merge to `main`** only after gates pass and the doc-sync commit is present. **Deploy** per `{{DEPLOYMENT}}`; the deploy step stamps CHANGELOG + the deploy log (`deployed vNN` → `live-verified` after the post-deploy checklist). Deploy state is written there and nowhere else.
-7. **Decisions captured without fail.** Any decision made during work — including "we chose X over Y because Z" — becomes a `docs/adr/ADR-xxx-<slug>.md` before merge (ID reserved at scope or taken at Integrate, never in a worktree). ADRs get no addenda: one `Build deviation` row, else a superseding ADR. Incidents → RUNBOOK postmortems. `[NEEDS DECISION]` markers resolved during work are removed and converted to ADRs; open ones are one row per question in `docs/adr/README.md`.
-8. **Claims carry evidence.** Nothing is `✅` without an evidence level (`code-read` < `unit` < `integration` < `local-browser` < `staging` < `prod-live`) and an artefact. Overclaiming is a defect.
-9. **Review before done.** After finishing any task that changed code (feature, refactor, bug fix, dependency bump), run the **security** reviewer ({{SECURITY_REVIEWER — `security` subagent, or the full-time agent named in .keel/meta.json "agents"}}) on the branch diff *before* reporting done; a task that touched UI also runs the **design** reviewer ({{DESIGN_REVIEWER}}). A confirmed high/critical security finding or a design P0/P1 means not done. Remove this step only if neither role is set up.
+0. **Git from commit one:** `git init` and commit the generated docs before any feature work.
+1. **Two units of work:** a Phase runs on `phase-N-<slug>` (`/keel phase new <slug>`); a Change on `chg/<slug>` (`/keel change <slug>`). Never commit to `main`.
+2. **Run the phase script:** `claude --workflow .claude/workflows/phase-N-<slug>.js` (mechanics: `.claude/workflows/README.md`).
+3. **Tests ship with the code;** security and isolation behaviour is proven by a test.
+4. **Done per change:** {{DOD_GATES}}.
+5. **Doc sync before the completing commit:** inline when only status lines change, else delegate to doc-sync ({{DOC_SYNC_OWNER}}; `doc-sync.js`, ≤3 rounds, then deferred items).
+6. **Merge** only with gates green and the doc-sync commit present; **deploy** per `{{DEPLOYMENT}}`, which alone writes deploy state.
+7. **Decisions → `docs/adr/` before merge** (no addenda; open questions in `docs/adr/README.md`).
+8. **Claims carry evidence:** no `✅` without a level (`code-read` < … < `prod-live`) and an artefact.
+9. **Review before done:** security reviewer ({{SECURITY_REVIEWER}}) on every code-changing diff, design reviewer ({{DESIGN_REVIEWER}}) for UI; high/critical or P0/P1 means not done.
 
-## Delegation (callers supervise their subagents)
-
-The agent doing a piece of work is the **caller**; the role subagents it delegates to (doc-sync,
-security, design — or the full-time agents that own those roles) work for it.
-
-- A subagent returns a **Report** to its caller (fixed format in each `.claude/agents/<role>.md`:
-  role · caller · scope · status · changed · checked · findings · evidence · not verified · needs
-  from caller). It never commits, pushes, merges, or messages anyone but its caller.
-- The caller reads the Report and decides the next step: accept, send specific follow-up (doc-sync:
-  max 3 rounds, then deferred items), fix and re-review, or escalate. The caller commits.
-- If the caller has its own supervisor or orchestrator, that relationship is unchanged: the caller
-  reports upward as before, including what its subagents found.
+Rules and rationale: IMPLEMENTATION_PLAN "Standing rules". Delegation (callers supervise their subagents, read the `## Report`, commit themselves): `.claude/workflows/README.md`.
 
 ## Current status
 
@@ -123,19 +114,15 @@ security, design — or the full-time agents that own those roles) work for it.
 
 ## Pre-PR checklist
 
-<!-- Keel guidance: one line per hard invariant above (same numbering) plus the standing gates.
-     Derived, not authored — if an invariant changes, this changes with it. -->
+<!-- Keel guidance: one line per hard invariant above (same numbering). The standing gates
+     (size + link check, doc-sync commit, reviews) are steps 5–9 and the `keel-gates` Stop hook,
+     not boxes here. -->
 
 - [ ] (1) every new {{SCOPED_QUERY}} carries its scope key
 - [ ] (2) no untrusted input crosses {{BOUNDARY}} outside {{GUARD}}
 - [ ] (3) no UPDATE/DELETE against {{APPEND_ONLY_TABLES}}
 - [ ] (4) {{SENSITIVE_OPERATION}} only via {{CANONICAL_MODULE}}
 - [ ] (5) no inline role checks outside {{RBAC_MODULE}}
-- [ ] tests ship with the code; security/isolation behaviour proven by a test
-- [ ] new decision → `docs/adr/`; new punt → deferred items (with owner + revisit trigger)
 - [ ] `{{COMMANDS}}` / `{{DEPLOYMENT}}` / `{{RUNBOOK}}` updated if a command, env var, or procedure changed
-- [ ] security reviewer run on the diff (and design reviewer for UI); no confirmed high/critical, no P0/P1
-- [ ] doc-sync Report reviewed against the work; gaps fixed or (after 3 rounds) logged as deferred items
-- [ ] doc-sync commit present; `node .keel/doc-size.mjs` passes (this file under 12 KB; split docs fully linked both ways)
 
-<!-- Claude-only sections (Active skills, Workflow-tool notes) live in CLAUDE.md, which starts with `@AGENTS.md`. -->
+<!-- Claude-only lines (workflow tooling, review roles, UI-skills pointer) live in CLAUDE.md, which starts with `@AGENTS.md`. -->

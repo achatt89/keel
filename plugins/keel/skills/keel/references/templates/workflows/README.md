@@ -72,3 +72,18 @@ seen to fail on broken code (`failSeen` in the record; conventions "Evidence lad
   then a split of anything still over into `docs/<name>/` parts behind a slim index, each its own
   commit. Only the keystone is never split: it reports `BUDGET_EXCEEDED`. A split part missing its
   link from or to the parent fails doc-sync.
+
+## Delegation (callers supervise their subagents)
+
+The agent doing a piece of work is the **caller**; the role subagents it delegates to (doc-sync,
+security, design — or the full-time agents that own those roles) work for it.
+
+- A subagent returns a **Report** to its caller (fixed format in each `.claude/agents/<role>.md`:
+  role · caller · scope · status · changed · checked · findings · evidence · not verified · needs
+  from caller). It never commits, pushes, merges, or messages anyone but its caller.
+- The caller reads the Report and decides the next step: accept, send specific follow-up (doc-sync:
+  max 3 rounds, then deferred items), fix and re-review, or escalate. The caller commits.
+- If the caller has its own supervisor or orchestrator, that relationship is unchanged: the caller
+  reports upward as before, including what its subagents found.
+- Doc sync is proportional: status-only work is synced inline by the caller in one pass; work that
+  changes a record doc goes to the doc-sync role (`doc-sync.js` Sync stage decides).

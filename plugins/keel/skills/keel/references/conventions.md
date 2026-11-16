@@ -241,7 +241,25 @@ investigation because the last one left no trace.
 ## AGENTS.md is canonical
 
 `AGENTS.md` is the keystone index (cross-tool standard). `CLAUDE.md` is one line — `@AGENTS.md`
-— plus Claude-only sections (Active skills, Workflow-tool notes). Never maintain two copies.
+— plus Claude-only lines (workflow tooling, review roles, a one-line UI-skills pointer). Never
+maintain two copies.
+
+## Placement rule (one home per instruction)
+
+Every instruction Keel generates has exactly one home. The other places point to it, never copy it.
+
+| Kind of instruction | Home | Example |
+|---|---|---|
+| A fact or one-line rule every session needs | Keystone (`AGENTS.md`; `CLAUDE.md` for Claude-only tooling) | "Never commit to `main`." · the hard-invariants table |
+| A rule for one area of the code | Path-scoped rules file (`.claude/rules/<area>.md`, `paths:` frontmatter) pointing to its ADR/NFR | "Payments code: ADR-007." |
+| A gate a machine can check | Hook or script (`.claude/hooks/`, `.keel/*.mjs`, the workflow scripts) | split-link check in the `keel-gates` Stop hook |
+| Reasoning, options, rationale, full command maps | Record document (ADR, ENGINEERING_DESIGN, DESIGN, NFR, …) | DESIGN.md §12 impeccable lifecycle |
+| How a procedure runs, step by step | Script or its README (`.claude/workflows/`), with the rules in IMPLEMENTATION_PLAN "Standing rules" | doc-sync delegate ⇄ review loop |
+
+Tests for a line in the keystone: would an agent act wrongly in *any* session without it? If not,
+it belongs in its home and the keystone gets a pointer at most. Can a script check it? Then the
+script is its home and the prose rule shrinks to a pointer. Moving text keeps it word for word:
+the home must already hold it (or receive it verbatim) before the keystone line is cut.
 
 ## Traceability checklist (run before handoff)
 
