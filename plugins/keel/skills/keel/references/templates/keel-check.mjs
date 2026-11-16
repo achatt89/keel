@@ -174,10 +174,10 @@ export function check(root) {
 
   // Plan: phase status vs phase blocks and the paths they cite.
   const planFiles = docs.filter(f => f === 'docs/IMPLEMENTATION_PLAN.md' || f.startsWith('docs/implementation-plan/'))
-  const status = new Map(), built = new Set(), merged = new Set(), blocks = []
+  const status = new Map(), built = new Set(), merged = new Set(), deferred = new Set(), blocks = []
   for (const f of planFiles) {
     const text = texts.get(f), p = prose(text)
-    for (const r of p.matchAll(/^\|\s*([\d.]+)\s*(?:—|-|–)[^|]*\|\s*(✅|🔄|⬜)[^\n]*/gm)) { status.set(r[1], r[2]); if (r[2] === '✅' || /\b(merged|deployed|live)\b|\bon `[^`]+`/i.test(text.slice(r.index, r.index + r[0].length))) built.add(r[1]); if (/\b(merged|deployed|live)\b/i.test(text.slice(r.index, r.index + r[0].length))) merged.add(r[1]) }
+    for (const r of p.matchAll(/^\|\s*([\d.]+)\s*(?:—|-|–)[^|]*\|\s*(✅|🔄|⬜)[^\n]*/gm)) { status.set(r[1], r[2]); if (r[2] === '✅' || /\b(merged|deployed|live)\b|\bon `[^`]+`/i.test(text.slice(r.index, r.index + r[0].length))) built.add(r[1]); if (/\b(merged|deployed|live)\b/i.test(text.slice(r.index, r.index + r[0].length))) merged.add(r[1]); if (/\bdeferred\b/i.test(r[0])) deferred.add(r[1]) }
     const heads = [...p.matchAll(/^## Phase ([\d.]+)\b.*$/gm)]
     heads.forEach((h, i) => {
       const end = i + 1 < heads.length ? heads[i + 1].index : (p.slice(h.index + 1).search(/^## /m) + h.index + 1 || text.length)
@@ -198,7 +198,8 @@ export function check(root) {
     }
     const gateRows = [...b.text.matchAll(/^\|(?!\s*-)(?!\s*Gate\s*\|)[^\n]*\|\s*(✅|⬜|🔄|❌)[^|\n]*\|\s*$/gm)]
     const open = gateRows.filter(r => r[1] !== '✅')
-    if (open.length) add('phase-gates-open', b.file, at(open[0].index), `Phase ${b.n} is ✅ but ${open.length} exit gate(s) are not`)
+    // 2.6.4: a merged phase may carry its open gates as Deferred items rows.
+    if (open.length && !deferred.has(b.n)) add('phase-gates-open', b.file, at(open[0].index), `Phase ${b.n} is ✅ but ${open.length} exit gate(s) are not`)
     for (const r of gateRows.filter(r => r[1] === '✅')) for (const t of pathTokens(r[0])) missing(t.p, r.index + t.i, 'gate artefact')
     for (const d of b.text.matchAll(/^\s*- \[x\][^\n]*$/gim)) for (const t of pathTokens(d[0])) missing(t.p, d.index + t.i, 'deliverable')
     const e = b.text.match(/\*\*Evidence:\*\*\s*`([^`]+)`/)
@@ -455,6 +456,7 @@ if (process.argv.includes('--self-test')) {
   const lWant = [/status-lag AGENTS\.md:5 .*Phase 0 is on `phase-0-guardrails`/, /status-lag docs\/README\.md:3 says "no phase built yet"/, /brd-unsourced docs\/BRD\.md:8 A-02 has no Source/, /brd-unsourced docs\/BRD\.md:9 A-03 has no Source/]
   for (const re of lWant) assert(lBad.some(f => re.test(`${f.kind} ${f.file}:${f.line} ${f.msg}`)), `expected ${re}\n${lBad.map(f => `${f.kind} ${f.file}:${f.line} ${f.msg}`).join('\n')}`)
   assert(lBad.length === lWant.length, `expected ${lWant.length} status/BRD findings, got ${lBad.length}\n${lBad.map(f => `${f.kind} ${f.file}:${f.line} ${f.msg}`).join('\n')}`)
+  assert(!check(mk({ ...clean, 'docs/IMPLEMENTATION_PLAN.md': plan('✅ merged, 1 gate(s) deferred (D-01)', '⬜') })).findings.some(f => f.kind === 'phase-gates-open'), 'a phase whose open gates are deferred is not phase-gates-open')
   console.log(`keel check self-test: ok (clean fixtures clean; ${want.length + tWant.length + sWant.length + dWant.length + lWant.length} planted drifts each reported once)`)
   process.exit(0)
 }
