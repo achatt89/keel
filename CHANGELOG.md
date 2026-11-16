@@ -3,6 +3,33 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.6.1] — 2026-11-16
+<!-- headline: Every document type in every project. -->
+
+Keel now writes every document type for every project. Until now a small project did not get the
+documents that did not fit it yet, such as a high-level design for a one-module tool or a
+deployment guide for something that runs only on a laptop, and which ones were left out could
+change from one run to the next. Now each such type is a short stub at its usual path. It says
+why the type does not apply yet, quoting your interview answer, what would make it apply, and where
+those facts live meanwhile. Documents that do apply are written in full, as before.
+
+### Added
+- **Stubs for document types that do not apply yet.** A new stub template; the catalog lists every
+  type with its stub trigger. During the interview Keel shows every type as full or stub, with the
+  reason, and you can change any of them. AGENTS.md lists the stubs in one document-map row.
+- **`/keel check` finds three more kinds of drift.** `missing-type`: a document type with neither a
+  file nor a stub (projects on 2.6.1 or with a stub). `stub-triggered`: a stub whose reason no
+  longer holds, for example a Dockerfile next to a DEPLOYMENT stub, a package manifest next to a
+  COMMANDS stub, front-end files next to a DESIGN stub. `rules-missing`: a decision record whose
+  header names code paths that no area rule cites.
+
+### Changed
+- **Generation reads the document catalog in full** before proposing the set, instead of choosing
+  from memory.
+- **`/keel upgrade`** offers a stub for each document type an existing project is missing, with the
+  reason taken from its existing docs, or the full document where the reason no longer holds.
+  Nothing is applied without your approval, and existing documents are not changed.
+
 ## [2.6.0] — 2026-11-16
 <!-- headline: Leaner instructions, the same full set of documents. -->
 

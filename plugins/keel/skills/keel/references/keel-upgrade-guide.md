@@ -9,6 +9,10 @@ Skill layout (2.6): SKILL.md is a router and each mode lives in `references/mode
 
 ## Document inventory
 
+"Required for" says when a document is written **in full**. Since 2.6.1 every catalog type exists in
+every project: where a row's condition does not hold, the type is a stub (`templates/STUB.md`), not a
+gap and not an omission. A type with neither file nor stub is `MISSING_DOC`.
+
 | Doc | Required for | Critical if missing |
 |---|---|---|
 | BRD.md | All projects | ✓ |
@@ -405,6 +409,14 @@ Every project that will be built:
 - [ ] `.keel/check.mjs` present (2.6.0: `/keel check`, read-only drift check) → MISSING_FEATURE (Optional).
   U1 installs it verbatim on every upgrade; no document changes. Run it once at U2 and list its findings in the
   report as information (doc-sync or the named mode fixes them; the upgrade itself does not)
+- [ ] Every catalog document type present, in full or as a stub (2.6.1; `.keel/check.mjs` reports `missing-type`)
+  → MISSING_DOC (Recommended). Propose one stub per missing type from `templates/STUB.md`: the reason from the
+  existing docs (e.g. ARCHITECTURE says there is no remote environment), the trigger from the catalog "Stubs"
+  table, and the AGENTS.md document-map "Stubs" row. Where the trigger already holds, propose the full document
+  instead. Applied on approval only; existing documents are never touched. A stub reported `stub-triggered`
+  → MISSING_DOC (Important): propose the full document.
+- [ ] Every ADR whose header names `paths` is cited by a `.claude/rules/*.md` (2.6.1; `rules-missing`) →
+  MISSING_FEATURE (Optional): propose the area rule from the ADR header, as generation does. The ADR is not edited.
 - [ ] an installed `.claude/hooks/keel-update-check.mjs` reads `release.json` (2.5.3: user-facing releases only) → else OUTDATED_CONVENTION (Minor): replace verbatim
 - [ ] `.claude/hooks/keel-update-check.mjs` + SessionStart entry → MISSING_FEATURE (Optional, opt-in)
 - [ ] AGENTS.md "Stops and end-of-run report" section (2.6: one stop line filled from the project's ADR/NFR/

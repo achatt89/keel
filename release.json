@@ -3,22 +3,20 @@
   "schemaVersion": 1,
   "name": "keel",
   "repository": "https://github.com/achatt89/keel",
-  "version": "2.6.0",
-  "latest": "2.6.0",
+  "version": "2.6.1",
+  "latest": "2.6.1",
   "date": "2026-11-16",
-  "headline": "Leaner instructions, the same full set of documents.",
-  "summary": "Keel still writes every document it wrote before. What changes is the part an agent reads on every run: a new project now loads about 8.7 KB at session start instead of 16.1 KB, and the Keel skill itself is read in pieces instead of 100 KB at a time. Nothing was cut from a record document, and no document type was removed.",
+  "headline": "Every document type in every project.",
+  "summary": "Keel now writes every document type for every project. Until now a small project did not get the documents that did not fit it yet, such as a high-level design for a one-module tool or a deployment guide for something that runs only on a laptop, and which ones were left out could change from one run to the next. Now each such type is a short stub at its usual path. It says why the type does not apply yet, quoting your interview answer, what would make it apply, and where those facts live meanwhile. Documents that do apply are written in full, as before.",
   "highlights": [
-    "A leaner keystone",
-    "Doc sync is proportional",
-    "Plain subagent descriptions",
-    "Verify runs a real check, and a check counts only once it has been seen to fail",
-    "A slimmer Keel skill",
-    "Stops and an end-of-run report"
+    "Stubs for document types that do not apply yet",
+    "/keel check finds three more kinds of drift",
+    "Generation reads the document catalog in full",
+    "/keel upgrade"
   ],
-  "tag": "keel--v2.6.0",
-  "tagUrl": "https://github.com/achatt89/keel/tree/keel--v2.6.0",
-  "compareUrl": "https://github.com/achatt89/keel/compare/keel--v2.5.6...keel--v2.6.0",
+  "tag": "keel--v2.6.1",
+  "tagUrl": "https://github.com/achatt89/keel/tree/keel--v2.6.1",
+  "compareUrl": "https://github.com/achatt89/keel/compare/keel--v2.6.0...keel--v2.6.1",
   "install": {
     "commands": [
       "/plugin marketplace add achatt89/keel",
@@ -75,6 +73,23 @@
     "node": ">=18, for the .keel/*.mjs helper scripts keel installs in a project"
   },
   "versions": [
+    {
+      "version": "2.6.1",
+      "date": "2026-11-16",
+      "audience": "user",
+      "headline": "Every document type in every project.",
+      "summary": "Keel now writes every document type for every project. Until now a small project did not get the documents that did not fit it yet, such as a high-level design for a one-module tool or a deployment guide for something that runs only on a laptop, and which ones were left out could change from one run to the next. Now each such type is a short stub at its usual path. It says why the type does not apply yet, quoting your interview answer, what would make it apply, and where those facts live meanwhile. Documents that do apply are written in full, as before.",
+      "highlights": [
+        "Stubs for document types that do not apply yet",
+        "/keel check finds three more kinds of drift",
+        "Generation reads the document catalog in full",
+        "/keel upgrade"
+      ],
+      "notes": "Keel now writes every document type for every project. Until now a small project did not get the\ndocuments that did not fit it yet, such as a high-level design for a one-module tool or a\ndeployment guide for something that runs only on a laptop, and which ones were left out could\nchange from one run to the next. Now each such type is a short stub at its usual path. It says\nwhy the type does not apply yet, quoting your interview answer, what would make it apply, and where\nthose facts live meanwhile. Documents that do apply are written in full, as before.\n\n### Added\n- **Stubs for document types that do not apply yet.** A new stub template; the catalog lists every\n  type with its stub trigger. During the interview Keel shows every type as full or stub, with the\n  reason, and you can change any of them. AGENTS.md lists the stubs in one document-map row.\n- **`/keel check` finds three more kinds of drift.** `missing-type`: a document type with neither a\n  file nor a stub (projects on 2.6.1 or with a stub). `stub-triggered`: a stub whose reason no\n  longer holds, for example a Dockerfile next to a DEPLOYMENT stub, a package manifest next to a\n  COMMANDS stub, front-end files next to a DESIGN stub. `rules-missing`: a decision record whose\n  header names code paths that no area rule cites.\n\n### Changed\n- **Generation reads the document catalog in full** before proposing the set, instead of choosing\n  from memory.\n- **`/keel upgrade`** offers a stub for each document type an existing project is missing, with the\n  reason taken from its existing docs, or the full document where the reason no longer holds.\n  Nothing is applied without your approval, and existing documents are not changed.",
+      "tag": "keel--v2.6.1",
+      "tagUrl": "https://github.com/achatt89/keel/tree/keel--v2.6.1",
+      "compareUrl": "https://github.com/achatt89/keel/compare/keel--v2.6.0...keel--v2.6.1"
+    },
     {
       "version": "2.6.0",
       "date": "2026-11-16",

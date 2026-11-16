@@ -95,7 +95,10 @@ Using the per-doc checklist in `references/keel-upgrade-guide.md`, audit every p
 check for every absent doc. Produce a structured gap list.
 
 **Gap categories (classify each gap into exactly one):**
-- `MISSING_DOC` — a doc in the current keel catalog that doesn't exist
+- `MISSING_DOC` — a document type in the current keel catalog with neither a file nor a stub
+  (`node .keel/check.mjs` reports it as `missing-type`). Propose a stub from
+  `references/templates/STUB.md`, with the reason taken from the existing docs, or the full
+  document if its trigger already holds. Applied only on approval, like every fix
 - `MISSING_SECTION` — a required section (by heading) in the current template but absent in existing doc
 - `OUTDATED_CONVENTION` — section exists but uses old structure (e.g. old 4-bullet standing rules without workflow-first)
 - `MISSING_FEATURE` — a new keel feature not yet in the doc (DESIGN.md §12 lifecycle table, workflow scripts in IMPLEMENTATION_PLAN, active skills in CLAUDE.md)

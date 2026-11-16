@@ -6,7 +6,7 @@
   subprocessors are, and what happens on a breach. The compliance reference.
 
   WHEN TO INCLUDE: ONLY when the project holds personal or regulated data, or is subject to
-  a regime like GDPR / CCPA / HIPAA. A system with no personal data does not need this doc.
+  a regime like GDPR / CCPA / HIPAA. A system with no personal data gets a stub (STUB.md, trigger pii).
   (document-catalog.md)
 
   DEPENDS ON: ENGINEERING_DESIGN.md (data classification C0–C3); the Security/Compliance

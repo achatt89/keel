@@ -11,13 +11,13 @@ anchor: roadmap
 
 Keel started as a way to write a full set of project documents. The documents are not the goal. The goal is that the coding agents working on your project make the right decisions, stop when they should, and prove their work.
 
-Keel still writes the full documentation set for every project: business case, product requirements, architecture, design, decision records, threat model, plan, runbook and the rest that fit the project. That does not change, and the roadmap never drops a document type. What changes is the documents agents work from day to day: they get shorter and easier for an agent to use, and their rules move into places that enforce them. The documents that hold the business and design thinking stay full. The section "Two kinds of document" below lists which is which.
+Keel still writes the full documentation set for every project: business case, product requirements, architecture, design, decision records, threat model, plan, runbook and every other document type. A type that does not apply yet is a short stub that says why and when to write it. That does not change, and the roadmap never drops a document type. What changes is the documents agents work from day to day: they get shorter and easier for an agent to use, and their rules move into places that enforce them. The documents that hold the business and design thinking stay full. The section "Two kinds of document" below lists which is which.
 
 So the roadmap makes the working documents short, adds the rules that steer your agents, keeps the record complete, and then checks that it works. Four ideas run through every step:
 
 - **Measure first.** Long instruction files can make agents slower and less accurate, not better. Keel will test its own output on real tasks before adding more, and publish the result whatever it shows. The measurement can make a working document shorter; it cannot shorten a record document or remove any document.
 - **Put each rule where it works.** A fact goes in the main instructions file. A procedure becomes a skill. A "never do this" becomes a hook or a permission setting that actually stops the action. A rule for one part of the code loads only when that part is touched.
-- **The full set stays.** Every project still gets every document that fits it. A working document can get shorter or move its rules into a hook or a setting; a record document is never shortened. No document is dropped. Removing a document type would need the written approval of Keel's maintainer first.
+- **The full set stays.** Every project still gets every document type, in full or as a stub saying why it does not apply yet. A working document can get shorter or move its rules into a hook or a setting; a record document is never shortened. No document is dropped. Removing a document type would need the written approval of Keel's maintainer first.
 - **Existing projects come along.** Every change reaches projects Keel already documented through `/keel upgrade`. The section "How existing projects adopt this" below says how.
 
 ## Two kinds of document

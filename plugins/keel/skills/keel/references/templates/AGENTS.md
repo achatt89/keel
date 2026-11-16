@@ -33,8 +33,8 @@ without path loading open the file whose `paths:` match).
 ## Document map
 
 <!-- Keel guidance: list ONLY docs that exist on disk (conventions traceability rule).
-     One row per doc. "When you are…" is the trigger that sends a reader there. Drop
-     rows for docs the project doesn't warrant; add rows for ones it does. -->
+     One row per full doc. "When you are…" is the trigger that sends a reader there.
+     Stubs (types that do not apply yet) share the single "Stubs" row instead of a row each. -->
 
 | Read this | When you are |
 |---|---|
@@ -54,6 +54,7 @@ without path loading open the file whose `paths:` match).
 | `{{RUNBOOK}}` | Operating, responding to an incident, or reading a postmortem |
 | `docs/FEEDBACK_ROUNDS.md` *(if clients/stakeholders review builds)* | Tracing a client request to the phase/change that answered it |
 | `docs/SPIKE_<slug>.md` · `docs/AUDIT_<date>.md` · `docs/COST_ANALYSIS.md` *(optional, on demand)* | Reading an investigation, a dated audit snapshot, or a measured cost model |
+| Stubs: `docs/{{STUB_1}}` · `docs/{{STUB_2}}` *(not needed yet)* | Wondering whether one now applies — each says why not yet and when to write it in full |
 | `docs/PHASE_ARCHIVE.md` *(only once `/keel archive` has run)* | Revisiting finished or superseded work — relocated detail, nothing deleted |
 
 ## Hard invariants (full list + rationale: {{ENGINEERING_DESIGN}} §{{NONNEG_SECTION}})

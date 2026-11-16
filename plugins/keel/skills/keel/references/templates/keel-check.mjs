@@ -14,6 +14,9 @@
 //   phase-gates-open a ✅ phase whose exit-gate table still has a ⬜ or 🔄 row
 //   phase-path       a path cited by a ✅ phase (Evidence, ✅ gate artefact, [x] deliverable) or a non-✅
 //                    phase's Workflow script that does not exist
+//   missing-type     (2.6.1+ projects) a catalog document type with neither a file nor a stub (see TYPES)
+//   stub-triggered   a stub (<!-- keel:stub trigger=… -->) whose trigger the repo now shows: write the full document
+//   rules-missing    an ADR whose header names paths, cited by no .claude/rules/*.md
 //   stack-undocumented  a runtime dependency (package.json dependencies, requirements.txt, go.mod, Cargo.toml)
 //                    named in no record doc (ARCHITECTURE, HLD, LLD, ENGINEERING_DESIGN, NFR, ADRs, AGENTS.md)
 // Scanned: .claude/rules/**.md, AGENTS.md, CLAUDE.md, root CHANGELOG/COMMANDS/RUNBOOK.md, docs/**.md. Archives (ARCHIVE in the
@@ -27,6 +30,21 @@ const { dirname, basename, normalize } = posix
 const ROOT_DOCS = ['AGENTS.md', 'CLAUDE.md', 'CHANGELOG.md', 'COMMANDS.md', 'RUNBOOK.md']
 const REQUIRED = ['AGENTS.md', 'CLAUDE.md', '.keel/meta.json', '.keel/doc-size.mjs']
 const RECORD = /(^|\/)(ARCHITECTURE|HLD|LLD|ENGINEERING_DESIGN|NFR)\.md$|(^|\/)adr\/|^AGENTS\.md$|^docs\/(architecture|hld|lld|engineering-design|nfr)\//i
+// Every catalog document type (2.6.1): [label, accepted paths, stub trigger]. A type that does not apply yet
+// is a stub file, never an omission. On-demand types (SPIKE, AUDIT, PHASE_ARCHIVE, COST_ANALYSIS) are not here.
+const TYPES = [
+  ['BRD', ['docs/BRD.md']], ['ARCHITECTURE', ['docs/ARCHITECTURE.md']], ['IMPLEMENTATION_PLAN', ['docs/IMPLEMENTATION_PLAN.md']],
+  ['CHANGELOG', ['CHANGELOG.md']], ['transcript', ['docs/keel-transcript.md']], ['docs index', ['docs/README.md']],
+  ['ADR index', ['docs/adr/README.md']],
+  ['PRD', ['docs/PRD.md'], 'users'], ['ENGINEERING_DESIGN', ['docs/ENGINEERING_DESIGN.md'], 'nontrivial'],
+  ['HLD', ['docs/HLD.md'], 'multi-component'], ['LLD', ['docs/LLD.md'], 'mvp'], ['NFR', ['docs/NFR.md'], 'mvp'],
+  ['DESIGN', ['docs/DESIGN.md', 'DESIGN.md'], 'ui'], ['COMMANDS', ['docs/COMMANDS.md', 'COMMANDS.md'], 'runs'],
+  ['DEPLOYMENT', ['docs/DEPLOYMENT.md'], 'deployed'], ['RUNBOOK', ['docs/RUNBOOK.md', 'RUNBOOK.md'], 'deployed'],
+  ['FEEDBACK_ROUNDS', ['docs/FEEDBACK_ROUNDS.md'], 'external-reviewers'], ['COMPLIANCE', ['docs/COMPLIANCE.md'], 'pii'],
+  ['THREAT_MODEL', ['docs/THREAT_MODEL.md'], 'high-risk'], ['extension contract spec', [/^docs\/[A-Z_]+_SPEC\.md$/], 'extensible'],
+  ['almanac', ['almanac/README.md'], 'product-dimension'],
+]
+const STUB = /<!--\s*keel:stub\s+trigger=([\w-]+)\s*-->/
 const isArchive = f => /ARCHIVE/i.test(basename(f)) || /^LEGACY_/i.test(basename(f)) || /(^|\/)archive\//i.test(f)
 const ADR_FILE = /^docs\/adr\/(ADR-(\d+))[^/]*\.md$/i
 const STAGES = ['reserved', 'proposed', 'accepted', 'built', 'superseded']
@@ -53,6 +71,16 @@ function anchors(text) {
   }
   for (const [, id] of text.matchAll(/\b(?:id|name)="([^"]+)"/g)) out.add(id)
   return out
+}
+
+// Every file (not .git, node_modules); used for document types and trigger signals.
+function walkAll(root, dir = '', acc = []) {
+  for (const e of readdirSync(join(root, dir || '.'), { withFileTypes: true })) {
+    const p = dir ? `${dir}/${e.name}` : e.name
+    if (e.isDirectory() && !['.git', 'node_modules'].includes(e.name)) walkAll(root, p, acc)
+    else if (e.isFile()) acc.push(p)
+  }
+  return acc
 }
 
 function walk(root, dir, acc = []) {
@@ -192,6 +220,33 @@ export function check(root) {
       add('stack-undocumented', manifest, 0, `dependency "${d}" is named in no record doc (ARCHITECTURE, HLD, LLD, ENGINEERING_DESIGN, NFR, ADRs, AGENTS.md)`)
   }
 
+  // Document types (2.6.1+): every type present, in full or as a stub; a stub whose trigger the repo now shows.
+  const files = walkAll(root)
+  const ver = (() => { try { return JSON.parse(read('.keel/meta.json')).keelVersion ?? '' } catch { return '' } })()
+  const atLeast = (v, w) => { const a = v.split('.').map(Number), b = w.split('.').map(Number); for (let i = 0; i < 3; i++) if ((a[i] || 0) !== b[i]) return (a[i] || 0) > b[i]; return true }
+  const stubs = files.filter(f => f.endsWith('.md') && !isArchive(f)).map(f => [f, read(f).match(STUB)?.[1]]).filter(([, t]) => t)
+  if (stubs.length || (/^\d+\.\d+\.\d+/.test(ver) && atLeast(ver, '2.6.1')))
+    for (const [label, paths, trigger] of TYPES)
+      if (!files.some(f => paths.some(p => typeof p === 'string' ? f === p : p.test(f))))
+        add('missing-type', paths.find(p => typeof p === 'string') ?? 'docs/', 0, `no ${label} document and no stub${trigger ? ` (a stub names why it does not apply yet; trigger: ${trigger})` : ''}`)
+  // Triggers with a signal in the repo; the others need judgment and are not checked.
+  const code = files.filter(f => !/^(docs|almanac|\.keel|\.claude|\.github)\//.test(f) && !/(^|\/)(dist|build|coverage)\//.test(f))
+  const signals = {
+    deployed: files.find(f => /^(Dockerfile|fly\.toml|vercel\.json|netlify\.toml|render\.yaml|app\.yaml|Procfile|serverless\.ya?ml|wrangler\.toml)$/.test(f) || /^\.github\/workflows\/[^/]*deploy[^/]*\.ya?ml$/i.test(f)),
+    ui: code.find(f => /\.(html|jsx|tsx|vue|svelte|css|scss)$/.test(f)),
+    runs: files.find(f => /^(package\.json|Makefile|pyproject\.toml|go\.mod|Cargo\.toml|requirements\.txt)$/.test(f)),
+    'multi-component': (() => { const m = code.filter(f => /(^|\/)(package\.json|go\.mod|Cargo\.toml|pyproject\.toml)$/.test(f)).map(dirname); return new Set(m).size > 1 ? m.join(', ') : undefined })(),
+  }
+  for (const [f, t] of stubs) if (signals[t]) add('stub-triggered', f, 0, `stub says "not needed yet" (trigger: ${t}) but the repo shows ${signals[t]}: write the full document`)
+
+  // An ADR that names paths needs an area rule citing it.
+  const cited = new Set(rules.flatMap(f => [...read(f).matchAll(/\bADR-(\d+)\b/g)].map(m => norm(`ADR-${m[1]}`))))
+  for (const [key, file] of adrFiles) {
+    const fm = front(read(file)), paths = fm?.match(/^paths:\s*(.*)$/m)?.[1] ?? ''
+    if (/[\w*]/.test(paths.replace(/\[\s*\]/, '')) && !/^status:\s*(superseded|reserved)/im.test(fm) && !cited.has(key))
+      add('rules-missing', file, 4, `header names paths ${paths.trim()} but no .claude/rules/*.md cites ${basename(file).match(/ADR-\d+/i)[0]}`)
+  }
+
   return { findings, scanned: { docs: docs.length, links, adrs: adrFiles.size, rules: rules.length, phases: status.size, deps: deps.length } }
 }
 
@@ -268,7 +323,23 @@ if (process.argv.includes('--self-test')) {
   for (const [k, re] of want) assert(has(k, re), `expected [${k}] ${re}\n${report(res)}`)
   assert(res.findings.length === want.length, `expected ${want.length} findings, got ${res.findings.length}\n${report(res)}`)
   assert(!res.findings.some(f => /PHASE_ARCHIVE|missing\.md|gone\.md/.test(`${f.file} ${f.msg}`)), 'archives, code and comments must be skipped')
-  console.log(`keel check self-test: ok (clean fixture clean; ${want.length} planted drifts each reported once)`)
+  // 2.6.1 document types: a full set (stubs where a type does not apply) is clean; then one of each new finding.
+  const stub = t => `# X\n\n> **Not needed yet.** No remote environment.\n> **Write it when:** it deploys.\n\n<!-- keel:stub trigger=${t} -->\n`
+  const typed = { ...clean, '.keel/meta.json': '{"keelVersion":"2.6.1"}' }
+  for (const [, paths, trigger] of TYPES) { const p = paths.find(x => typeof x === 'string') ?? 'docs/CONNECTOR_SPEC.md'; if (!typed[p]) typed[p] = trigger ? stub(trigger) : '# Doc\n' }
+  typed['docs/HLD.md'] = clean['docs/HLD.md']; typed['docs/COMMANDS.md'] = '# Commands\n' // package.json: COMMANDS applies
+  const tOk = check(mk(typed))
+  assert(tOk.findings.length === 0, `typed clean fixture has findings:\n${report(tOk)}`)
+  const tBad = { ...typed, Dockerfile: 'FROM node\n', 'docs/THREAT_MODEL.md': undefined,
+    'docs/adr/README.md': typed['docs/adr/README.md'] + '| [ADR-008](./ADR-008-io.md) | IO — fs | Accepted | eng | 2026-01-08 |\n',
+    'docs/adr/ADR-008-io.md': '---\nid: ADR-008\nstatus: Accepted\npaths: ["src/io.js"]\n---\n' + adr('Accepted 2026-01-08').replace('ADR-001', 'ADR-008') }
+  const tRes = check(mk(Object.fromEntries(Object.entries(tBad).filter(([, v]) => v !== undefined))))
+  const tWant = [['stub-triggered', /DEPLOYMENT\.md:0 .*trigger: deployed.*Dockerfile/], ['stub-triggered', /RUNBOOK\.md:0 .*Dockerfile/],
+    ['missing-type', /THREAT_MODEL/], ['rules-missing', /ADR-008-io\.md:4 .*cites ADR-008/]]
+  for (const [k, re] of tWant) assert(tRes.findings.some(f => f.kind === k && re.test(`${f.file}:${f.line} ${f.msg}`)), `expected [${k}] ${re}\n${report(tRes)}`)
+  assert(tRes.findings.length === tWant.length, `expected ${tWant.length} type findings, got ${tRes.findings.length}\n${report(tRes)}`)
+  assert(check(mk({ ...clean, 'docs/LLD.md': '# LLD\n' })).findings.length === 0, 'a pre-2.6.1 project with no stub must not get missing-type')
+  console.log(`keel check self-test: ok (clean fixtures clean; ${want.length + tWant.length} planted drifts each reported once)`)
   process.exit(0)
 }
 
