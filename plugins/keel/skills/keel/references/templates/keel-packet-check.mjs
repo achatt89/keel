@@ -108,7 +108,7 @@ function checkFile(file, sealedByRound) {
       if (q.revealed === 'all answered') {
         const missing = people.filter(p => !q.answers.some(a => speaker(a.by) === p))
         if (missing.length) err.push(`${at}: revealed as "all answered" but no answer from ${missing.join(', ')}`)
-      } else if (!new RegExp(`^closed by ${fm.owner.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`).test(q.revealed)) {
+      } else if (!new RegExp(`^closed by ${(fm.owner || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`).test(q.revealed)) {
         err.push(`${at}: revealed must be "all answered" or "closed by ${fm.owner}" (the owner)`)
       }
     } else if (q.revealed) err.push(`${at}: revealed applies to blind questions only`)
@@ -155,6 +155,7 @@ if (process.argv.includes('--self-test')) {
     ['unmarked answer', { 'a.md': OPEN.replace('by: Ben (human)', 'by: Ben') }, r => r.err.some(e => e.includes('by must be'))],
     ['missing mode', { 'a.md': OPEN.replace('### ARC-02 Which queue?\nmode: open', '### ARC-02 Which queue?') }, r => r.err.some(e => e.includes('mode must be'))],
     ['secret in an answer', { 'a.md': OPEN.replace('EU region only', 'key AKIAABCDEFGHIJKLMNOP') }, r => r.err.some(e => e.includes('AWS access key'))],
+    ['no owner: reported, not a crash', { 'pm.md': BLIND.replace('owner: Ana\n', '') + 'revealed: closed by Ana\n' }, r => r.err.some(e => e.includes('frontmatter has no owner'))],
     ['sealed file with someone else\'s answer', { 'pm.md': BLIND, 'sealed/pm.ana.md': SEAL.replace('respondent: Ben', 'respondent: Ana') }, r => r.err.some(e => e.includes('other than Ana'))],
   ]
   let fail = 0
