@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url';
 
 export const EVALS = dirname(fileURLToPath(import.meta.url));
 export const REPO = dirname(EVALS);
+// Raw logs live here. Set EVAL_RAW to a folder outside the worktree so a torn-down worktree keeps them.
+export const RAW = process.env.EVAL_RAW || join(EVALS, 'results/raw');
 export const taskDir = (id) => join(EVALS, 'tasks', id);
 export const readTask = (id) => ({ ...JSON.parse(readFileSync(join(taskDir(id), 'task.json'), 'utf8')), dir: taskDir(id) });
 
@@ -14,14 +16,17 @@ export const readTask = (id) => ({ ...JSON.parse(readFileSync(join(taskDir(id), 
 export const CLEAN = ['--setting-sources', 'project', '--strict-mcp-config', '--no-session-persistence'];
 
 // Run `claude -p` and resolve with { code, stdout, stderr, timedOut }.
-export function claude(args, { cwd, timeoutMs, input } = {}) {
+// Prints a heartbeat line every 60 s so a watching agent is never idle while a long child run is silent.
+export function claude(args, { cwd, timeoutMs, input, label = 'claude -p' } = {}) {
   return new Promise((resolve) => {
+    const t0 = Date.now();
+    const beat = setInterval(() => console.log(`[heartbeat] ${label}: ${Math.round((Date.now() - t0) / 1000)} s, ${stdout.length} bytes out`), Number(process.env.EVAL_HEARTBEAT_MS || 60000));
     const p = spawn('claude', ['-p', ...args], { cwd, stdio: ['pipe', 'pipe', 'pipe'] });
     let stdout = '', stderr = '', timedOut = false;
     p.stdout.on('data', (d) => (stdout += d));
     p.stderr.on('data', (d) => (stderr += d));
     const t = timeoutMs && setTimeout(() => { timedOut = true; p.kill('SIGTERM'); }, timeoutMs);
-    p.on('close', (code) => { clearTimeout(t); resolve({ code, stdout, stderr, timedOut }); });
+    p.on('close', (code) => { clearTimeout(t); clearInterval(beat); resolve({ code, stdout, stderr, timedOut }); });
     p.stdin.end(input ?? '');
   });
 }

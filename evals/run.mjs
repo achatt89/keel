@@ -7,7 +7,7 @@ import { mkdtempSync, mkdirSync, cpSync, writeFileSync, readFileSync, existsSync
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { readTask, claude, resultEvent, models, CLEAN, EVALS, REPO } from './lib.mjs';
+import { readTask, claude, resultEvent, models, CLEAN, EVALS, REPO, RAW } from './lib.mjs';
 import { grade } from './grade.mjs';
 
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > -1 ? process.argv[i + 1] : d; };
@@ -69,15 +69,16 @@ ${readFileSync(join(task.dir, 'prompt.md'), 'utf8')}
 ## The founder's interview answers
 ${readFileSync(join(task.dir, 'founder-answers.md'), 'utf8')}`;
   console.log(`generating Keel fixture for ${id} in ${d}`);
-  const r = await claude([...AGENT, '--plugin-dir', join(REPO, 'plugins/keel'), '--max-budget-usd', arg('gen-cap-usd', '15')], { cwd: d, timeoutMs: 60 * 60000, input: prompt });
+  const r = await claude([...AGENT, '--plugin-dir', join(REPO, 'plugins/keel'), '--max-budget-usd', arg('gen-cap-usd', '15')], { cwd: d, timeoutMs: 60 * 60000, input: prompt, label: `gen ${id}` });
   const res = resultEvent(r.stdout);
-  const raw = join(EVALS, 'results/raw', `gen-${id}-${Date.now()}`);
+  const raw = join(RAW, `gen-${id}-${Date.now()}`);
   mkdirSync(raw, { recursive: true });
   writeFileSync(join(raw, 'transcript.jsonl'), r.stdout);
   writeFileSync(join(raw, 'usage.json'), JSON.stringify({ ...usage(res), ...profile(r.stdout), stderr: r.stderr.slice(-2000) }, null, 2));
   const fx = join(task.dir, 'keel');
   rmSync(fx, { recursive: true, force: true });
   cpSync(d, fx, { recursive: true, filter: (s) => !/\/\.git(\/|$)/.test(s) });
+  writeFileSync(join(task.dir, 'keel-gen-usage.json'), JSON.stringify({ keelVersion: JSON.parse(readFileSync(join(fx, '.keel/meta.json'), 'utf8')).keelVersion, ...usage(res), modelId: profile(r.stdout).modelId }, null, 2));
   console.log(JSON.stringify(usage(res)), `\nfixture: ${readdirSync(fx).join(' ')}\nlog: ${raw}`);
 }
 
@@ -87,7 +88,7 @@ async function main() {
   const conds = arg('conds', 'none,min,keel').split(',');
   const reps = Number(arg('reps', '1'));
   const cap = Number(arg('cap-usd', '10'));
-  const outDir = join(EVALS, 'results/raw', arg('out', new Date().toISOString().replace(/[:.]/g, '-')));
+  const outDir = join(RAW, arg('out', new Date().toISOString().replace(/[:.]/g, '-')));
   mkdirSync(outDir, { recursive: true });
   const summaryFile = join(outDir, 'summary.json');
   const rows = existsSync(summaryFile) ? JSON.parse(readFileSync(summaryFile, 'utf8')) : [];
@@ -104,7 +105,7 @@ async function main() {
     const prompt = readFileSync(join(task.dir, 'prompt.md'), 'utf8');
     process.stdout.write(`${name} ... `);
     const r = await claude([...AGENT, '--max-budget-usd', String(Math.min(left, Number(arg('run-cap-usd', '5'))).toFixed(2))],
-      { cwd: d, timeoutMs: (task.timeoutMin ?? 20) * 60000, input: prompt });
+      { cwd: d, timeoutMs: (task.timeoutMin ?? 20) * 60000, input: prompt, label: name });
     const res = resultEvent(r.stdout);
     writeFileSync(join(outDir, `${name}.jsonl`), r.stdout);
     cpSync(d, join(outDir, name), { recursive: true, filter: (s) => !/\/(\.git|node_modules)(\/|$)/.test(s) });

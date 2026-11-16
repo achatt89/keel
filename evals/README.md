@@ -53,3 +53,5 @@ node evals/grade.mjs ledger <folder>            # grade any folder by hand
 ## What a result may and may not recommend
 
 The suite measures what an agent needs at build time. It may justify shortening **execution-tier** documents (AGENTS.md, CLAUDE.md, COMMANDS, IMPLEMENTATION_PLAN, RUNBOOK, DEPLOYMENT, PRODUCT, indexes). It never justifies shortening a **record-tier** document or dropping a document type: those carry the reasons a later reader needs, which a small build task does not test.
+
+**Long runs.** `run.mjs` prints a `[heartbeat]` line every 60 s while a child `claude -p` run is silent; run it in the background and watch its output so the watching agent is never idle. Set `EVAL_RAW` to a folder outside the worktree: `results/raw/` is git-ignored and is lost when a temp's worktree is torn down. `--gen-keel` also writes `tasks/<id>/keel-gen-usage.json` (committed) so the generation's tokens and cost are kept with the fixture.
