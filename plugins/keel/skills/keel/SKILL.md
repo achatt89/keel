@@ -25,8 +25,8 @@ description: >
   "what version of keel is this", "check keel version", "is my keel up to date", "which keel
   version generated these docs", "check for keel updates").
 metadata:
-  version: 2.5.5
-  userVersion: 2.5.4
+  version: 2.5.6
+  userVersion: 2.5.6
 license: MIT
 ---
 
@@ -713,7 +713,9 @@ ritual. It scopes; it does not build (the generated script does that).
    - `--split N` → Phase N (must be ⬜ or 🔄, never ✅) becomes `N.a` and `N.b`: the original row
      and block are renamed `N.a` and keep everything that has evidence; `N.b` gets the remainder.
      Ask with `AskUserQuestion` which scope items move.
-   - A closeout phase (from `/keel closeout`) is always `N.5` after the phase that is 🔄 or last ✅.
+   - A closeout phase (from `/keel closeout`) is `N.5` after the phase that is 🔄 or last ✅; if `N.5`
+     already exists, the next free `N.x` after the highest one (`N.15` exists → `N.16`). Never renumber.
+     `node .keel/doc-size.mjs --closeout docs/IMPLEMENTATION_PLAN.md` prints the number.
 2. **Interview, briefly.** Two to four questions in the Delivery/Ops voice: goal in one sentence;
    scope items (each becomes a task); which requirement IDs it satisfies; the decisions it will
    force (each becomes a reserved ADR); does it touch UI; does it touch the launch line. Take the
@@ -734,7 +736,8 @@ ritual. It scopes; it does not build (the generated script does that).
    from the scope items, `{{RESERVED_ADRS}}` from step 4, `{{GOAL_EXIT_STRATEGY_BLOCK}}` from the
    Standing rules' recorded choice). Add its row to the Workflow scripts table.
 6. **CHANGELOG line** under `[Unreleased]`: `- Phase N — <name> scoped [on-branch]`.
-7. **Commit** on a branch `docs/scope-phase-N-<slug>` off `main` (never straight to `main`):
+7. **Commit** on a branch `docs/scope-phase-N-<slug>` off `main` — or off the branch carrying an
+   unmerged `/keel upgrade`, so the scope lands on the upgraded docs (never straight to `main`):
    `docs: scope Phase N — <name> | <k> ADRs reserved | workflow script added`. Tell the user the
    branch and the run command: `claude --workflow .claude/workflows/phase-N-<slug>.js`.
 
@@ -796,13 +799,17 @@ cadence.
 
 ### Steps
 
-1. **List the open rows** with their `Owner` and `Revisit trigger` columns. Rows owned by
+1. **List the open rows** with their `Owner` and `Revisit trigger` columns:
+   `node .keel/doc-size.mjs --closeout docs/IMPLEMENTATION_PLAN.md` lists every ⬜ row (split plan
+   included) and the closeout phase number. An italic placeholder row (`*(none yet — …)*`) is not a
+   row: never count or schedule it. Rows owned by
    `founder` or `legal` whose trigger has not fired are **excluded** (they are decisions, not
    work) — show them separately so the user can pull one in explicitly.
 2. **Confirm scope** with `AskUserQuestion`: all eligible rows (recommended) / let me pick / skip.
-3. **Run Phase Mode** with the slug `deferred-closeout`, numbered `N.5` (see Phase Mode step 1),
+3. **Run Phase Mode** with the slug `deferred-closeout`, numbered as the checker printed (`N.5`, or the
+   next free `N.x`; see Phase Mode step 1),
    whose scope items are *exactly* the chosen rows, one task each, each task's `/goal` being the
-   row's own resolution condition. Each chosen row gets `Target phase = N.5`.
+   row's own resolution condition. Each chosen row gets `Target phase` = that number.
 4. Report which rows were pulled in, which were left (and why), and the run command.
 
 **Never:** resolve a row inside closeout itself; invent a resolution for a founder/legal row;

@@ -382,6 +382,9 @@ Every project that will be built:
   → else OUTDATED_CONVENTION (Important): replace verbatim with `doc-sync.js`
 - [ ] `.keel/doc-size.mjs` supports `--where` and `--move-out` (2.4.3) → else OUTDATED_CONVENTION (Important):
   replace verbatim, with `doc-sync.js` and `change-template.js`; phase scripts' plan writes use `--where`
+- [ ] `.keel/doc-size.mjs` supports `--closeout` (2.5.6: `--split` stays inside the project, `§N` refs repointed,
+  closeout numbering + open-row count) → else OUTDATED_CONVENTION (Important): replace verbatim (U1 installs it first).
+  No document changes. A Deferred items placeholder row `*(none yet …)*` whose Status is ⬜ → propose `—` (Minor)
 - [ ] keystone headroom covers any keystone text this upgrade adds → else propose `--move-out` of a
   named section (never compress)
 - [ ] `.keel/meta.json` has no `budgetExceptions` (moved to `waivers` with `reason` + `reviewed`)
