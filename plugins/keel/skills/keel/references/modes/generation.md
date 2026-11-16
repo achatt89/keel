@@ -186,6 +186,11 @@ default to the current working directory). For each document:
   deliverable line ("README: examples in `examples/`, error table under test") and gets the exit
   gate `README examples and error table pass` · `unit` · `examples.test.*`. The phase script's
   task that writes the README names the same (conventions "Docs under test").
+- **BRD says only what was decided.** Every BRD Assumptions row fills `Source`: the founder
+  answer (transcript Q-ref), the ADR that decides it, or `unvalidated`. An assumption about code
+  behaviour (a data shape, normalisation such as trimming, a helper, an algorithm) that no founder
+  answer states is a design choice: write it as an ADR or LLD item and point the BRD row there,
+  or leave it out. A risk mitigation that names code structure cites its ADR.
 - **Keystone pair.** `AGENTS.md` from `references/templates/AGENTS.md` is the full keystone
   (document map, invariants as `Rule · Enforced by · Gap · Source`, status as a two-row table,
   pre-PR checklist). `CLAUDE.md` from `references/templates/CLAUDE.md` opens with `@AGENTS.md`
@@ -463,7 +468,8 @@ platform handling sensitive data gets the full fan-out with adversarial verifica
    with `@AGENTS.md` and duplicates nothing from it, no ✅ anywhere lacks an evidence level, and
    `node .keel/doc-size.mjs` passes with no breach, and `node .keel/check.mjs` is clean (every
    document type present in full or as a stub; every ADR that names paths cited by an area
-   rule). A generated doc over its budget is **split
+   rule; every BRD assumption has a Source, and none names code behaviour without an ADR or
+   founder-answer source). A generated doc over its budget is **split
    now** (`node .keel/doc-size.mjs --split <doc>`, then add the Parts table's IDs column) (keel-archive-guide "Splitting an oversize doc": `docs/<name>/NN-<slug>.md` parts, the
    parent a slim index linking every part, each part linking back) — never handed over oversize.
 2. Write `docs/README.md` (or root README) as the index: the document map table, reading order by

@@ -297,7 +297,10 @@ await agent(`
      - IMPLEMENTATION_PLAN.md phase status table (split docs: write to the file \`node .keel/doc-size.mjs --where docs/IMPLEMENTATION_PLAN.md "<section>"\` prints — never the index), Phase {{N}} row, Deploy state column:
        "on \`phase-{{N}}-{{SLUG}}\`" → "merged <sha>"
      - AGENTS.md / CLAUDE.md status table, Last completed cell: same substitution.
+     All three edits go in this ONE commit — none may be left for later:
      git add -u && git commit -m "docs: phase {{N}} merged"
+     Then, if .keel/check.mjs exists: node .keel/check.mjs. A status-lag finding means a status
+     cell still says "on \`phase-{{N}}-{{SLUG}}\`": fix it, git commit --amend --no-edit, re-run.
   5. Delete the phase branch: git branch -d phase-{{N}}-{{SLUG}}
   6. Confirm: git log --oneline -8
   7. Report: what merged, any conflicts and how resolved. Remind: "deployed vNN" and

@@ -3,6 +3,44 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.6.4] — 2026-11-16
+<!-- headline: Business requirements say only what was decided. -->
+
+The business requirements document (BRD) now says where each assumption comes from. In our 2.6.3
+test, every remaining contradiction between the documents and the code came from the generated
+BRD stating code details nobody had decided, such as that names are stored trimmed, or that two
+features share one helper. Now each BRD assumption names its source: your answer in the
+interview, the decision record that settles it, or *unvalidated*. A code detail with no answer
+behind it goes in a decision record or the low-level design instead. Doc sync compares these
+statements with the code and records any difference next to the original text, which is never
+rewritten or removed. The merge step also updates every status line in one commit, then runs the
+drift check.
+
+**What we checked.** The new checks run on the saved folders from our earlier test runs, with no
+model calls: the 2.6.3 session that left a status line on its branch after the merge is reported,
+and no other saved session gets a false report. The effect on drift in new sessions is not
+measured yet.
+
+### Added
+- **A Source column in the BRD Assumptions table** (new projects), and guidance that risk
+  mitigations naming code structure cite their decision record.
+- **`/keel check` reports two more kinds of drift:** `status-lag`, a status line in `AGENTS.md` or
+  `CLAUDE.md` still saying a phase is on its branch after the plan shows it merged; and
+  `brd-unsourced`, an assumption with no source, in a BRD whose table has a Source column.
+
+### Changed
+- **Doc sync** compares BRD assumptions, risk mitigations and product acceptance notes that name
+  code behaviour with the code. When the build differs it records it, in order of preference, as
+  the decision record's build deviation, as "superseded by the build" after the original text, or
+  as an open decision for you when you were the one who said it. No row is removed.
+- **The merge step** of phase and change scripts makes all its status edits in one commit and
+  runs `node .keel/check.mjs` afterwards.
+
+### Upgrading
+- `/keel upgrade` offers the Source column for an existing BRD, with sources proposed from the
+  interview transcript and *unvalidated* where none applies. It is applied only with your
+  approval; the assumption text is not changed.
+
 ## [2.6.3] — 2026-11-16
 <!-- headline: README examples are tested, not just written. -->
 

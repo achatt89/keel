@@ -130,6 +130,14 @@ const SYNC_RULES = `
   this phase's work is built even though the plan row still says "on <branch>". Where the doc no longer matches, fix the doc to describe the code. If the
   code broke a recorded decision rather than a detail, write the ADR's Build deviation row (or
   a new ADR), never silently re-word the decision.
+  Business statements vs code — the same sync: BRD Assumptions rows and RSK mitigations, and
+  PRD acceptance notes, that name code behaviour (a data shape, normalisation such as trimming,
+  a helper, an algorithm). Where the code contradicts one, never rewrite or delete the row;
+  record it, in this order of preference: the cited ADR's Build deviation row; else append to
+  the row "superseded by the build: <what the code does>, <sha>" after the original text; else,
+  when the founder said it (Source is a transcript answer) and the code differs, an Open
+  decisions row in docs/adr/README.md for the founder. A row with no Source (check.mjs reports
+  brd-unsourced) gets one: the transcript answer, the ADR, or unvalidated.
   README examples and error tables: one with no keel:example / keel:asserts marker (check.mjs
   reports docs-untested) is a gap. Add the example file or test and the marker, run it, and
   report it; never fix the README text alone.
@@ -141,7 +149,8 @@ const SYNC_RULES = `
   that don't. Never write "prod-live" from this step — only DEPLOYMENT.md's deploy procedure may.
 
   Step 9 — Drift check: if .keel/check.mjs exists, run node .keel/check.mjs. Fix every
-  adr-status-stale finding (Step 4) and every dead-link or adr-status finding your edits caused;
+  adr-status-stale finding (Step 4), every status-lag finding (the AGENTS.md / CLAUDE.md status
+  line), every brd-unsourced finding (Step 7) and every dead-link or adr-status finding your edits caused;
   list the rest under findings in your Report.
 `
 
@@ -221,10 +230,14 @@ for (let round = 1; round <= MAX_ROUNDS && !inline.statusOnly; round++) {
      on the index), any LINK ERROR (a part not linked from its index, or not linking back), any
      "split" verdict on a doc the role touched, any doc newly over budget with no verdict reason
      the caller accepts. A new waiver needs the caller's (human's) approval — never self-granted.
-  5. Drift: run node .keel/check.mjs if it exists; every adr-status-stale finding is a gap. Then
-     read the code the work touched against ARCHITECTURE, LLD, README.md and docs/README.md: each statement
+  5. Drift: run node .keel/check.mjs if it exists; every adr-status-stale, status-lag and
+     brd-unsourced finding is a gap. Then
+     read the code the work touched against ARCHITECTURE, LLD, README.md and docs/README.md, and the BRD
+     assumptions, RSK mitigations and PRD acceptance notes that name code behaviour: each statement
      about a data shape, store field, export, module section, error code or check order, or "not built yet"
-     that the code contradicts is a gap (file, statement, what the code does).
+     that the code contradicts and that is neither fixed nor recorded (Build deviation, "superseded by
+     the build", or an Open decisions row) is a gap (file, statement, what the code does). A deleted or
+     rewritten BRD row is a gap.
   complete = true only if that list is empty.
 `, {
     label: `doc-sync-review-r${round}`,

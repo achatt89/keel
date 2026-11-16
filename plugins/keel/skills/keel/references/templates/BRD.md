@@ -196,12 +196,19 @@ The result: {{COST_OF_THE_STATUS_QUO}}.
 
 <!-- Keel guidance: things taken as true but not yet proven, each one a thing that, if
      wrong, changes the design. Mark with [ASSUMPTION] in prose elsewhere when referenced.
-     Do not invent scale/cost figures the interview didn't give — flag them as unvalidated. -->
+     Do not invent scale/cost figures the interview didn't give — flag them as unvalidated.
+     Source (required): the founder answer it rests on (`transcript Q-ref`), the ADR that
+     decides it, or `unvalidated`. An assumption about code behaviour (a data shape,
+     normalisation, a helper, an algorithm) with no founder answer behind it is a design
+     choice: write it as an ADR or LLD item and point this row there — never state it here
+     on its own. Doc sync compares rows that name code behaviour with the code; a row the
+     build contradicts gets a status "superseded by the build: <what the code does>, <sha>"
+     after the original text, which is never rewritten. -->
 
-| ID | Assumption |
-|----|-----------|
-| A-01 | {{ASSUMPTION}} |
-| A-02 | {{ASSUMPTION}} |
+| ID | Assumption | Source |
+|----|-----------|--------|
+| A-01 | {{ASSUMPTION}} | {{transcript Q-ref / ADR-xxx / unvalidated}} |
+| A-02 | {{ASSUMPTION}} | {{transcript Q-ref / ADR-xxx / unvalidated}} |
 
 ---
 
@@ -234,7 +241,8 @@ The result: {{COST_OF_THE_STATUS_QUO}}.
      Append-only — grow this list downward, never delete; mark resolved/retired with a
      date. Accepted residual risks (the team chooses to live with them) are mirrored in
      ARCHITECTURE.md §9 with a revisit trigger; mark them "**Accepted residual risk**"
-     and cite the ADR. -->
+     and cite the ADR. A mitigation that names code structure (a shared helper, a
+     transaction, a lock) cites the ADR that decides it; the BRD does not decide design. -->
 
 | ID | Risk | Likelihood | Impact | Mitigation | Owner |
 |----|------|-----------|--------|-----------|-------|

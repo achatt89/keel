@@ -54,6 +54,8 @@ keel documents projects using the templates in references/templates/. The docume
 ## Current status
 Docs site cutover (no plugin version): `site/` (React, TLA DS from GitHub Packages) deploys to keel.thelogicatelier.com via `.github/workflows/pages.yml`; old `docs/index.html` single page retired.
 
+v2.6.4 — BRD says only what was decided: Assumptions table Source column (transcript answer / ADR / unvalidated), code behaviour goes to ADR or LLD, RSK mitigations cite ADRs; doc sync Step 7 compares BRD/RSK/PRD statements with code (Build deviation, "superseded by the build", or Open decision; no row removed); Merge stage: all substitutions in one commit + check.mjs; /keel check status-lag, brd-unsourced. Not measured (no spend). On branch feat/keel-2.6.4-brd-sourced.
+
 v2.6.3 — docs under test: README examples in examples/ run by examples.test.*, error tables carry keel:asserts tests (conventions, plan standing rule + exit gate, phase/change Build briefs, doc-sync gap); /keel check docs-untested. Signal n=1: README contradictions 0 of 3 sessions; drift 3/3 from generated BRD detail (2.6.4). Founder-approved 16 Nov. Merged to main.
 
 v2.6.2 — doc sync reconciles ADR Status + Build deviation for every ADR the work touched or whose phase it advanced (re-checks earlier "not built" text), compares ARCHITECTURE/LLD/README with the code, runs .keel/check.mjs (Step 9); phase completion naming an ADR is never status-only; /keel check adr-status-stale. Measured on eval v1 inventory: ADR/design-doc drift 0 of 6 sessions; pass rule (≤1 of 9) NOT met — README detail in 2 of 6 (2.6.3). Founder chose ship as is. Merged to main.
