@@ -21,7 +21,9 @@ document or script that already held it, word for word.
 
 These changes were measured first. The evaluation in `evals/` ran the same tasks with no
 documents, a minimal AGENTS.md and the full Keel set, then again with 2.6.0
-(`evals/results/v0-baseline.md`, `evals/results/regression-2.6.0.md`).
+(`evals/results/v0-baseline.md`, `evals/results/regression-2.6.0.md`). With the 2.6.0
+documents, agents still finished every task (9 of 9 runs, as before), at about 14% lower
+cost per run.
 
 ### Changed
 - **A leaner keystone.** AGENTS.md workflow steps are one line each; the rules live in the
