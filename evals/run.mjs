@@ -4,7 +4,7 @@
 //   node evals/run.mjs --gen-keel ledger         one-off: generate the Keel doc set fixture for a task
 //     --plugin-dir <dir>  the Keel plugin to generate with (default: this repo's plugins/keel); v1 pins tag keel--v2.5.6:
 //     git archive keel--v2.5.6 plugins/keel | tar -x -C <dir>   then  --plugin-dir <dir>/plugins/keel
-// Conditions: none, min, answers (min + founder-answers.md), keel. A task with "base" starts every condition from that code.
+// Conditions: none, min, answers (min + founder-answers.md), spec (answers + idea.md), keel. A task with "base" starts every condition from that code.
 // A task with "sessions" runs them in order in the same folder, one fresh `claude -p` each; one row per session.
 // Options: --model sonnet (agent), --judge opus, --effort <level>, --out <dir under results/raw>,
 //   --rescore (with --out: recompute usage fields from saved transcripts, no model calls).
@@ -48,6 +48,12 @@ const conditions = {
     cpSync(join(task.dir, 'founder-answers.md'), join(d, 'founder-answers.md'));
     writeFileSync(join(d, 'AGENTS.md'), readFileSync(join(d, 'AGENTS.md'), 'utf8') + '- The founder\'s interview answers (product decisions): `founder-answers.md`.\n');
   },
+  // answers + the founder's own written idea (idea.md): separates "the spec is written in the repo" from Keel's structure.
+  spec: (task, d) => {
+    conditions.answers(task, d);
+    cpSync(join(task.dir, 'idea.md'), join(d, 'idea.md'));
+    writeFileSync(join(d, 'AGENTS.md'), readFileSync(join(d, 'AGENTS.md'), 'utf8') + '- The founder\'s full specification, all phases (the "specification above" the answers refer to): `idea.md`.\n');
+  },
   keel: (task, d) => {
     const fx = join(task.dir, 'keel');
     if (!existsSync(fx)) throw new Error(`no Keel fixture for ${task.id}: run --gen-keel ${task.id} first`);
@@ -57,8 +63,8 @@ const conditions = {
 
 // What the transcript says the agent did: turns, tool calls, which doc files it opened.
 // docReads = main agent (Read, or a doc path named in a Bash command); subDocReads = subagents (e.g. Keel's doc-sync).
-const DOC = /(^|\/)(AGENTS|CLAUDE|founder-answers)\.md$|(^|\/)docs\//;
-const DOC_IN_CMD = /(?:^|[\s'"=/])((?:docs\/[\w./-]+\.md)|AGENTS\.md|CLAUDE\.md|founder-answers\.md)/g;
+const DOC = /(^|\/)(AGENTS|CLAUDE|founder-answers|idea)\.md$|(^|\/)docs\//;
+const DOC_IN_CMD = /(?:^|[\s'"=/])((?:docs\/[\w./-]+\.md)|AGENTS\.md|CLAUDE\.md|founder-answers\.md|idea\.md)/g;
 export function profile(stdout) {
   const tools = {}, main = new Set(), sub = new Set();
   let modelId;
