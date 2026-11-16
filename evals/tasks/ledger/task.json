@@ -1,0 +1,1 @@
+{ "id": "ledger", "title": "Shared-expense CLI", "tests": "tests", "timeoutMin": 20 }

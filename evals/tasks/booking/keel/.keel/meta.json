@@ -1,0 +1,52 @@
+{
+  "keelVersion": "2.5.6",
+  "docFormat": 2,
+  "generatedAt": "2026-11-16",
+  "lastUpgraded": null,
+  "lastArchived": null,
+  "archivedEntries": 0,
+  "adrLayout": "per-file",
+  "goalExitStrategy": "bounded-retries-then-escalate",
+  "budgets": {
+    "AGENTS.md": 12288,
+    "CLAUDE.md": 12288,
+    "docs/IMPLEMENTATION_PLAN.md": 65536,
+    "docs/adr/README.md": 16384
+  },
+  "defaultBudget": 32768,
+  "waivers": {},
+  "waiverReviewDays": 90,
+  "evidenceDir": ".keel/evidence",
+  "closeout": {
+    "maxOpenDeferred": 8,
+    "everyNPhases": 5
+  },
+  "deployLogKeep": 10,
+  "lastArchiveTrigger": null,
+  "documentsGenerated": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "CHANGELOG.md",
+    "docs/README.md",
+    "docs/BRD.md",
+    "docs/ARCHITECTURE.md",
+    "docs/IMPLEMENTATION_PLAN.md",
+    "docs/COMMANDS.md",
+    "docs/keel-transcript.md",
+    "docs/adr/README.md",
+    "docs/adr/ADR-001-commonjs-single-module.md",
+    "docs/adr/ADR-002-strict-parse-integer-minutes.md",
+    "docs/adr/ADR-003-check-order-and-error-precedence.md",
+    "docs/adr/ADR-004-generated-opaque-ids-map-store.md"
+  ],
+  "skillsInstalled": [],
+  "securitySkill": "declined",
+  "agents": {
+    "doc-sync": { "type": "subagent", "path": ".claude/agents/doc-sync.md" }
+  },
+  "updateCheck": true,
+  "evidenceRetention": {
+    "keepRunsPerBranch": 3,
+    "pruneMergedAfterDays": 30
+  }
+}
