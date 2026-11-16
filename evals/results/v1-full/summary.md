@@ -60,5 +60,14 @@
 | inventory-keel-r3-s1 | yes | 5/5 | - | - | pass | 0 | 1.50 | 0.36 | 8 | 324 | 51623 | 1620791 | 1 (0) |
 | inventory-keel-r3-s2 | yes | 11/11 | - | - | pass | 0 | 1.41 | 0.45 | 6 | 264 | 48593 | 1419435 | 0 (0) |
 | inventory-keel-r3-s3 | yes | 15/15 | - | - | fail (no-contradiction) | 0 | 0.51 | 0.50 | 16 | 110 | 17162 | 762139 | 5 (7) |
+| inventory-spec-r1-s1 | yes | 5/5 | - | - | - | 0 | 0.09 | 0.00 | 3 | 24 | 3613 | 50872 | 2 (0) |
+| inventory-spec-r1-s2 | yes | 11/11 | - | - | - | 0 | 0.11 | 0.00 | 4 | 28 | 4497 | 73904 | 2 (0) |
+| inventory-spec-r1-s3 | yes | 15/15 | - | - | - | 0 | 0.13 | 0.00 | 7 | 30 | 4354 | 171043 | 2 (0) |
+| inventory-spec-r2-s1 | yes | 5/5 | - | - | - | 0 | 0.09 | 0.00 | 4 | 22 | 3249 | 72329 | 2 (0) |
+| inventory-spec-r2-s2 | yes | 11/11 | - | - | - | 0 | 0.12 | 0.00 | 4 | 33 | 5305 | 72758 | 2 (0) |
+| inventory-spec-r2-s3 | yes | 15/15 | - | - | - | 0 | 0.10 | 0.00 | 4 | 32 | 5089 | 79124 | 2 (0) |
+| inventory-spec-r3-s1 | yes | 5/5 | - | - | - | 0 | 0.09 | 0.00 | 3 | 22 | 3400 | 50878 | 2 (0) |
+| inventory-spec-r3-s2 | yes | 11/11 | - | - | - | 0 | 0.11 | 0.00 | 4 | 30 | 4931 | 73095 | 2 (0) |
+| inventory-spec-r3-s3 | yes | 15/15 | - | - | - | 0 | 0.10 | 0.00 | 6 | 31 | 4793 | 132787 | 2 (0) |
 
-Total spend: agent 16.286 + judge 6.179 = 22.465. Multi-session runs: the run total is the sum of its session rows.
+Total spend: agent 17.226 + judge 6.179 = 23.405. Multi-session runs: the run total is the sum of its session rows.
