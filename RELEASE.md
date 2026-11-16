@@ -1,6 +1,6 @@
-# keel 2.6.1 — 2026-11-16
+# keel 2.6.2 — 2026-11-16
 
-Keel now writes every document type for every project. Until now a small project did not get the documents that did not fit it yet, such as a high-level design for a one-module tool or a deployment guide for something that runs only on a laptop, and which ones were left out could change from one run to the next. Now each such type is a short stub at its usual path. It says why the type does not apply yet, quoting your interview answer, what would make it apply, and where those facts live meanwhile. Documents that do apply are written in full, as before.
+Doc sync now brings decision records and design documents up to date with what was built, not only the plan and changelog. In our multi-session test, the plan and changelog stayed right, but older decision records kept saying a feature was "not built" after later sessions built it, and the architecture and low-level design described data shapes the code did not use. Doc sync now rewrites each affected decision record's status and build-deviation row, compares the design documents with the code, and runs the drift check before it hands back.
 
 **Install:**
 
@@ -18,31 +18,35 @@ Keel now writes every document type for every project. Until now a small project
 
 Restart Claude Code after installing or updating, then run /keel upgrade in an existing keel project.
 
-Keel now writes every document type for every project. Until now a small project did not get the
-documents that did not fit it yet, such as a high-level design for a one-module tool or a
-deployment guide for something that runs only on a laptop, and which ones were left out could
-change from one run to the next. Now each such type is a short stub at its usual path. It says
-why the type does not apply yet, quoting your interview answer, what would make it apply, and where
-those facts live meanwhile. Documents that do apply are written in full, as before.
-
-### Added
-- **Stubs for document types that do not apply yet.** A new stub template; the catalog lists every
-  type with its stub trigger. During the interview Keel shows every type as full or stub, with the
-  reason, and you can change any of them. AGENTS.md lists the stubs in one document-map row.
-- **`/keel check` finds three more kinds of drift.** `missing-type`: a document type with neither a
-  file nor a stub (projects on 2.6.1 or with a stub). `stub-triggered`: a stub whose reason no
-  longer holds, for example a Dockerfile next to a DEPLOYMENT stub, a package manifest next to a
-  COMMANDS stub, front-end files next to a DESIGN stub. `rules-missing`: a decision record whose
-  header names code paths that no area rule cites.
+Doc sync now brings decision records and design documents up to date with what was built, not only
+the plan and changelog. In our multi-session test, the plan and changelog stayed right, but older
+decision records kept saying a feature was "not built" after later sessions built it, and the
+architecture and low-level design described data shapes the code did not use. Doc sync now
+rewrites each affected decision record's status and build-deviation row, compares the design
+documents with the code, and runs the drift check before it hands back.
 
 ### Changed
-- **Generation reads the document catalog in full** before proposing the set, instead of choosing
-  from memory.
-- **`/keel upgrade`** offers a stub for each document type an existing project is missing, with the
-  reason taken from its existing docs, or the full document where the reason no longer holds.
-  Nothing is applied without your approval, and existing documents are not changed.
+- **Doc sync reconciles decision records.** Every record the work touched, or whose phase it
+  advanced, gets its Status cell moved to Built and its Build deviation row filled with what was
+  actually built. Wording an earlier sync left, like "Phase 2–3 methods not built", is checked
+  again on every sync. The decision text itself is never changed.
+- **Doc sync compares the design documents with the code.** Data shapes and store fields, exported
+  names, module sections, error codes and file layout in ARCHITECTURE, LLD and the README are
+  checked against the code the work touched, and fixed to match. A change that breaks a recorded
+  decision becomes a Build deviation row or a new decision record.
+- **Completing a phase that a decision record names is never a status-only sync,** so it always
+  goes to the doc-sync role.
+
+### Added
+- **`/keel check` reports stale decision records** (`adr-status-stale`): a Status cell, Build
+  deviation row or index row that says "not built" for phases the plan shows done, or a record
+  still Accepted after its phase is done. Doc sync runs the check as its last step.
+
+### Upgrading
+- `/keel upgrade` offers to replace `doc-sync.js` and the doc-sync subagent (they hold no project
+  content) and lists any stale records; the next doc sync fixes them.
 
 ---
 
-Tag: [keel--v2.6.1](https://github.com/achatt89/keel/tree/keel--v2.6.1) · [compare with 2.6.0](https://github.com/achatt89/keel/compare/keel--v2.6.0...keel--v2.6.1) · full history: [CHANGELOG.md](CHANGELOG.md) · machine-readable: [release.json](release.json)
+Tag: [keel--v2.6.2](https://github.com/achatt89/keel/tree/keel--v2.6.2) · [compare with 2.6.1](https://github.com/achatt89/keel/compare/keel--v2.6.1...keel--v2.6.2) · full history: [CHANGELOG.md](CHANGELOG.md) · machine-readable: [release.json](release.json)
 <!-- generated by scripts/release.mjs from CHANGELOG.md — do not edit -->

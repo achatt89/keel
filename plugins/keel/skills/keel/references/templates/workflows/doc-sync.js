@@ -81,6 +81,13 @@ const SYNC_RULES = `
   - New ADR → the template's frontmatter header (id, status, paths, check); its header status
     changes with its Status cell. ADRs without a header never get one. New or changed paths →
     add or fix the pointer line in .claude/rules/<area>.md (one line + the ID, never record text).
+  - Reconcile every ADR this work touched or whose phase it advanced (the phase named in its
+    Status cell, Build deviation row or index row): rewrite the Status cell to the latest stage
+    ("· Built \`<sha>\` <date>" once its code exists) and fill the Build deviation row with what
+    was actually built ("none — built as decided", or what differed, why, commit). Text YOU or an
+    earlier sync wrote, like "Phase 2–3 methods not built", is re-checked on EVERY sync and
+    rewritten once the code exists; it is never left behind. Same for the README index Status
+    column. These two rows are the only ADR text you may change; the decision text stays.
   - No addenda. Post-decision events are: build deviation (one ADR row) · incident (RUNBOOK.md
     Postmortems table) · deploy state (CHANGELOG / DEPLOYMENT deploy log) · superseded (new ADR).
 
@@ -115,12 +122,23 @@ const SYNC_RULES = `
   Step 7 — Other docs touched: COMMANDS.md (new command) · DEPLOYMENT.md (new env var /
   build-arg / gotcha) · RUNBOOK.md (new playbook / postmortem) · requirement coverage map ·
   FEEDBACK_ROUNDS.md (if this work closes a feedback item).
+  Design docs vs code — every sync that changed or added code: open the code this work touched
+  and compare it, statement by statement, with what ARCHITECTURE, LLD and docs/README.md (and
+  their parts) say about it: data shapes and store fields, exported names and export style,
+  module sections and helpers, error codes, file layout, and "not built yet / available once
+  Phase N" wording. Where the doc no longer matches, fix the doc to describe the code. If the
+  code broke a recorded decision rather than a detail, write the ADR's Build deviation row (or
+  a new ADR), never silently re-word the decision.
 
   Step 8 — Evidence-ladder lint (before committing): in every file you edited, grep for
   "✅", "verified", "live-verified", "confirmed", "proven". Each occurrence YOU wrote must be in a
   row/line that names a level (code-read | unit | integration | local-browser | staging |
   prod-live) and an artefact (sha, report path, CI URL, transcript path). Fix or downgrade any
   that don't. Never write "prod-live" from this step — only DEPLOYMENT.md's deploy procedure may.
+
+  Step 9 — Drift check: if .keel/check.mjs exists, run node .keel/check.mjs. Fix every
+  adr-status-stale finding (Step 4) and every dead-link or adr-status finding your edits caused;
+  list the rest under findings in your Report.
 `
 
 const REPORT_FORMAT = `
@@ -156,9 +174,10 @@ const inline = await agent(`
   Run: git log --oneline main..HEAD ; git diff main --name-only ; ls .keel/evidence/
   STATUS-ONLY means the docs need nothing beyond SYNC_RULES steps 2, 3 and 6 (exit-gate / phase
   row or Changes row, the AGENTS.md status table, one CHANGELOG line). It is NOT status-only if the
-  work made or changed a decision, filled an ADR stub, resolved a [NEEDS DECISION], deferred
+  work made or changed a decision, completed a phase that an ADR's Status cell, Build deviation
+  row or index row names (that ADR must move to Built), filled an ADR stub, resolved a [NEEDS DECISION], deferred
   anything, or changed a command, env var, procedure, schema, API, requirement or design rule.
-  If status-only: do steps 1, 2, 3, 6 and 8 below yourself now, then run node .keel/doc-size.mjs
+  If status-only: do steps 1, 2, 3, 6, 8 and 9 below yourself now, then run node .keel/doc-size.mjs
   (no LINK ERROR). Do not commit. If not status-only: edit nothing and say why.
   ${SYNC_RULES}
 `, {
@@ -198,6 +217,10 @@ for (let round = 1; round <= MAX_ROUNDS && !inline.statusOnly; round++) {
      on the index), any LINK ERROR (a part not linked from its index, or not linking back), any
      "split" verdict on a doc the role touched, any doc newly over budget with no verdict reason
      the caller accepts. A new waiver needs the caller's (human's) approval — never self-granted.
+  5. Drift: run node .keel/check.mjs if it exists; every adr-status-stale finding is a gap. Then
+     read the code the work touched against ARCHITECTURE, LLD and docs/README.md: each statement
+     about a data shape, store field, export, module section, error code or "not built yet"
+     that the code contradicts is a gap (file, statement, what the code does).
   complete = true only if that list is empty.
 `, {
     label: `doc-sync-review-r${round}`,

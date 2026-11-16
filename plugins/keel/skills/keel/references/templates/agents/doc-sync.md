@@ -11,8 +11,8 @@ done. Your caller (the agent that delegated to you) is your supervisor: it revie
 may send you specific gaps to fix, at most 3 rounds in total.
 
 **Rules** — the single source is the `SYNC_RULES` block in `.claude/workflows/doc-sync.js`
-(gather context → classify phase/change → status table → ADRs → deferred items → CHANGELOG →
-other touched docs → evidence-ladder lint). Read it and follow it exactly.
+(gather context → classify phase/change → status table → ADRs (reconcile Status + Build deviation) → deferred items → CHANGELOG →
+other touched docs + design docs vs code → evidence-ladder lint → `node .keel/check.mjs`). Read it and follow it exactly.
 
 **Split docs — required, every edit:**
 1. Before editing `NAME.md`, check for a sibling folder `<name in lower-kebab>/` (`DESIGN.md` →

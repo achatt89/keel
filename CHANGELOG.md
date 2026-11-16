@@ -3,6 +3,37 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.6.2] — 2026-11-16
+<!-- headline: Decision records and design docs keep up with the code. -->
+
+Doc sync now brings decision records and design documents up to date with what was built, not only
+the plan and changelog. In our multi-session test, the plan and changelog stayed right, but older
+decision records kept saying a feature was "not built" after later sessions built it, and the
+architecture and low-level design described data shapes the code did not use. Doc sync now
+rewrites each affected decision record's status and build-deviation row, compares the design
+documents with the code, and runs the drift check before it hands back.
+
+### Changed
+- **Doc sync reconciles decision records.** Every record the work touched, or whose phase it
+  advanced, gets its Status cell moved to Built and its Build deviation row filled with what was
+  actually built. Wording an earlier sync left, like "Phase 2–3 methods not built", is checked
+  again on every sync. The decision text itself is never changed.
+- **Doc sync compares the design documents with the code.** Data shapes and store fields, exported
+  names, module sections, error codes and file layout in ARCHITECTURE, LLD and the README are
+  checked against the code the work touched, and fixed to match. A change that breaks a recorded
+  decision becomes a Build deviation row or a new decision record.
+- **Completing a phase that a decision record names is never a status-only sync,** so it always
+  goes to the doc-sync role.
+
+### Added
+- **`/keel check` reports stale decision records** (`adr-status-stale`): a Status cell, Build
+  deviation row or index row that says "not built" for phases the plan shows done, or a record
+  still Accepted after its phase is done. Doc sync runs the check as its last step.
+
+### Upgrading
+- `/keel upgrade` offers to replace `doc-sync.js` and the doc-sync subagent (they hold no project
+  content) and lists any stale records; the next doc sync fixes them.
+
 ## [2.6.1] — 2026-11-16
 <!-- headline: Every document type in every project. -->
 
