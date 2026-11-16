@@ -74,5 +74,94 @@
       }
     },
     "success": true
+  },
+  {
+    "name": "inventory-keel-r1-s2",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 0.0396658,
+    "turns": 1,
+    "segments": 1,
+    "durationMs": 6312,
+    "wallMs": 6998,
+    "inputTokens": 2,
+    "outputTokens": 727,
+    "cacheRead": 13278,
+    "cacheWrite": 7766,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 2,
+        "output": 727,
+        "cacheRead": 13278,
+        "cacheWrite": 7766,
+        "costUsd": 0.0396658
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {},
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 11,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "docs/README.md says 'Status: ⬜ no phase built yet', which contradicts src/inventory.js, where Phase 1 (createInventory, InventoryError, addItem, receive, ship, stock) is implemented."
+    },
+    "judgeCostUsd": 0.3486898,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 832,
+        "cacheRead": 649,
+        "cacheWrite": 41489,
+        "costUsd": 0.3486898
+      }
+    },
+    "success": false
   }
 ]
