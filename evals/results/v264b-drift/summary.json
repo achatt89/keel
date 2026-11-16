@@ -1,0 +1,75 @@
+[
+  {
+    "name": "inventory-keel-r1-s1",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 1.7428409999999999,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 6539,
+    "wallMs": 341052,
+    "inputTokens": 222,
+    "outputTokens": 60553,
+    "cacheRead": 2021615,
+    "cacheWrite": 365715,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 222,
+        "output": 60553,
+        "cacheRead": 2021615,
+        "cacheWrite": 365715,
+        "costUsd": 1.7428409999999999
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "The plan's open deferred item says README does not mention examples/exports.js, but README embeds it via a keel:example marker that test/examples.test.js runs; NFR-MNT-001/002 also say the test checks devDependencies and scans src/**, while test/maintainability.test.js checks only dependencies and reads only src/inventory.js."
+    },
+    "judgeCostUsd": 0.3564058,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1993,
+        "cacheRead": 649,
+        "cacheWrite": 39551,
+        "costUsd": 0.3564058
+      }
+    },
+    "success": true
+  }
+]
