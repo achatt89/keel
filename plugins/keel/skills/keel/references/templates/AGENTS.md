@@ -94,6 +94,15 @@ without path loading open the file whose `paths:` match).
 
 Rules and rationale: IMPLEMENTATION_PLAN "Standing rules". Delegation (callers supervise their subagents, read the `## Report`, commit themselves): `.claude/workflows/README.md`.
 
+## Stops and end-of-run report
+
+<!-- Keel guidance: fill the stop list from the interview: actions an ADR, NFR, COMPLIANCE or
+     THREAT_MODEL row says need a human (irreversible data changes, money, credentials, new paid
+     services, anything outward-facing). Keep it to one line; the reasons stay in those docs. -->
+
+**Stop and ask** before: {{STOPS — e.g. a migration on shared data · a new paid service · deleting user data · a public release}}; or when two docs disagree on something the task depends on.
+**End every run with four lines:** Blocked on me · Changed · Found · Could not confirm.
+
 ## Current status
 
 <!-- Keel guidance: EXACTLY two rows, each cell one line. Overwritten (never appended) by doc-sync

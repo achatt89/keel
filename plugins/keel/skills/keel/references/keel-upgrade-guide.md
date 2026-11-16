@@ -407,6 +407,9 @@ Every project that will be built:
   report as information (doc-sync or the named mode fixes them; the upgrade itself does not)
 - [ ] an installed `.claude/hooks/keel-update-check.mjs` reads `release.json` (2.5.3: user-facing releases only) → else OUTDATED_CONVENTION (Minor): replace verbatim
 - [ ] `.claude/hooks/keel-update-check.mjs` + SessionStart entry → MISSING_FEATURE (Optional, opt-in)
+- [ ] AGENTS.md "Stops and end-of-run report" section (2.6: one stop line filled from the project's ADR/NFR/
+  COMPLIANCE/THREAT_MODEL rows, and the four-line end-of-run report) → MISSING_FEATURE (Optional). Propose the
+  stop list for the owner to edit; never invent a stop the docs do not support
 - [ ] Slim keystone and hooks (2.6) → see the section below; every item is OUTDATED_CONVENTION
   (Minor) and an offer, never applied without approval
 - [ ] Team answers (opt-in, `references/team-answers.md`): no `rounds` in `.keel/meta.json` → nothing
