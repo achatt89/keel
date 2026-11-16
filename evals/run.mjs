@@ -36,8 +36,10 @@ const conditions = {
 // What the transcript says the agent did: turns, tool calls, which doc files it opened.
 function profile(stdout) {
   const tools = {}, docReads = new Set();
+  let modelId;
   for (const l of stdout.split('\n')) {
     let e; try { e = JSON.parse(l); } catch { continue; }
+    if (e.type === 'system' && e.subtype === 'init') modelId = e.model;
     for (const c of e.message?.content ?? []) {
       if (c.type !== 'tool_use') continue;
       tools[c.name] = (tools[c.name] ?? 0) + 1;
@@ -45,7 +47,7 @@ function profile(stdout) {
       if (c.name === 'Read' && /(^|\/)(AGENTS|CLAUDE)\.md$|\/docs\//.test(f)) docReads.add(f.replace(/.*keel-eval-[^/]+\//, ''));
     }
   }
-  return { tools, docReads: [...docReads].sort() };
+  return { modelId, tools, docReads: [...docReads].sort() };
 }
 
 const usage = (r) => r ? {

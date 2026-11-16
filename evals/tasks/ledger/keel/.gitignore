@@ -1,0 +1,3 @@
+ledger.json
+*.tmp-*
+.DS_Store
