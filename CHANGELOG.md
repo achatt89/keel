@@ -3,6 +3,32 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.6.3] — 2026-11-16
+<!-- headline: README examples are tested, not just written. -->
+
+README examples and error tables now sit under test. In our 2.6.2 test, the documents Keel keeps
+stayed in step with the code, but the project's own README still went wrong in small ways: an
+error code described for the wrong case, and an off-by-one number in a worked example. Now each
+README code example is a file in `examples/` that a test runs and compares with its stated output,
+and each documented error code has a test that triggers it. A wrong example fails the tests
+instead of waiting for someone to notice. This adds no model work to a session.
+
+### Added
+- **Docs under test.** A new convention, a standing rule in the implementation plan, and a README
+  section in the phase and change task briefs. A phase that delivers a README gets the exit gate
+  "README examples and error table pass".
+- **`/keel check` reports untested README content** (`docs-untested`): a runnable code block or an
+  error table with no `keel:example` / `keel:asserts` marker, or a marker naming a file that does
+  not exist (projects on 2.6.3, or with a marker).
+
+### Changed
+- **Doc sync** treats an untested README example or error table as a gap: it adds the example or
+  test and the marker. It never fixes the README text alone.
+
+### Upgrading
+- `/keel upgrade` offers the examples runner, the markers and the standing rule for an existing
+  README. It is applied only with your approval.
+
 ## [2.6.2] — 2026-11-16
 <!-- headline: Decision records and design docs keep up with the code. -->
 

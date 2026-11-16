@@ -1,6 +1,6 @@
-# keel 2.6.2 — 2026-11-16
+# keel 2.6.3 — 2026-11-16
 
-Doc sync now brings decision records and design documents up to date with what was built, not only the plan and changelog. In our multi-session test, the plan and changelog stayed right, but older decision records kept saying a feature was "not built" after later sessions built it, and the architecture and low-level design described data shapes the code did not use. Doc sync now rewrites each affected decision record's status and build-deviation row, compares the design documents with the code, and runs the drift check before it hands back.
+README examples and error tables now sit under test. In our 2.6.2 test, the documents Keel keeps stayed in step with the code, but the project's own README still went wrong in small ways: an error code described for the wrong case, and an off-by-one number in a worked example. Now each README code example is a file in `examples/` that a test runs and compares with its stated output, and each documented error code has a test that triggers it. A wrong example fails the tests instead of waiting for someone to notice. This adds no model work to a session.
 
 **Install:**
 
@@ -18,44 +18,30 @@ Doc sync now brings decision records and design documents up to date with what w
 
 Restart Claude Code after installing or updating, then run /keel upgrade in an existing keel project.
 
-Doc sync now brings decision records and design documents up to date with what was built, not only
-the plan and changelog. In our multi-session test, the plan and changelog stayed right, but older
-decision records kept saying a feature was "not built" after later sessions built it, and the
-architecture and low-level design described data shapes the code did not use. Doc sync now
-rewrites each affected decision record's status and build-deviation row, compares the design
-documents with the code, and runs the drift check before it hands back.
-
-**What we measured, and what is not covered.** On one three-session test task (our v1 inventory
-task, one tested model, 6 sessions), stale decision records and architecture or low-level design
-contradictions dropped to 0 of 6 sessions, against 6 of 9 sessions with some contradiction on
-2.5.6. That is a small sample and an indication, not proof. The release did **not** meet the pass
-rule we set (contradictions in at most 1 of 9 sessions): 2 of 6 sessions still had a wrong
-statement in the project's own README, an error-code meaning and the numbers in a worked example.
-README accuracy is not covered by this release; making README examples runnable checks is
-planned for 2.6.3.
-
-### Changed
-- **Doc sync reconciles decision records.** Every record the work touched, or whose phase it
-  advanced, gets its Status cell moved to Built and its Build deviation row filled with what was
-  actually built. Wording an earlier sync left, like "Phase 2–3 methods not built", is checked
-  again on every sync. The decision text itself is never changed.
-- **Doc sync compares the design documents with the code.** Data shapes and store fields, exported
-  names, module sections, error codes and file layout in ARCHITECTURE, LLD and the README are
-  checked against the code the work touched, and fixed to match. A change that breaks a recorded
-  decision becomes a Build deviation row or a new decision record.
-- **Completing a phase that a decision record names is never a status-only sync,** so it always
-  goes to the doc-sync role.
+README examples and error tables now sit under test. In our 2.6.2 test, the documents Keel keeps
+stayed in step with the code, but the project's own README still went wrong in small ways: an
+error code described for the wrong case, and an off-by-one number in a worked example. Now each
+README code example is a file in `examples/` that a test runs and compares with its stated output,
+and each documented error code has a test that triggers it. A wrong example fails the tests
+instead of waiting for someone to notice. This adds no model work to a session.
 
 ### Added
-- **`/keel check` reports stale decision records** (`adr-status-stale`): a Status cell, Build
-  deviation row or index row that says "not built" for phases the plan shows done, or a record
-  still Accepted after its phase is done. Doc sync runs the check as its last step.
+- **Docs under test.** A new convention, a standing rule in the implementation plan, and a README
+  section in the phase and change task briefs. A phase that delivers a README gets the exit gate
+  "README examples and error table pass".
+- **`/keel check` reports untested README content** (`docs-untested`): a runnable code block or an
+  error table with no `keel:example` / `keel:asserts` marker, or a marker naming a file that does
+  not exist (projects on 2.6.3, or with a marker).
+
+### Changed
+- **Doc sync** treats an untested README example or error table as a gap: it adds the example or
+  test and the marker. It never fixes the README text alone.
 
 ### Upgrading
-- `/keel upgrade` offers to replace `doc-sync.js` and the doc-sync subagent (they hold no project
-  content) and lists any stale records; the next doc sync fixes them.
+- `/keel upgrade` offers the examples runner, the markers and the standing rule for an existing
+  README. It is applied only with your approval.
 
 ---
 
-Tag: [keel--v2.6.2](https://github.com/achatt89/keel/tree/keel--v2.6.2) · [compare with 2.6.1](https://github.com/achatt89/keel/compare/keel--v2.6.1...keel--v2.6.2) · full history: [CHANGELOG.md](CHANGELOG.md) · machine-readable: [release.json](release.json)
+Tag: [keel--v2.6.3](https://github.com/achatt89/keel/tree/keel--v2.6.3) · [compare with 2.6.2](https://github.com/achatt89/keel/compare/keel--v2.6.2...keel--v2.6.3) · full history: [CHANGELOG.md](CHANGELOG.md) · machine-readable: [release.json](release.json)
 <!-- generated by scripts/release.mjs from CHANGELOG.md — do not edit -->

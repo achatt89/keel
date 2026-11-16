@@ -336,6 +336,12 @@ Check:
   project content (a full-time doc agent's brief is not touched): replace verbatim on approval. Run
   `.keel/check.mjs` at U2 and list any `adr-status-stale` finding as information; the next doc-sync fixes it
   (it may edit only the Status cell and Build deviation row, never the decision).
+- [ ] Docs under test (2.6.3; `.keel/check.mjs` reports `docs-untested` once the project is on 2.6.3) →
+  OUTDATED_CONVENTION (Optional). For a README with runnable code blocks or an error table, propose
+  `examples/<name>.*` files with expected output, an `examples.test.*` runner, the `keel:example` /
+  `keel:asserts` markers, and the plan's "Docs under test" standing rule. Applied on approval; the
+  README text is not changed except to add the markers. The phase and change templates' Build brief
+  gain the README section (replace `change-template.js` verbatim; propose the edit for non-✅ phase scripts).
 - [ ] `change-template.js` present → MISSING_FEATURE (Important) if absent
 - [ ] `.keel/evidence/` exists → MISSING_FEATURE (Important) if absent
 - [ ] At least one `phase-N-*.js` for each non-✅ phase in IMPLEMENTATION_PLAN → MISSING_FEATURE (Important)

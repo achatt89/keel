@@ -6,7 +6,7 @@
     { "name": "Version", "usage": ["/keel version"],
       "summary": "Shows the installed keel version, the version that last updated this project's docs, doc sizes against their budgets, and whether a newer user-facing release exists." },
     { "name": "Check", "usage": ["/keel check"],
-      "summary": "Read-only drift check: dead links, ADR index against ADR files, finished phases with open gates or missing evidence, decision records still marked not built after their phase is done, missing workflow scripts, and dependencies no design doc names. Writes nothing." },
+      "summary": "Read-only drift check: dead links, ADR index against ADR files, finished phases with open gates or missing evidence, decision records still marked not built after their phase is done, README examples and error tables with no test, missing workflow scripts, and dependencies no design doc names. Writes nothing." },
     { "name": "Phase", "usage": ["/keel phase new <slug> [--after N | --split N]"],
       "summary": "Scopes a new build phase: a plan block with exit gates, reserved decision-record numbers, and a workflow script. Insert after a phase or split one." },
     { "name": "Change", "usage": ["/keel change <slug>"],

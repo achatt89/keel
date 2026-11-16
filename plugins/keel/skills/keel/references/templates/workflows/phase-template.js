@@ -114,6 +114,14 @@ const buildResults = await parallel(TASKS.map((task, i) => () => agent(`
     (founder | engineering | legal). Never invent a decision to fill a stub.
   ── End ID rules ───────────────────────────────────────────────────────────
 
+  ── If this task writes or edits a README or usage doc ─────────────────────
+  Docs under test (conventions "Docs under test"): each code example is a file in examples/
+  with its expected output, copied word for word under <!-- keel:example examples/<file> -->;
+  examples.test.* runs them all. An error table carries <!-- keel:asserts <test file> --> above
+  its header, and that test triggers every row's code on that row's method. Write the example
+  or test first, run it against the code, then copy it into the README.
+  ── End docs section ───────────────────────────────────────────────────────
+
   ── If this task includes UI work ──────────────────────────────────────────
   1. Run /impeccable shape <feature> FIRST — plan the UX/UI before writing code.
   2. Check modern-web-guidance before any new UI pattern:
