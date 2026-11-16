@@ -515,3 +515,31 @@ Source `v1-full/summary.json`. Tested model `claude-sonnet-5-5` and judge `claud
 | task quotas | agent | `claude-sonnet-5-5` | 12 | 176 | 74,936 | 2,059,906 | 342,563 | 2.126 |
 | task quotas | judge | `claude-opus-5-5` | 12 | 24 | 15,774 | 7,788 | 102,643 | 1.138 |
 
+
+## 2.6.2 drift measurement (16 Nov 2026, cap USD 15)
+
+Task v1 inventory, keel condition, 2.5.6 docs plus the 2.6.2 doc-sync overlay. Stopped after rep 1 (verdict already decided: 2 of 9 sessions failed). Rep 2 session 1 was killed mid-run: its transcript was never written, so its tokens and cost are **not recorded**. Recorded spend: USD 5.242 (agent 3.987 + judge 1.255).
+
+### Per run
+
+| run | role | model id | runs | input | output | cache read | cache write | cost $ |
+|---|---|---|---|---|---|---|---|---|
+| inventory-keel-r1-s1 | agent | `claude-sonnet-5-5` |  | 178 | 46,869 | 1,516,220 | 324,528 | 1.455 |
+| inventory-keel-r1-s1 | judge | `claude-opus-5-5` |  | 2 | 1,394 | 649 | 40,260 | 0.350 |
+| inventory-keel-r1-s2 | agent | `claude-sonnet-5-5` |  | 148 | 45,341 | 1,330,054 | 287,133 | 1.325 |
+| inventory-keel-r1-s2 | judge | `claude-opus-5-5` |  | 2 | 1,298 | 649 | 50,617 | 0.431 |
+| inventory-keel-r1-s3 | agent | `claude-sonnet-5-5` |  | 148 | 43,145 | 1,411,902 | 245,715 | 1.207 |
+| inventory-keel-r1-s3 | judge | `claude-opus-5-5` |  | 2 | 834 | 649 | 57,092 | 0.474 |
+
+### Totals
+
+| group | role | model id | runs | input | output | cache read | cache write | cost $ |
+|---|---|---|---|---|---|---|---|---|
+| ALL | agent | `claude-sonnet-5-5` | 3 | 474 | 135,355 | 4,258,176 | 857,376 | 3.987 |
+| ALL | judge | `claude-opus-5-5` | 3 | 6 | 3,526 | 1,947 | 147,969 | 1.255 |
+| cond keel | agent | `claude-sonnet-5-5` | 3 | 474 | 135,355 | 4,258,176 | 857,376 | 3.987 |
+| cond keel | judge | `claude-opus-5-5` | 3 | 6 | 3,526 | 1,947 | 147,969 | 1.255 |
+| inventory / keel | agent | `claude-sonnet-5-5` | 3 | 474 | 135,355 | 4,258,176 | 857,376 | 3.987 |
+| inventory / keel | judge | `claude-opus-5-5` | 3 | 6 | 3,526 | 1,947 | 147,969 | 1.255 |
+| task inventory | agent | `claude-sonnet-5-5` | 3 | 474 | 135,355 | 4,258,176 | 857,376 | 3.987 |
+| task inventory | judge | `claude-opus-5-5` | 3 | 6 | 3,526 | 1,947 | 147,969 | 1.255 |

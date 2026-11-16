@@ -177,7 +177,7 @@ export function check(root) {
   const status = new Map(), built = new Set(), blocks = []
   for (const f of planFiles) {
     const text = texts.get(f), p = prose(text)
-    for (const r of p.matchAll(/^\|\s*([\d.]+)\s*(?:—|-|–)[^|]*\|\s*(✅|🔄|⬜)[^\n]*/gm)) { status.set(r[1], r[2]); if (r[2] === '✅' || /\b(merged|deployed|live)\b/i.test(r[0])) built.add(r[1]) }
+    for (const r of p.matchAll(/^\|\s*([\d.]+)\s*(?:—|-|–)[^|]*\|\s*(✅|🔄|⬜)[^\n]*/gm)) { status.set(r[1], r[2]); if (r[2] === '✅' || /\b(merged|deployed|live)\b|\bon `[^`]+`/i.test(text.slice(r.index, r.index + r[0].length))) built.add(r[1]) }
     const heads = [...p.matchAll(/^## Phase ([\d.]+)\b.*$/gm)]
     heads.forEach((h, i) => {
       const end = i + 1 < heads.length ? heads[i + 1].index : (p.slice(h.index + 1).search(/^## /m) + h.index + 1 || text.length)
@@ -208,11 +208,11 @@ export function check(root) {
   // ADR status vs the plan (2.6.2): "not built" text, or Accepted never moved to Built, after the phases it names are ✅.
   const phasesIn = s => [...s.matchAll(/\bPhases?\s+(\d+(?:\.\d+)?)(?:\s*(?:[–—-]|\/|,|and|&)\s*(\d+(?:\.\d+)?))?/gi)].flatMap(([, a, b]) =>
     !b ? [a] : Number.isInteger(+a) && Number.isInteger(+b) && +b > +a && +b - +a < 10 ? Array.from({ length: +b - +a + 1 }, (_, i) => String(+a + i)) : [a, b])
-  const allDone = ps => ps.length > 0 && ps.every(n => built.has(n)) // built = ✅, or its row says merged/deployed/live
+  const allDone = ps => ps.length > 0 && ps.every(n => built.has(n)) // built = ✅, or its row says merged/deployed/live or "on `<branch>`" (code exists)
   const notBuilt = (file, text, cell, label) => {
     for (const seg of cell.split(/[;·|]|\.\s/)) if (/\bnot (?:yet )?built\b|\bunbuilt\b/i.test(seg)) {
       const ps = phasesIn(seg), hit = ps.length ? ps.filter(n => built.has(n)) : allDone([...status.keys()]) ? [...status.keys()] : []
-      if (hit.length) add('adr-status-stale', file, lineOf(text, Math.max(0, text.indexOf(cell))), `${label} says "${seg.trim().slice(0, 80)}" but the plan shows Phase ${hit.join(', ')} built (✅ or merged): update it to what was built`)
+      if (hit.length) add('adr-status-stale', file, lineOf(text, Math.max(0, text.indexOf(cell))), `${label} says "${seg.trim().slice(0, 80)}" but the plan shows Phase ${hit.join(', ')} built (✅, merged or on a branch): update it to what was built`)
     }
   }
   if (status.size) {
@@ -222,7 +222,7 @@ export function check(root) {
       notBuilt(file, text, st, 'Status'); notBuilt(file, text, dev, 'Build deviation')
       const scope = phasesIn(st)
       if (stage(st) === STAGES.indexOf('accepted') && allDone(scope))
-        add('adr-status-stale', file, lineOf(text, text.indexOf(st)), `Status is Accepted but the plan shows Phase ${scope.join(', ')} built (✅ or merged): mark it Built (commit) and fill the Build deviation row`)
+        add('adr-status-stale', file, lineOf(text, text.indexOf(st)), `Status is Accepted but the plan shows Phase ${scope.join(', ')} built (✅, merged or on a branch): mark it Built (commit) and fill the Build deviation row`)
     }
     if (texts.has(index)) for (const r of prose(texts.get(index)).matchAll(/^\|[^\n]*ADR-\d+[^\n]*$/gm)) notBuilt(index, texts.get(index), r[0], 'Index row')
   }
@@ -378,7 +378,7 @@ if (process.argv.includes('--self-test')) {
     ['adr-status-stale', /README\.md:\d+ Index row says "Phase 0 parts not built"/]]
   for (const [k, re] of sWant) assert(sRes.findings.some(f => f.kind === k && re.test(`${f.file}:${f.line} ${f.msg}`)), `expected [${k}] ${re}\n${report(sRes)}`)
   assert(sRes.findings.length === sWant.length, `expected ${sWant.length} status findings, got ${sRes.findings.length}\n${report(sRes)}`)
-  const merged = check(mk({ ...sOk, 'docs/IMPLEMENTATION_PLAN.md': plan('✅', '✅').replace('| 1 — Core | ⬜ |', '| 1 — Core | 🔄 2/3 gates met · merged `abc` |') })).findings
+  const merged = check(mk({ ...sOk, 'docs/IMPLEMENTATION_PLAN.md': plan('✅', '✅').replace('| 1 — Core | ⬜ |', '| 1 — Core | 🔄 2/3 gates met · on `phase-1-core` |') })).findings
   assert(merged.length === 2 && merged.every(f => f.kind === 'adr-status-stale' && /Phase 1 built/.test(f.msg)), `a merged phase counts as built:\n${merged.map(f => f.msg).join('\n')}`)
   console.log(`keel check self-test: ok (clean fixtures clean; ${want.length + tWant.length + sWant.length} planted drifts each reported once)`)
   process.exit(0)

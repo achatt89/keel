@@ -123,10 +123,11 @@ const SYNC_RULES = `
   build-arg / gotcha) · RUNBOOK.md (new playbook / postmortem) · requirement coverage map ·
   FEEDBACK_ROUNDS.md (if this work closes a feedback item).
   Design docs vs code — every sync that changed or added code: open the code this work touched
-  and compare it, statement by statement, with what ARCHITECTURE, LLD and docs/README.md (and
-  their parts) say about it: data shapes and store fields, exported names and export style,
-  module sections and helpers, error codes, file layout, and "not built yet / available once
-  Phase N" wording. Where the doc no longer matches, fix the doc to describe the code. If the
+  and compare it, statement by statement, with what ARCHITECTURE, LLD, the root README.md and
+  docs/README.md (and their parts) say about it: data shapes and store fields, exported names and export style,
+  module sections and helpers, error codes and the order they are checked in, file layout, and
+  "not built yet / available once Phase N" wording. The code on this branch counts as built:
+  this phase's work is built even though the plan row still says "on <branch>". Where the doc no longer matches, fix the doc to describe the code. If the
   code broke a recorded decision rather than a detail, write the ADR's Build deviation row (or
   a new ADR), never silently re-word the decision.
 
@@ -218,8 +219,8 @@ for (let round = 1; round <= MAX_ROUNDS && !inline.statusOnly; round++) {
      "split" verdict on a doc the role touched, any doc newly over budget with no verdict reason
      the caller accepts. A new waiver needs the caller's (human's) approval — never self-granted.
   5. Drift: run node .keel/check.mjs if it exists; every adr-status-stale finding is a gap. Then
-     read the code the work touched against ARCHITECTURE, LLD and docs/README.md: each statement
-     about a data shape, store field, export, module section, error code or "not built yet"
+     read the code the work touched against ARCHITECTURE, LLD, README.md and docs/README.md: each statement
+     about a data shape, store field, export, module section, error code or check order, or "not built yet"
      that the code contradicts is a gap (file, statement, what the code does).
   complete = true only if that list is empty.
 `, {
