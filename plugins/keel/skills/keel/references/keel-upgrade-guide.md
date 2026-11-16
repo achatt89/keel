@@ -395,6 +395,10 @@ Every project that will be built:
   named section (never compress)
 - [ ] `.keel/meta.json` has no `budgetExceptions` (moved to `waivers` with `reason` + `reviewed`)
   → OUTDATED_CONVENTION (Minor; ask the user per entry)
+- [ ] Split docs (a parent with `## Parts`): no same-file `#anchor` link in the family points at a heading that moved to
+  another part (2.6.0; `.keel/check.mjs` reports them as `dead-link … no heading`) → OUTDATED_CONVENTION (Minor).
+  Propose `node .keel/doc-size.mjs --relink <parent.md>` per family and run it on approval: it rewrites only those links,
+  to `NN-part.md#anchor`, is idempotent, and never touches ADR files. New splits do this themselves.
 - [ ] `.keel/check.mjs` present (2.6.0: `/keel check`, read-only drift check) → MISSING_FEATURE (Optional).
   U1 installs it verbatim on every upgrade; no document changes. Run it once at U2 and list its findings in the
   report as information (doc-sync or the named mode fixes them; the upgrade itself does not)

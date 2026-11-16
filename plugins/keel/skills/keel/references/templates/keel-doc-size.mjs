@@ -5,6 +5,7 @@
 //        node .keel/doc-size.mjs --where <doc.md> "<section>"   print the file that holds <section>
 //        node .keel/doc-size.mjs --move-out <AGENTS.md|CLAUDE.md> "<## section>"   keystone → docs/agents/
 //        node .keel/doc-size.mjs --closeout <IMPLEMENTATION_PLAN.md>   open deferred rows + the closeout phase number
+//        node .keel/doc-size.mjs --relink <doc.md>   point a split doc's same-file #anchors at the part holding the heading
 //        node .keel/doc-size.mjs --evidence <.keel/evidence/x.json>   check a Verify record (read-only)
 //        node .keel/doc-size.mjs --self-test
 // One VERDICT per doc, with the reason:
@@ -343,7 +344,43 @@ export function split(root, doc, budget, depth = 0) {
     try { const r = split(root, f, budget, depth + 1); res.parts.push(...r.parts); res.rewired += r.rewired; res.adrSkipped += r.adrSkipped } catch {}
   }
   res.parts.sort()
+  if (depth === 0) res.relinked = relink(root, parentRel)
   return res
+}
+
+// Same-file "#anchor" links inside a split family (the parent and every part in its folder) whose
+// heading now lives in another file of the family → "<part>.md#anchor". Fixes a table of contents
+// that the split left in one part. Idempotent; links outside fenced code only; ADR files are never in a family.
+export function relink(root, parentRel) {
+  if (outside(posix.normalize(parentRel))) throw new Error(`${parentRel}: outside the project — refused`)
+  const folder = folderOf(parentRel)
+  const family = [parentRel, ...(isDir(root, folder) ? readdirSync(join(root, folder)).filter(f => f.endsWith('.md')).sort().map(f => posix.join(folder, f)) : [])]
+    .filter(f => existsSync(join(root, f)))
+  const heads = {}, home = {}
+  for (const f of family) {
+    let fence = false; heads[f] = new Set()
+    for (const l of read(root, f).split('\n')) {
+      if (/^\s*(```|~~~)/.test(l)) fence = !fence
+      const m = !fence && l.match(/^#{1,6} (.+?)\s*#*\s*$/)
+      if (m) { const a = slug(m[1]); heads[f].add(a); if (!(a in home)) home[a] = f }
+    }
+  }
+  let n = 0
+  for (const f of family) {
+    let fence = false
+    const src = read(root, f)
+    const out = src.split('\n').map(l => {
+      if (/^\s*(```|~~~)/.test(l)) { fence = !fence; return l }
+      if (fence) return l
+      return l.replace(/\]\(#([^)\s]+)\)/g, (all, a) => {
+        const to = !heads[f].has(a) && home[a]
+        if (!to || to === f) return all
+        n++; return `](${relative(dirname(f), to)}#${a})`
+      })
+    }).join('\n')
+    if (out !== src) writeFileSync(join(root, f), out)
+  }
+  return n
 }
 
 // Keystone: move one "## " section out verbatim to docs/agents/NN-<slug>.md (docs/claude/ for
@@ -558,6 +595,14 @@ if (process.argv.includes('--self-test')) {
   if (!(k1.phase === "5.5" && k1.open.length === 0 && k2.phase === "5.16" && k2.open.length === 3 && k3.open.length === 0))
     fail("closeout", { k1, k2, k3 })
 
+  // relink: a table of contents left in one part points at the parts that now hold its headings
+  const [r9, w9] = fixture()
+  w9('docs/ARCH.md', '# Arch\n\n## 1. Intro\n\nToC:\n- [Two](#2-two)\n- [Three](#3-three)\n- [Intro](#1-intro)\n\n' + sec('2. Two', 400) + sec('3. Three', 400))
+  const s9 = split(r9, 'docs/ARCH.md', 3000)
+  const fam9 = [...walk(r9, 'docs')].map(f => [f, read(r9, f)])
+  const left9 = fam9.flatMap(([f, t]) => [...t.matchAll(/\]\(#([^)]+)\)/g)].filter(m => !t.split('\n').some(l => /^#{1,6} /.test(l) && slug(l.replace(/^#+ /, '')) === m[1])).map(m => `${f}#${m[1]}`))
+  if (!(s9.relinked >= 2 && !left9.length && relink(r9, 'docs/ARCH.md') === 0)) fail('relink', { s9, left9 })
+
   // evidence: prod-live and an unproven met check are rejected; proven, partial and code-read pass
   const ev = evidenceErrors({ gates: [
     { gate: 'a', level: 'prod-live', status: 'met', failSeen: 'x' },
@@ -598,6 +643,11 @@ if (process.argv.includes('--move-out')) {
   if (!KEYSTONE.has(ks)) refuse(ks, '--move-out is for AGENTS.md / CLAUDE.md; other docs use --split')
   try { console.log(`moved "${process.argv[i + 2]}" out of ${ks} → ${moveOut('.', ks, process.argv[i + 2] || '')}`) } catch (e) { refuse(ks, e.message) }
 }
+if (process.argv.includes('--relink')) {
+  const doc = arg('--relink')
+  try { console.log(`relink ${doc}: ${relink('.', doc)} #anchor link(s) pointed at the part that holds the heading`) } catch (e) { refuse(doc, e.message) }
+  process.exit(0)
+}
 if (process.argv.includes('--split')) {
   const doc = arg('--split')
   const f = check('.', { afterArchive: true }).files.find(x => x.file === doc)
@@ -607,7 +657,7 @@ if (process.argv.includes('--split')) {
   if (f && ['waived', 'manual'].includes(f.verdict)) refuse(doc, `${f.verdict}: ${f.reason}`)
   try {
     const r = split('.', doc, f ? f.budget : (meta.budgets || {})[doc] ?? meta.defaultBudget ?? 32768)
-    console.log(`split ${doc}: ${r.parts.length} new part(s) in ${r.folder}/ — ${r.parts.join(', ')}; ${r.rewired} inbound reference(s) repointed${r.adrSkipped ? `; ${r.adrSkipped} in ADR files left as-is (listed under "Moved sections")` : ''}`)
+    console.log(`split ${doc}: ${r.parts.length} new part(s) in ${r.folder}/ — ${r.parts.join(', ')}; ${r.rewired} inbound reference(s) repointed, ${r.relinked} in-family #anchor link(s) relinked${r.adrSkipped ? `; ${r.adrSkipped} in ADR files left as-is (listed under "Moved sections")` : ''}`)
   } catch (e) { refuse(doc, e.message) }
 }
 const res = check('.', { afterArchive: process.argv.includes('--after-archive') })
