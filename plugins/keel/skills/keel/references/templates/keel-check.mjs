@@ -48,9 +48,9 @@ const STUB = /<!--\s*keel:stub\s+trigger=([\w-]+)\s*-->/
 const isArchive = f => /ARCHIVE/i.test(basename(f)) || /^LEGACY_/i.test(basename(f)) || /(^|\/)archive\//i.test(f)
 const ADR_FILE = /^docs\/adr\/(ADR-(\d+))[^/]*\.md$/i
 const STAGES = ['reserved', 'proposed', 'accepted', 'built', 'superseded']
-// A Status cell is "Proposed … · Accepted … · Built `abc` …": its stage is the last " · " segment that
+// A Status cell is "Proposed … · Accepted … · Built `abc` …" (or "→" between steps): its stage is the last " · " segment that
 // starts with a stage word (so "Accepted (implemented). Built via …" stays accepted).
-const stage = s => s.split(/\s·\s/).reduce((best, seg) => {
+const stage = s => s.split(/\s[·→]\s/).reduce((best, seg) => {
   const i = STAGES.findIndex(st => new RegExp(`^\\W*${st}\\b`, 'i').test(seg.trim()))
   return i >= 0 ? i : best
 }, -1)
@@ -174,10 +174,10 @@ export function check(root) {
 
   // Plan: phase status vs phase blocks and the paths they cite.
   const planFiles = docs.filter(f => f === 'docs/IMPLEMENTATION_PLAN.md' || f.startsWith('docs/implementation-plan/'))
-  const status = new Map(), blocks = []
+  const status = new Map(), built = new Set(), blocks = []
   for (const f of planFiles) {
     const text = texts.get(f), p = prose(text)
-    for (const r of p.matchAll(/^\|\s*([\d.]+)\s*(?:—|-|–)[^|]*\|\s*(✅|🔄|⬜)/gm)) status.set(r[1], r[2])
+    for (const r of p.matchAll(/^\|\s*([\d.]+)\s*(?:—|-|–)[^|]*\|\s*(✅|🔄|⬜)[^\n]*/gm)) { status.set(r[1], r[2]); if (r[2] === '✅' || /\b(merged|deployed|live)\b|\bon `[^`]+`/i.test(text.slice(r.index, r.index + r[0].length))) built.add(r[1]) }
     const heads = [...p.matchAll(/^## Phase ([\d.]+)\b.*$/gm)]
     heads.forEach((h, i) => {
       const end = i + 1 < heads.length ? heads[i + 1].index : (p.slice(h.index + 1).search(/^## /m) + h.index + 1 || text.length)
@@ -203,6 +203,28 @@ export function check(root) {
     for (const d of b.text.matchAll(/^\s*- \[x\][^\n]*$/gim)) for (const t of pathTokens(d[0])) missing(t.p, d.index + t.i, 'deliverable')
     const e = b.text.match(/\*\*Evidence:\*\*\s*`([^`]+)`/)
     if (e && !e[1].includes('{{')) missing(e[1], e.index, 'evidence')
+  }
+
+  // ADR status vs the plan (2.6.2): "not built" text, or Accepted never moved to Built, after the phases it names are ✅.
+  const phasesIn = s => [...s.matchAll(/\bPhases?\s+(\d+(?:\.\d+)?)(?:\s*(?:[–—-]|\/|,|and|&)\s*(\d+(?:\.\d+)?))?/gi)].flatMap(([, a, b]) =>
+    !b ? [a] : Number.isInteger(+a) && Number.isInteger(+b) && +b > +a && +b - +a < 10 ? Array.from({ length: +b - +a + 1 }, (_, i) => String(+a + i)) : [a, b])
+  const allDone = ps => ps.length > 0 && ps.every(n => built.has(n)) // built = ✅, or its row says merged/deployed/live or "on `<branch>`" (code exists)
+  const notBuilt = (file, text, cell, label) => {
+    for (const seg of cell.split(/[;·|]|\.\s/)) if (/\bnot (?:yet )?built\b|\bunbuilt\b/i.test(seg)) {
+      const ps = phasesIn(seg), hit = ps.length ? ps.filter(n => built.has(n)) : allDone([...status.keys()]) ? [...status.keys()] : []
+      if (hit.length) add('adr-status-stale', file, lineOf(text, Math.max(0, text.indexOf(cell))), `${label} says "${seg.trim().slice(0, 80)}" but the plan shows Phase ${hit.join(', ')} built (✅, merged or on a branch): update it to what was built`)
+    }
+  }
+  if (status.size) {
+    for (const [, file] of adrFiles) {
+      const text = read(file), st = cellOf(text), dev = text.match(/^\|\s*Build deviation\s*\|([^\n]*)\|/m)?.[1] ?? ''
+      if (stage(st) === STAGES.indexOf('superseded')) continue
+      notBuilt(file, text, st, 'Status'); notBuilt(file, text, dev, 'Build deviation')
+      const scope = phasesIn(st)
+      if (stage(st) === STAGES.indexOf('accepted') && allDone(scope))
+        add('adr-status-stale', file, lineOf(text, text.indexOf(st)), `Status is Accepted but the plan shows Phase ${scope.join(', ')} built (✅, merged or on a branch): mark it Built (commit) and fill the Build deviation row`)
+    }
+    if (texts.has(index)) for (const r of prose(texts.get(index)).matchAll(/^\|[^\n]*ADR-\d+[^\n]*$/gm)) notBuilt(index, texts.get(index), r[0], 'Index row')
   }
 
   // Stack: runtime dependencies no record doc names.
@@ -339,7 +361,26 @@ if (process.argv.includes('--self-test')) {
   for (const [k, re] of tWant) assert(tRes.findings.some(f => f.kind === k && re.test(`${f.file}:${f.line} ${f.msg}`)), `expected [${k}] ${re}\n${report(tRes)}`)
   assert(tRes.findings.length === tWant.length, `expected ${tWant.length} type findings, got ${tRes.findings.length}\n${report(tRes)}`)
   assert(check(mk({ ...clean, 'docs/LLD.md': '# LLD\n' })).findings.length === 0, 'a pre-2.6.1 project with no stub must not get missing-type')
-  console.log(`keel check self-test: ok (clean fixtures clean; ${want.length + tWant.length} planted drifts each reported once)`)
+  // 2.6.2 ADR status vs plan: Phase 0 is ✅, Phase 1 ⬜. Text about an unfinished phase is not stale.
+  const row = (n, s) => `| [ADR-00${n}](./ADR-00${n}-x.md) | X | ${s} | eng | 2026-01-0${n} |\n`
+  const dev = (s, d) => adr(s) + `\n| Consequence | |\n|---|---|\n| Build deviation | ${d} |\n`
+  const sOk = { ...clean, 'docs/adr/README.md': clean['docs/adr/README.md'] + row(3, 'Accepted (Phase 1 scope)') + row(4, 'Built'),
+    'docs/adr/ADR-003-x.md': adr('Accepted 2026-01-03 (Phase 1 scope)'),
+    'docs/adr/ADR-004-x.md': dev('Accepted 2026-01-03 → Built `abc` 2026-01-09 (Phase 0)', 'Phase 1 methods not built yet') }
+  const sRes0 = check(mk(sOk))
+  assert(sRes0.findings.length === 0, `status fixture with an unfinished phase has findings:\n${report(sRes0)}`)
+  const sBad = { ...sOk, 'docs/adr/README.md': clean['docs/adr/README.md'] + row(3, 'Accepted (Phase 0 scope)') + row(4, 'Built; Phase 0 parts not built'),
+    'docs/adr/ADR-003-x.md': adr('Accepted 2026-01-03 (Phase 0 scope)'),
+    'docs/adr/ADR-004-x.md': dev('Accepted 2026-01-03 · Built `abc` 2026-01-09 (Phase 0)', 'order methods not built (Phase 0/1); Phase 0 history not built') }
+  const sRes = check(mk(sBad))
+  const sWant = [['adr-status-stale', /ADR-003-x\.md:\d+ Status is Accepted but the plan shows Phase 0 built/], ['adr-status-stale', /ADR-004-x\.md:\d+ Build deviation says "Phase 0 history not built"/],
+    ['adr-status-stale', /ADR-004-x\.md:\d+ Build deviation says "order methods not built \(Phase 0\/1\)".*Phase 0 built/],
+    ['adr-status-stale', /README\.md:\d+ Index row says "Phase 0 parts not built"/]]
+  for (const [k, re] of sWant) assert(sRes.findings.some(f => f.kind === k && re.test(`${f.file}:${f.line} ${f.msg}`)), `expected [${k}] ${re}\n${report(sRes)}`)
+  assert(sRes.findings.length === sWant.length, `expected ${sWant.length} status findings, got ${sRes.findings.length}\n${report(sRes)}`)
+  const merged = check(mk({ ...sOk, 'docs/IMPLEMENTATION_PLAN.md': plan('✅', '✅').replace('| 1 — Core | ⬜ |', '| 1 — Core | 🔄 2/3 gates met · on `phase-1-core` |') })).findings
+  assert(merged.length === 2 && merged.every(f => f.kind === 'adr-status-stale' && /Phase 1 built/.test(f.msg)), `a merged phase counts as built:\n${merged.map(f => f.msg).join('\n')}`)
+  console.log(`keel check self-test: ok (clean fixtures clean; ${want.length + tWant.length + sWant.length} planted drifts each reported once)`)
   process.exit(0)
 }
 

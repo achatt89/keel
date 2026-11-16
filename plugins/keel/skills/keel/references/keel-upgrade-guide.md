@@ -330,6 +330,12 @@ Check:
 - [ ] `doc-sync.js` ends with a Budget check (`wc -c` against `.keel/meta.json` `budgets`) and a
   conditional Archive phase → FORMAT_MIGRATION (Important) if absent — replace verbatim, it holds
   no project content
+- [ ] `doc-sync.js` reconciles ADR status (2.6.2: Step 4 rewrites each touched ADR's Status cell and Build
+  deviation row to what was built; Step 7 compares ARCHITECTURE, LLD and README with the code; Step 9 runs
+  `node .keel/check.mjs`) → OUTDATED_CONVENTION (Minor). `doc-sync.js` and `.claude/agents/doc-sync.md` hold no
+  project content (a full-time doc agent's brief is not touched): replace verbatim on approval. Run
+  `.keel/check.mjs` at U2 and list any `adr-status-stale` finding as information; the next doc-sync fixes it
+  (it may edit only the Status cell and Build deviation row, never the decision).
 - [ ] `change-template.js` present → MISSING_FEATURE (Important) if absent
 - [ ] `.keel/evidence/` exists → MISSING_FEATURE (Important) if absent
 - [ ] At least one `phase-N-*.js` for each non-✅ phase in IMPLEMENTATION_PLAN → MISSING_FEATURE (Important)

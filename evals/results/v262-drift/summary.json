@@ -1,0 +1,235 @@
+[
+  {
+    "name": "inventory-keel-r1-s1",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 1.4549695,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 4926,
+    "wallMs": 291871,
+    "inputTokens": 178,
+    "outputTokens": 46869,
+    "cacheRead": 1516220,
+    "cacheWrite": 324528,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 178,
+        "output": 46869,
+        "cacheRead": 1516220,
+        "cacheWrite": 324528,
+        "costUsd": 1.4549695
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "pass",
+    "driftFailed": [],
+    "driftReasons": {},
+    "judgeCostUsd": 0.35009779999999996,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1394,
+        "cacheRead": 649,
+        "cacheWrite": 40260,
+        "costUsd": 0.35009779999999996
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r1-s2",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 1.3249333999999995,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 5886,
+    "wallMs": 247180,
+    "inputTokens": 148,
+    "outputTokens": 45341,
+    "cacheRead": 1330054,
+    "cacheWrite": 287133,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 148,
+        "output": 45341,
+        "cacheRead": 1330054,
+        "cacheWrite": 287133,
+        "costUsd": 1.3249333999999995
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "README's reserve row, which claims to list codes in check order, puts the summed-qty-overflow invalid_qty before duplicate_order and not_found, but src/inventory.js checks per-SKU sum overflow after the duplicate and lookup checks; ADR-002's Build deviation also says 'Phase 2–3 methods not built' although the code implements reserve, available, release and fulfil."
+    },
+    "judgeCostUsd": 0.4310338,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1298,
+        "cacheRead": 649,
+        "cacheWrite": 50617,
+        "costUsd": 0.4310338
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r1-s3",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 1.2069846999999998,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 6344,
+    "wallMs": 222168,
+    "inputTokens": 148,
+    "outputTokens": 43145,
+    "cacheRead": 1411902,
+    "cacheWrite": 245715,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 148,
+        "output": 43145,
+        "cacheRead": 1411902,
+        "cacheWrite": 245715,
+        "costUsd": 1.2069846999999998
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 15,
+    "testsTotal": 15,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      },
+      {
+        "phase": 3,
+        "pass": 4,
+        "total": 4,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "README.md says the Phase 3 methods are 'available only once the Phase 3 code lands (at the time of writing src/inventory.js does not yet export them)', but the code implements and returns history, setReorderPoint and reorderReport; the README's reserve check order also puts the summed-qty invalid_qty check before duplicate_order and not_found, while the code runs it after the lookup."
+    },
+    "judgeCostUsd": 0.47355379999999997,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 834,
+        "cacheRead": 649,
+        "cacheWrite": 57092,
+        "costUsd": 0.47355379999999997
+      }
+    },
+    "success": true
+  }
+]

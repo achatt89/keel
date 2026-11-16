@@ -27,9 +27,10 @@ It is read-only: no permission prompt, no edits, nothing written. Run it any tim
 - the ADR index against the ADR files: a row with no file, a file with no row, a status that differs, or a supersession by an ADR that does not exist;
 - the header on a new ADR (an id or status that disagrees with the file), and area rules in `.claude/rules/` with no paths or naming a record that does not exist;
 - the plan: a finished phase with an open gate, or whose evidence, artefact or deliverable path is gone, and an unfinished phase with no workflow script;
+- a decision record that still says *not built* for phases the plan shows done, or is still *Accepted* when its phase is done (2.6.2);
 - runtime dependencies in `package.json`, `requirements.txt`, `go.mod` or `Cargo.toml` that no design or decision doc names.
 
-When the script finds nothing, keel prints its summary line and stops. Only when there are findings does Claude read the cited lines, say which are real, and name the mode that fixes each one. Nothing is written, ever: fixes happen in doc-sync, `/keel upgrade` or `/keel archive`. ADR files are never edited, so a dead link inside one is fixed at its target. Run `node .keel/check.mjs` yourself, or in CI: it exits 1 when there are findings.
+When the script finds nothing, keel prints its summary line and stops. Only when there are findings does Claude read the cited lines, say which are real, and name the mode that fixes each one. Nothing is written, ever: fixes happen in doc-sync, `/keel upgrade` or `/keel archive`. An ADR's decision text is never edited (only its Status cell and Build deviation row change, in doc-sync), so a dead link inside one is fixed at its target. Run `node .keel/check.mjs` yourself, or in CI: it exits 1 when there are findings.
 
 ## Automatic update check
 
