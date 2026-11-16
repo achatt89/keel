@@ -5,6 +5,7 @@
 //        node .keel/doc-size.mjs --where <doc.md> "<section>"   print the file that holds <section>
 //        node .keel/doc-size.mjs --move-out <AGENTS.md|CLAUDE.md> "<## section>"   keystone → docs/agents/
 //        node .keel/doc-size.mjs --closeout <IMPLEMENTATION_PLAN.md>   open deferred rows + the closeout phase number
+//        node .keel/doc-size.mjs --evidence <.keel/evidence/x.json>   check a Verify record (read-only)
 //        node .keel/doc-size.mjs --self-test
 // One VERDICT per doc, with the reason:
 //   ok      within budget; or an archive (append-only history) or a redirect stub — never budgeted, never split
@@ -385,6 +386,19 @@ export function closeout(planText) {
   return { open, phase: minors.includes(5) ? `${n}.${Math.max(...minors) + 1}` : `${n}.5` }
 }
 
+// A Verify record: only the levels Verify may write (prod-live comes from a deploy), and every met
+// gate above code-read says how its check was seen to fail on broken code (failSeen).
+const VERIFY_LEVELS = ['code-read', 'unit', 'integration', 'local-browser', 'staging']
+export function evidenceErrors(rec) {
+  if (!Array.isArray(rec?.gates) || !rec.gates.length) return ['no gates: a Verify record lists every exit gate (unknown = "unmet")']
+  return rec.gates.flatMap(g => {
+    if (!VERIFY_LEVELS.includes(g.level)) return [`"${g.gate}": level "${g.level}"; Verify writes ${VERIFY_LEVELS.join(' | ')} only, prod-live comes from a deploy`]
+    if (g.status === 'met' && g.level !== 'code-read' && !String(g.failSeen ?? '').trim())
+      return [`"${g.gate}": met at ${g.level} with no failSeen; show the check failing on broken code, or mark the gate partial`]
+    return []
+  })
+}
+
 if (process.argv.includes('--self-test')) {
   const fail = (what, o) => { console.log(`FAIL ${what} ` + JSON.stringify(o, null, 1)); process.exit(1) }
   const fixture = () => {
@@ -543,6 +557,16 @@ if (process.argv.includes('--self-test')) {
   const k3 = closeout(tpl)
   if (!(k1.phase === "5.5" && k1.open.length === 0 && k2.phase === "5.16" && k2.open.length === 3 && k3.open.length === 0))
     fail("closeout", { k1, k2, k3 })
+
+  // evidence: prod-live and an unproven met check are rejected; proven, partial and code-read pass
+  const ev = evidenceErrors({ gates: [
+    { gate: 'a', level: 'prod-live', status: 'met', failSeen: 'x' },
+    { gate: 'b', level: 'unit', status: 'met' },
+    { gate: 'c', level: 'unit', status: 'met', failSeen: 'test failed before the fix' },
+    { gate: 'd', level: 'integration', status: 'partial' },
+    { gate: 'e', level: 'code-read', status: 'met' }] })
+  if (!(ev.length === 2 && /prod-live/.test(ev[0]) && /failSeen/.test(ev[1]))) fail('evidence', ev)
+  if (!(evidenceErrors({ gates: [] }).length === 1 && evidenceErrors({}).length === 1)) fail('evidence: empty gates', evidenceErrors({}))
   console.log('ok'); process.exit(0)
 }
 
@@ -552,6 +576,14 @@ const refuse = (doc, m) => { console.error(`${doc}: not done — ${m}`); process
 if (process.argv.includes('--where')) {
   const i = process.argv.indexOf('--where')
   console.log(where('.', process.argv[i + 1], process.argv[i + 2] || '')); process.exit(0)
+}
+if (process.argv.includes('--evidence')) {
+  let rec
+  try { rec = JSON.parse(read('.', arg('--evidence'))) } catch (e) { console.log(`EVIDENCE ERROR cannot read ${arg('--evidence')}: ${e.message}`); process.exit(1) }
+  const errs = evidenceErrors(rec)
+  for (const e of errs) console.log(`EVIDENCE ERROR ${e}`)
+  if (!errs.length) console.log(`evidence ok: ${arg('--evidence')}`)
+  process.exit(errs.length ? 1 : 0)
 }
 if (process.argv.includes('--closeout')) {
   const plan0 = arg('--closeout') || 'docs/IMPLEMENTATION_PLAN.md', fo = folderOf(plan0)

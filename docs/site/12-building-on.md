@@ -15,7 +15,7 @@ anchor: building-on
 
 ## Claims carry evidence
 
-A ✅ is never bare. Every exit gate records its evidence level (`code-read` \< `unit` \< `integration` \< `local-browser` \< `staging` \< `prod-live`) and the artefact behind it (commit, test report, CI run, browser transcript). Deploy state is tracked separately, in one place: `on-branch → merged → deployed vNN → live-verified`, flipped by the merge step and the deploy procedure, never by prose. A gate whose evidence falls short of what the gate demands stays *partial*; the phase stays open.
+A ✅ is never bare. Every exit gate records its evidence level (`code-read` \< `unit` \< `integration` \< `local-browser` \< `staging` \< `prod-live`) and the artefact behind it (commit, test report, CI run, browser transcript). Deploy state is tracked separately, in one place: `on-branch → merged → deployed vNN → live-verified`, flipped by the merge step and the deploy procedure, never by prose. A gate whose evidence falls short of what the gate demands stays *partial*; the phase stays open. Verify runs a real check before calling anything done, and a check counts only once it has been seen to fail on broken code: the record says how in `failSeen`. `node .keel/doc-size.mjs --evidence` rejects a Verify record that claims `prod-live` or a met gate with no proof the check can fail.
 
 ## Where things live now
 

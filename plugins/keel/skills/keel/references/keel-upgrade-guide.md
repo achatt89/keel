@@ -327,6 +327,12 @@ Check:
 - [ ] `.keel/evidence/` exists → MISSING_FEATURE (Important) if absent
 - [ ] At least one `phase-N-*.js` for each non-✅ phase in IMPLEMENTATION_PLAN → MISSING_FEATURE (Important)
 - [ ] `README.md` present → MISSING_FEATURE (Optional)
+- [ ] Verify stage of `change-template.js` and every non-✅ `phase-N-*.js` has the real-check line,
+  the `failSeen` field and the `doc-size.mjs --evidence` step (2.6: check proven to fail; `prod-live`
+  rejected by the checker, not by capitals) → OUTDATED_CONVENTION (Minor). Propose the three Verify
+  edits per script and apply on approval; `change-template.js` holds no project content and is
+  replaced verbatim. Needs `.keel/doc-size.mjs` with `--evidence` (installed on every upgrade).
+  Existing `.keel/evidence/*.json` records are history: never rewritten, never re-checked.
 
 ---
 
