@@ -1,0 +1,4297 @@
+[
+  {
+    "name": "invoices-none-r1",
+    "run": "invoices-none-r1",
+    "task": "invoices",
+    "cond": "none",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.0938418,
+    "turns": 7,
+    "segments": 1,
+    "durationMs": 23325,
+    "wallMs": 23950,
+    "inputTokens": 10,
+    "outputTokens": 3278,
+    "cacheRead": 91418,
+    "cacheWrite": 12975,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 10,
+        "output": 3278,
+        "cacheRead": 91418,
+        "cacheWrite": 12975,
+        "costUsd": 0.0938418
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3,
+      "bash": 1,
+      "Edit": 2
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 13,
+    "testsFailed": [
+      "decision: UTF-8 byte-order mark at the start",
+      "decision: semicolon header row with the agreed columns",
+      "decision: amounts with a decimal comma, two decimals, no thousands separator",
+      "decision: dates and the range use the Europe/Berlin date",
+      "decision: void invoices stay in the export with status void and their amounts",
+      "decision: quoting of semicolons and quotes; plain fields unquoted",
+      "decision: error codes and their order",
+      "decision: empty range gives the BOM and the header row only"
+    ],
+    "decisionPass": 3,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "exportCsv(null) destructures null (the default parameter applies only to undefined), so a TypeError escapes instead of an InvoiceError."
+    },
+    "judgeCostUsd": 0.09086179999999999,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 841,
+        "cacheRead": 649,
+        "cacheWrite": 9238,
+        "costUsd": 0.09086179999999999
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "invoices-min-r1",
+    "run": "invoices-min-r1",
+    "task": "invoices",
+    "cond": "min",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.1009449,
+    "turns": 6,
+    "segments": 1,
+    "durationMs": 24776,
+    "wallMs": 25412,
+    "inputTokens": 8,
+    "outputTokens": 3734,
+    "cacheRead": 72809,
+    "cacheWrite": 14077,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 3734,
+        "cacheRead": 72809,
+        "cacheWrite": 14077,
+        "costUsd": 0.1009449
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Read": 2,
+      "Bash": 3
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 13,
+    "testsFailed": [
+      "decision: UTF-8 byte-order mark at the start",
+      "decision: semicolon header row with the agreed columns",
+      "decision: amounts with a decimal comma, two decimals, no thousands separator",
+      "decision: dates and the range use the Europe/Berlin date",
+      "decision: void invoices stay in the export with status void and their amounts",
+      "decision: quoting of semicolons and quotes; plain fields unquoted",
+      "decision: error codes and their order",
+      "decision: empty range gives the BOM and the header row only"
+    ],
+    "decisionPass": 3,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "exportCsv(null) throws a TypeError, because the `= {}` default only covers undefined, so a non-InvoiceError escapes for bad input."
+    },
+    "judgeCostUsd": 0.0936218,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 833,
+        "cacheRead": 649,
+        "cacheWrite": 9603,
+        "costUsd": 0.0936218
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "invoices-answers-r1",
+    "run": "invoices-answers-r1",
+    "task": "invoices",
+    "cond": "answers",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.1041745,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 24259,
+    "wallMs": 24935,
+    "inputTokens": 8,
+    "outputTokens": 3749,
+    "cacheRead": 74085,
+    "cacheWrite": 14815,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 3749,
+        "cacheRead": 74085,
+        "cacheWrite": 14815,
+        "costUsd": 0.1041745
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 13,
+    "testsTotal": 13,
+    "testsFailed": [],
+    "decisionPass": 11,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "checkDay calls toISOString() on an Invalid Date without a NaN check, so a well-shaped but impossible date like '2026-13-01' throws a RangeError instead of InvoiceError, and exportCsv(null) throws a TypeError from destructuring."
+    },
+    "judgeCostUsd": 0.1032298,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1107,
+        "cacheRead": 649,
+        "cacheWrite": 10119,
+        "costUsd": 0.1032298
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "invoices-keel-r1",
+    "run": "invoices-keel-r1",
+    "task": "invoices",
+    "cond": "keel",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.2630905,
+    "turns": 12,
+    "segments": 1,
+    "durationMs": 65888,
+    "wallMs": 66513,
+    "inputTokens": 14,
+    "outputTokens": 11695,
+    "cacheRead": 202765,
+    "cacheWrite": 31459,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 14,
+        "output": 11695,
+        "cacheRead": 202765,
+        "cacheWrite": 31459,
+        "costUsd": 0.2630905
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 6,
+      "Write": 1,
+      "Edit": 4
+    },
+    "docReads": [
+      "docs/LLD.md",
+      "docs/adr/ADR-008-csv-export-format.md",
+      "docs/adr/ADR-009-csv-formula-injection-policy.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 13,
+    "testsTotal": 13,
+    "testsFailed": [],
+    "decisionPass": 11,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "Calling exportCsv(null) destructures null and throws a TypeError rather than an InvoiceError, so a non-InvoiceError escapes for bad input."
+    },
+    "judgeCostUsd": 0.1013098,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 963,
+        "cacheRead": 649,
+        "cacheWrite": 10239,
+        "costUsd": 0.1013098
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "quotas-none-r1",
+    "run": "quotas-none-r1",
+    "task": "quotas",
+    "cond": "none",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.0972394,
+    "turns": 6,
+    "segments": 1,
+    "durationMs": 25550,
+    "wallMs": 26233,
+    "inputTokens": 12,
+    "outputTokens": 3476,
+    "cacheRead": 116434,
+    "cacheWrite": 12703,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 12,
+        "output": 3476,
+        "cacheRead": 116434,
+        "cacheWrite": 12703,
+        "costUsd": 0.0972394
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 5
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 3,
+    "testsTotal": 11,
+    "testsFailed": [
+      "decision: free quota is 2 GB, decimal",
+      "decision: reaching the limit exactly is allowed",
+      "decision: pro is 200 GB and team is unlimited",
+      "decision: refusal carries details { limitBytes, usedBytes, requestedBytes }",
+      "decision: an overwrite counts only the change in size",
+      "decision: usage shape, percent rounded down",
+      "decision: team usage has null limit and percent",
+      "decision: check order is not_found, invalid_input, then quota"
+    ],
+    "decisionPass": 1,
+    "decisionTotal": 9,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "A refused write correctly throws StoreError('quota_exceeded'), but bad input such as put(u, null) or addUser(null) still escapes as a TypeError from destructuring null, since the default parameter only applies to undefined."
+    },
+    "judgeCostUsd": 0.0868858,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1089,
+        "cacheRead": 649,
+        "cacheWrite": 8121,
+        "costUsd": 0.0868858
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "quotas-min-r1",
+    "run": "quotas-min-r1",
+    "task": "quotas",
+    "cond": "min",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.080038,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 19057,
+    "wallMs": 19739,
+    "inputTokens": 8,
+    "outputTokens": 2574,
+    "cacheRead": 70300,
+    "cacheWrite": 11813,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 2574,
+        "cacheRead": 70300,
+        "cacheWrite": 11813,
+        "costUsd": 0.080038
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 3,
+    "testsTotal": 11,
+    "testsFailed": [
+      "decision: free quota is 2 GB, decimal",
+      "decision: reaching the limit exactly is allowed",
+      "decision: pro is 200 GB and team is unlimited",
+      "decision: refusal carries details { limitBytes, usedBytes, requestedBytes }",
+      "decision: an overwrite counts only the change in size",
+      "decision: usage shape, percent rounded down",
+      "decision: team usage has null limit and percent",
+      "decision: check order is not_found, invalid_input, then quota"
+    ],
+    "decisionPass": 1,
+    "decisionTotal": 9,
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.0853098,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1221,
+        "cacheRead": 649,
+        "cacheWrite": 7594,
+        "costUsd": 0.0853098
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "quotas-answers-r1",
+    "run": "quotas-answers-r1",
+    "task": "quotas",
+    "cond": "answers",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.09058360000000001,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 20349,
+    "wallMs": 20883,
+    "inputTokens": 8,
+    "outputTokens": 3101,
+    "cacheRead": 72136,
+    "cacheWrite": 13086,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 3101,
+        "cacheRead": 72136,
+        "cacheWrite": 13086,
+        "costUsd": 0.09058360000000001
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 9,
+    "decisionTotal": 9,
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.09315380000000001,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1352,
+        "cacheRead": 649,
+        "cacheWrite": 8247,
+        "costUsd": 0.09315380000000001
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "quotas-keel-r1",
+    "run": "quotas-keel-r1",
+    "task": "quotas",
+    "cond": "keel",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.4767806,
+    "turns": 12,
+    "segments": 3,
+    "durationMs": 4967,
+    "wallMs": 98787,
+    "inputTokens": 38,
+    "outputTokens": 15559,
+    "cacheRead": 475446,
+    "cacheWrite": 90027,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 38,
+        "output": 15559,
+        "cacheRead": 475446,
+        "cacheWrite": 90027,
+        "costUsd": 0.4767806
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 12,
+      "Read": 1,
+      "Agent": 1,
+      "SendMessage": 1
+    },
+    "docReads": [
+      "docs/BRD.md",
+      "docs/COMMANDS.md",
+      "docs/LLD.md",
+      "docs/PRD.md",
+      "docs/adr/README.md"
+    ],
+    "subDocReads": [
+      "AGENTS.md",
+      "docs/COMMANDS.md",
+      "docs/IMPLEMENTATION_PLAN.md",
+      "docs/LLD.md",
+      "docs/adr/README.md"
+    ],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 9,
+    "decisionTotal": 9,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "A refused write throws StoreError('quota_exceeded') with details, but `put(u, null)` throws a TypeError because the `= {}` default does not apply to null, so a non-StoreError escapes for bad input."
+    },
+    "judgeCostUsd": 0.1203178,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 2079,
+        "cacheRead": 649,
+        "cacheWrite": 9825,
+        "costUsd": 0.1203178
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-none-r1-s1",
+    "run": "inventory-none-r1",
+    "task": "inventory",
+    "cond": "none",
+    "rep": 1,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 0.07265920000000001,
+    "turns": 2,
+    "segments": 1,
+    "durationMs": 19362,
+    "wallMs": 19913,
+    "inputTokens": 4,
+    "outputTokens": 3018,
+    "cacheRead": 29792,
+    "cacheWrite": 9873,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 4,
+        "output": 3018,
+        "cacheRead": 29792,
+        "cacheWrite": 9873,
+        "costUsd": 0.07265920000000001
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": true
+  },
+  {
+    "name": "inventory-none-r1-s2",
+    "run": "inventory-none-r1",
+    "task": "inventory",
+    "cond": "none",
+    "rep": 1,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 0.065894,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 18253,
+    "wallMs": 18915,
+    "inputTokens": 8,
+    "outputTokens": 2452,
+    "cacheRead": 68580,
+    "cacheWrite": 8625,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 2452,
+        "cacheRead": 68580,
+        "cacheWrite": 8625,
+        "costUsd": 0.065894
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 11,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-none-r1-s3",
+    "run": "inventory-none-r1",
+    "task": "inventory",
+    "cond": "none",
+    "rep": 1,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 0.0522633,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 18743,
+    "wallMs": 19376,
+    "inputTokens": 8,
+    "outputTokens": 2444,
+    "cacheRead": 73953,
+    "cacheWrite": 5103,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 2444,
+        "cacheRead": 73953,
+        "cacheWrite": 5103,
+        "costUsd": 0.0522633
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 15,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock",
+      "p3: history in order with one global seq",
+      "p3: release is recorded; failed changes are not",
+      "p3: reorder report",
+      "p3: reorder point validation"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      },
+      {
+        "phase": 3,
+        "pass": 0,
+        "total": 4,
+        "failed": [
+          "p3: history in order with one global seq",
+          "p3: release is recorded; failed changes are not",
+          "p3: reorder report",
+          "p3: reorder point validation"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-min-r1-s1",
+    "run": "inventory-min-r1",
+    "task": "inventory",
+    "cond": "min",
+    "rep": 1,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 0.0726922,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 17864,
+    "wallMs": 18537,
+    "inputTokens": 6,
+    "outputTokens": 2730,
+    "cacheRead": 49202,
+    "cacheWrite": 10115,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 2730,
+        "cacheRead": 49202,
+        "cacheWrite": 10115,
+        "costUsd": 0.0726922
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": true
+  },
+  {
+    "name": "inventory-min-r1-s2",
+    "run": "inventory-min-r1",
+    "task": "inventory",
+    "cond": "min",
+    "rep": 1,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 0.0688545,
+    "turns": 5,
+    "segments": 1,
+    "durationMs": 19065,
+    "wallMs": 19732,
+    "inputTokens": 10,
+    "outputTokens": 2368,
+    "cacheRead": 91465,
+    "cacheWrite": 9002,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 10,
+        "output": 2368,
+        "cacheRead": 91465,
+        "cacheWrite": 9002,
+        "costUsd": 0.0688545
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3,
+      "bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 11,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-min-r1-s3",
+    "run": "inventory-min-r1",
+    "task": "inventory",
+    "cond": "min",
+    "rep": 1,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 0.0439898,
+    "turns": 5,
+    "segments": 1,
+    "durationMs": 14830,
+    "wallMs": 15520,
+    "inputTokens": 10,
+    "outputTokens": 1788,
+    "cacheRead": 97338,
+    "cacheWrite": 4089,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 10,
+        "output": 1788,
+        "cacheRead": 97338,
+        "cacheWrite": 4089,
+        "costUsd": 0.0439898
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 4
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 15,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock",
+      "p3: history in order with one global seq",
+      "p3: release is recorded; failed changes are not",
+      "p3: reorder report",
+      "p3: reorder point validation"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      },
+      {
+        "phase": 3,
+        "pass": 0,
+        "total": 4,
+        "failed": [
+          "p3: history in order with one global seq",
+          "p3: release is recorded; failed changes are not",
+          "p3: reorder report",
+          "p3: reorder point validation"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-answers-r1-s1",
+    "run": "inventory-answers-r1",
+    "task": "inventory",
+    "cond": "answers",
+    "rep": 1,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 0.08313820000000001,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 21743,
+    "wallMs": 22425,
+    "inputTokens": 6,
+    "outputTokens": 3325,
+    "cacheRead": 49882,
+    "cacheWrite": 11222,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 3325,
+        "cacheRead": 49882,
+        "cacheWrite": 11222,
+        "costUsd": 0.08313820000000001
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": true
+  },
+  {
+    "name": "inventory-answers-r1-s2",
+    "run": "inventory-answers-r1",
+    "task": "inventory",
+    "cond": "answers",
+    "rep": 1,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 0.041494699999999995,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 7998,
+    "wallMs": 8677,
+    "inputTokens": 6,
+    "outputTokens": 648,
+    "cacheRead": 50387,
+    "cacheWrite": 7491,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 648,
+        "cacheRead": 50387,
+        "cacheWrite": 7491,
+        "costUsd": 0.041494699999999995
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 11,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-answers-r1-s3",
+    "run": "inventory-answers-r1",
+    "task": "inventory",
+    "cond": "answers",
+    "rep": 1,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 0.0265688,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 10769,
+    "wallMs": 11452,
+    "inputTokens": 6,
+    "outputTokens": 957,
+    "cacheRead": 54948,
+    "cacheWrite": 2873,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 957,
+        "cacheRead": 54948,
+        "cacheWrite": 2873,
+        "costUsd": 0.0265688
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 15,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock",
+      "p3: history in order with one global seq",
+      "p3: release is recorded; failed changes are not",
+      "p3: reorder report",
+      "p3: reorder point validation"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      },
+      {
+        "phase": 3,
+        "pass": 0,
+        "total": 4,
+        "failed": [
+          "p3: history in order with one global seq",
+          "p3: release is recorded; failed changes are not",
+          "p3: reorder report",
+          "p3: reorder point validation"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-keel-r1-s1",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 1.2776388999999997,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 5542,
+    "wallMs": 245128,
+    "inputTokens": 152,
+    "outputTokens": 40381,
+    "cacheRead": 1267934,
+    "cacheWrite": 289422,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 152,
+        "output": 40381,
+        "cacheRead": 1267934,
+        "cacheWrite": 289422,
+        "costUsd": 1.2776388999999997
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "pass",
+    "driftFailed": [],
+    "driftReasons": {},
+    "judgeCostUsd": 0.3464578,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1480,
+        "cacheRead": 649,
+        "cacheWrite": 39590,
+        "costUsd": 0.3464578
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r1-s2",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 1.3699969,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 6331,
+    "wallMs": 270314,
+    "inputTokens": 152,
+    "outputTokens": 49773,
+    "cacheRead": 1295759,
+    "cacheWrite": 289114,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 152,
+        "output": 49773,
+        "cacheRead": 1295759,
+        "cacheWrite": 289114,
+        "costUsd": 1.3699969
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "ADR-002 and ADR-003 say order methods are 'not built' and multi-line order atomicity is 'not built (Phase 2/3)', and ADR-005 says order copies are not built, but src/inventory.js implements reserve/release/fulfil with validate-then-commit and line snapshots; docs/README.md also says no build evidence exists yet."
+    },
+    "judgeCostUsd": 0.43934979999999996,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1247,
+        "cacheRead": 649,
+        "cacheWrite": 51784,
+        "costUsd": 0.43934979999999996
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r1-s3",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 1.3571807,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 5957,
+    "wallMs": 257906,
+    "inputTokens": 162,
+    "outputTokens": 46302,
+    "cacheRead": 1440022,
+    "cacheWrite": 291895,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 162,
+        "output": 46302,
+        "cacheRead": 1440022,
+        "cacheWrite": 291895,
+        "costUsd": 1.3571807
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 15,
+    "testsTotal": 15,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      },
+      {
+        "phase": 3,
+        "pass": 4,
+        "total": 4,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "ADR-002, ADR-003 and ADR-005 say the Phase 2–3 methods (order methods, history) are not built, and README says history/setReorderPoint/reorderReport are available only once Phase 3 is merged, but src/inventory.js implements all of them."
+    },
+    "judgeCostUsd": 0.4978898,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 632,
+        "cacheRead": 649,
+        "cacheWrite": 60639,
+        "costUsd": 0.4978898
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "invoices-none-r2",
+    "run": "invoices-none-r2",
+    "task": "invoices",
+    "cond": "none",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.09113629999999999,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 23598,
+    "wallMs": 24277,
+    "inputTokens": 8,
+    "outputTokens": 3347,
+    "cacheRead": 70103,
+    "cacheWrite": 12660,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 3347,
+        "cacheRead": 70103,
+        "cacheWrite": 12660,
+        "costUsd": 0.09113629999999999
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 4,
+    "testsTotal": 13,
+    "testsFailed": [
+      "decision: UTF-8 byte-order mark at the start",
+      "decision: semicolon header row with the agreed columns",
+      "decision: amounts with a decimal comma, two decimals, no thousands separator",
+      "decision: dates and the range use the Europe/Berlin date",
+      "decision: void invoices stay in the export with status void and their amounts",
+      "decision: rows in invoice-number order, not date order",
+      "decision: quoting of semicolons and quotes; plain fields unquoted",
+      "decision: error codes and their order",
+      "decision: empty range gives the BOM and the header row only"
+    ],
+    "decisionPass": 2,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "exportCsv(null) throws a TypeError, because the `= {}` default only applies to undefined and destructuring null fails, so a non-InvoiceError escapes for bad input."
+    },
+    "judgeCostUsd": 0.09265380000000001,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 825,
+        "cacheRead": 649,
+        "cacheWrite": 9502,
+        "costUsd": 0.09265380000000001
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "invoices-min-r2",
+    "run": "invoices-min-r2",
+    "task": "invoices",
+    "cond": "min",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.0970345,
+    "turns": 5,
+    "segments": 1,
+    "durationMs": 24426,
+    "wallMs": 25121,
+    "inputTokens": 8,
+    "outputTokens": 3541,
+    "cacheRead": 72405,
+    "cacheWrite": 13592,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 3541,
+        "cacheRead": 72405,
+        "cacheWrite": 13592,
+        "costUsd": 0.0970345
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Read": 1,
+      "Bash": 3
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 13,
+    "testsFailed": [
+      "decision: UTF-8 byte-order mark at the start",
+      "decision: semicolon header row with the agreed columns",
+      "decision: amounts with a decimal comma, two decimals, no thousands separator",
+      "decision: dates and the range use the Europe/Berlin date",
+      "decision: void invoices stay in the export with status void and their amounts",
+      "decision: quoting of semicolons and quotes; plain fields unquoted",
+      "decision: error codes and their order",
+      "decision: empty range gives the BOM and the header row only"
+    ],
+    "decisionPass": 3,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "exportCsv(null) throws a native TypeError when destructuring null, because the `= {}` default only applies to undefined, so a non-InvoiceError escapes for bad input."
+    },
+    "judgeCostUsd": 0.09862180000000001,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1121,
+        "cacheRead": 649,
+        "cacheWrite": 9508,
+        "costUsd": 0.09862180000000001
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "invoices-answers-r2",
+    "run": "invoices-answers-r2",
+    "task": "invoices",
+    "cond": "answers",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.1180595,
+    "turns": 7,
+    "segments": 1,
+    "durationMs": 30421,
+    "wallMs": 31004,
+    "inputTokens": 8,
+    "outputTokens": 4687,
+    "cacheRead": 75655,
+    "cacheWrite": 15902,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 4687,
+        "cacheRead": 75655,
+        "cacheWrite": 15902,
+        "costUsd": 0.1180595
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Read": 3,
+      "Bash": 3
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 13,
+    "testsTotal": 13,
+    "testsFailed": [],
+    "decisionPass": 11,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "exportCsv(null) throws a TypeError because the destructuring default only applies to undefined, so a non-InvoiceError escapes for bad input."
+    },
+    "judgeCostUsd": 0.0989458,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 832,
+        "cacheRead": 649,
+        "cacheWrite": 10271,
+        "costUsd": 0.0989458
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "invoices-keel-r2",
+    "run": "invoices-keel-r2",
+    "task": "invoices",
+    "cond": "keel",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.1414645,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 25151,
+    "wallMs": 25707,
+    "inputTokens": 8,
+    "outputTokens": 3893,
+    "cacheRead": 87865,
+    "cacheWrite": 23433,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 3893,
+        "cacheRead": 87865,
+        "cacheWrite": 23433,
+        "costUsd": 0.1414645
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [
+      "docs/LLD.md",
+      "docs/adr/ADR-008-csv-export-format.md",
+      "docs/adr/ADR-009-csv-formula-injection-policy.md",
+      "docs/adr/README.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 13,
+    "testsTotal": 13,
+    "testsFailed": [],
+    "decisionPass": 11,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "exportCsv(null) destructures null (the default parameter only applies to undefined), so a TypeError rather than an InvoiceError escapes for bad input."
+    },
+    "judgeCostUsd": 0.0984338,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1008,
+        "cacheRead": 649,
+        "cacheWrite": 9767,
+        "costUsd": 0.0984338
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "quotas-none-r2",
+    "run": "quotas-none-r2",
+    "task": "quotas",
+    "cond": "none",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.09372079999999999,
+    "turns": 6,
+    "segments": 1,
+    "durationMs": 24710,
+    "wallMs": 25319,
+    "inputTokens": 12,
+    "outputTokens": 3380,
+    "cacheRead": 111128,
+    "cacheWrite": 12196,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 12,
+        "output": 3380,
+        "cacheRead": 111128,
+        "cacheWrite": 12196,
+        "costUsd": 0.09372079999999999
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 5
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 3,
+    "testsTotal": 11,
+    "testsFailed": [
+      "decision: free quota is 2 GB, decimal",
+      "decision: reaching the limit exactly is allowed",
+      "decision: pro is 200 GB and team is unlimited",
+      "decision: refusal carries details { limitBytes, usedBytes, requestedBytes }",
+      "decision: an overwrite counts only the change in size",
+      "decision: usage shape, percent rounded down",
+      "decision: team usage has null limit and percent",
+      "decision: check order is not_found, invalid_input, then quota"
+    ],
+    "decisionPass": 1,
+    "decisionTotal": 9,
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.0860258,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1116,
+        "cacheRead": 649,
+        "cacheWrite": 7946,
+        "costUsd": 0.0860258
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "quotas-min-r2",
+    "run": "quotas-min-r2",
+    "task": "quotas",
+    "cond": "min",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.094469,
+    "turns": 6,
+    "segments": 1,
+    "durationMs": 24983,
+    "wallMs": 25646,
+    "inputTokens": 10,
+    "outputTokens": 3466,
+    "cacheRead": 93690,
+    "cacheWrite": 12605,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 10,
+        "output": 3466,
+        "cacheRead": 93690,
+        "cacheWrite": 12605,
+        "costUsd": 0.094469
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 4,
+      "bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 3,
+    "testsTotal": 11,
+    "testsFailed": [
+      "decision: free quota is 2 GB, decimal",
+      "decision: reaching the limit exactly is allowed",
+      "decision: pro is 200 GB and team is unlimited",
+      "decision: refusal carries details { limitBytes, usedBytes, requestedBytes }",
+      "decision: an overwrite counts only the change in size",
+      "decision: usage shape, percent rounded down",
+      "decision: team usage has null limit and percent",
+      "decision: check order is not_found, invalid_input, then quota"
+    ],
+    "decisionPass": 1,
+    "decisionTotal": 9,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "A refused write throws StoreError('quota_exceeded'), but bad input such as put(u, null) or addUser(null) still escapes as a TypeError from destructuring null, because the `= {}` default only applies to undefined."
+    },
+    "judgeCostUsd": 0.0883178,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1193,
+        "cacheRead": 649,
+        "cacheWrite": 8040,
+        "costUsd": 0.0883178
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "quotas-answers-r2",
+    "run": "quotas-answers-r2",
+    "task": "quotas",
+    "cond": "answers",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.0953653,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 22697,
+    "wallMs": 23284,
+    "inputTokens": 8,
+    "outputTokens": 3448,
+    "cacheRead": 72133,
+    "cacheWrite": 13414,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 3448,
+        "cacheRead": 72133,
+        "cacheWrite": 13414,
+        "costUsd": 0.0953653
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 9,
+    "decisionTotal": 9,
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.0930218,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1281,
+        "cacheRead": 649,
+        "cacheWrite": 8408,
+        "costUsd": 0.0930218
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "quotas-keel-r2",
+    "run": "quotas-keel-r2",
+    "task": "quotas",
+    "cond": "keel",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.5063351,
+    "turns": 10,
+    "segments": 2,
+    "durationMs": 8209,
+    "wallMs": 132579,
+    "inputTokens": 34,
+    "outputTokens": 18837,
+    "cacheRead": 570676,
+    "cacheWrite": 86204,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 34,
+        "output": 18837,
+        "cacheRead": 570676,
+        "cacheWrite": 86204,
+        "costUsd": 0.5063351
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 14,
+      "Read": 8,
+      "Agent": 1
+    },
+    "docReads": [
+      "docs/COMMANDS.md",
+      "docs/LLD.md",
+      "docs/adr/README.md"
+    ],
+    "subDocReads": [
+      "AGENTS.md",
+      "docs/COMMANDS.md",
+      "docs/IMPLEMENTATION_PLAN.md",
+      "docs/LLD.md",
+      "docs/adr/ADR-006-usage-counter-vs-recompute.md",
+      "docs/adr/README.md"
+    ],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 9,
+    "decisionTotal": 9,
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.1121738,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1535,
+        "cacheRead": 649,
+        "cacheWrite": 10167,
+        "costUsd": 0.1121738
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-none-r2-s1",
+    "run": "inventory-none-r2",
+    "task": "inventory",
+    "cond": "none",
+    "rep": 2,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 0.0705929,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 18220,
+    "wallMs": 18857,
+    "inputTokens": 6,
+    "outputTokens": 2719,
+    "cacheRead": 48309,
+    "cacheWrite": 9640,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 2719,
+        "cacheRead": 48309,
+        "cacheWrite": 9640,
+        "costUsd": 0.0705929
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": true
+  },
+  {
+    "name": "inventory-none-r2-s2",
+    "run": "inventory-none-r2",
+    "task": "inventory",
+    "cond": "none",
+    "rep": 2,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 0.06966929999999999,
+    "turns": 5,
+    "segments": 1,
+    "durationMs": 19547,
+    "wallMs": 20222,
+    "inputTokens": 10,
+    "outputTokens": 2578,
+    "cacheRead": 90013,
+    "cacheWrite": 8717,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 10,
+        "output": 2578,
+        "cacheRead": 90013,
+        "cacheWrite": 8717,
+        "costUsd": 0.06966929999999999
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3,
+      "Edit": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 11,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-none-r2-s3",
+    "run": "inventory-none-r2",
+    "task": "inventory",
+    "cond": "none",
+    "rep": 2,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 0.0548155,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 19081,
+    "wallMs": 19668,
+    "inputTokens": 8,
+    "outputTokens": 2693,
+    "cacheRead": 73215,
+    "cacheWrite": 5137,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 2693,
+        "cacheRead": 73215,
+        "cacheWrite": 5137,
+        "costUsd": 0.0548155
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 15,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock",
+      "p3: history in order with one global seq",
+      "p3: release is recorded; failed changes are not",
+      "p3: reorder report",
+      "p3: reorder point validation"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      },
+      {
+        "phase": 3,
+        "pass": 0,
+        "total": 4,
+        "failed": [
+          "p3: history in order with one global seq",
+          "p3: release is recorded; failed changes are not",
+          "p3: reorder report",
+          "p3: reorder point validation"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-min-r2-s1",
+    "run": "inventory-min-r2",
+    "task": "inventory",
+    "cond": "min",
+    "rep": 2,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 0.0731478,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 18214,
+    "wallMs": 18814,
+    "inputTokens": 6,
+    "outputTokens": 2769,
+    "cacheRead": 49178,
+    "cacheWrite": 10132,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 2769,
+        "cacheRead": 49178,
+        "cacheWrite": 10132,
+        "costUsd": 0.0731478
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": true
+  },
+  {
+    "name": "inventory-min-r2-s2",
+    "run": "inventory-min-r2",
+    "task": "inventory",
+    "cond": "min",
+    "rep": 2,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 0.0344034,
+    "turns": 2,
+    "segments": 1,
+    "durationMs": 8429,
+    "wallMs": 9119,
+    "inputTokens": 4,
+    "outputTokens": 709,
+    "cacheRead": 31134,
+    "cacheWrite": 6048,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 4,
+        "output": 709,
+        "cacheRead": 31134,
+        "cacheWrite": 6048,
+        "costUsd": 0.0344034
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 11,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-min-r2-s3",
+    "run": "inventory-min-r2",
+    "task": "inventory",
+    "cond": "min",
+    "rep": 2,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 0.0635421,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 24013,
+    "wallMs": 24577,
+    "inputTokens": 8,
+    "outputTokens": 3375,
+    "cacheRead": 74801,
+    "cacheWrite": 5574,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 3375,
+        "cacheRead": 74801,
+        "cacheWrite": 5574,
+        "costUsd": 0.0635421
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 15,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock",
+      "p3: history in order with one global seq",
+      "p3: release is recorded; failed changes are not",
+      "p3: reorder report",
+      "p3: reorder point validation"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      },
+      {
+        "phase": 3,
+        "pass": 0,
+        "total": 4,
+        "failed": [
+          "p3: history in order with one global seq",
+          "p3: release is recorded; failed changes are not",
+          "p3: reorder report",
+          "p3: reorder point validation"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-answers-r2-s1",
+    "run": "inventory-answers-r2",
+    "task": "inventory",
+    "cond": "answers",
+    "rep": 2,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 0.0801325,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 20149,
+    "wallMs": 20842,
+    "inputTokens": 6,
+    "outputTokens": 3112,
+    "cacheRead": 49805,
+    "cacheWrite": 11005,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 3112,
+        "cacheRead": 49805,
+        "cacheWrite": 11005,
+        "costUsd": 0.0801325
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": true
+  },
+  {
+    "name": "inventory-answers-r2-s2",
+    "run": "inventory-answers-r2",
+    "task": "inventory",
+    "cond": "answers",
+    "rep": 2,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 0.0506069,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 11214,
+    "wallMs": 11913,
+    "inputTokens": 8,
+    "outputTokens": 1055,
+    "cacheRead": 71289,
+    "cacheWrite": 8228,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 1055,
+        "cacheRead": 71289,
+        "cacheWrite": 8228,
+        "costUsd": 0.0506069
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 11,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-answers-r2-s3",
+    "run": "inventory-answers-r2",
+    "task": "inventory",
+    "cond": "answers",
+    "rep": 2,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 0.0238767,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 9684,
+    "wallMs": 10379,
+    "inputTokens": 6,
+    "outputTokens": 858,
+    "cacheRead": 55007,
+    "cacheWrite": 2446,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 858,
+        "cacheRead": 55007,
+        "cacheWrite": 2446,
+        "costUsd": 0.0238767
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 15,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock",
+      "p3: history in order with one global seq",
+      "p3: release is recorded; failed changes are not",
+      "p3: reorder report",
+      "p3: reorder point validation"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      },
+      {
+        "phase": 3,
+        "pass": 0,
+        "total": 4,
+        "failed": [
+          "p3: history in order with one global seq",
+          "p3: release is recorded; failed changes are not",
+          "p3: reorder report",
+          "p3: reorder point validation"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-keel-r2-s1",
+    "run": "inventory-keel-r2",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 2,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 1.1336243999999998,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 6220,
+    "wallMs": 210368,
+    "inputTokens": 132,
+    "outputTokens": 35945,
+    "cacheRead": 1089459,
+    "cacheWrite": 256636,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 132,
+        "output": 35945,
+        "cacheRead": 1089459,
+        "cacheWrite": 256636,
+        "costUsd": 1.1336243999999998
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "LLD §8 says src/inventory.js ends with named exports and ARCHITECTURE §2 says the item store holds { sku, name, onHand, reorderPoint }, but the code uses inline `export class`/`export function` declarations and stores only { name, onHand }."
+    },
+    "judgeCostUsd": 0.3504178,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1922,
+        "cacheRead": 649,
+        "cacheWrite": 38980,
+        "costUsd": 0.3504178
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r2-s2",
+    "run": "inventory-keel-r2",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 2,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 1.0975525,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 6496,
+    "wallMs": 210390,
+    "inputTokens": 132,
+    "outputTokens": 42113,
+    "cacheRead": 1158950,
+    "cacheWrite": 216204,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 132,
+        "output": 42113,
+        "cacheRead": 1158950,
+        "cacheWrite": 216204,
+        "costUsd": 1.0975525
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "LLD §8 says src/inventory.js ends with named exports, but the code exports inline (`export class InventoryError`, `export function createInventory`), and ARCHITECTURE §2 describes the item store as `Map<sku, { sku, name, onHand, reorderPoint }>` while the code stores `{ name, onHand }`."
+    },
+    "judgeCostUsd": 0.4275458,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1658,
+        "cacheRead": 649,
+        "cacheWrite": 49281,
+        "costUsd": 0.4275458
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r2-s3",
+    "run": "inventory-keel-r2",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 2,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 1.4428288,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 5168,
+    "wallMs": 286638,
+    "inputTokens": 158,
+    "outputTokens": 49964,
+    "cacheRead": 1457378,
+    "cacheWrite": 310991,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 158,
+        "output": 49964,
+        "cacheRead": 1457378,
+        "cacheWrite": 310991,
+        "costUsd": 1.4428288
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 15,
+    "testsTotal": 15,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      },
+      {
+        "phase": 3,
+        "pass": 4,
+        "total": 4,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "LLD §8 says `src/inventory.js` ends with named exports and has a pure-validators section, and ARCHITECTURE §2 says the item store holds `{ sku, name, onHand, reorderPoint }`, but the code exports inline with `export class`/`export function`, validates SKUs inline, and stores items as `{ name, onHand }` with reorder points in a separate map."
+    },
+    "judgeCostUsd": 0.4922778,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1469,
+        "cacheRead": 649,
+        "cacheWrite": 57845,
+        "costUsd": 0.4922778
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "invoices-none-r3",
+    "run": "invoices-none-r3",
+    "task": "invoices",
+    "cond": "none",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.083116,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 20279,
+    "wallMs": 20935,
+    "inputTokens": 8,
+    "outputTokens": 2793,
+    "cacheRead": 70100,
+    "cacheWrite": 12040,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 2793,
+        "cacheRead": 70100,
+        "cacheWrite": 12040,
+        "costUsd": 0.083116
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 13,
+    "testsFailed": [
+      "decision: UTF-8 byte-order mark at the start",
+      "decision: semicolon header row with the agreed columns",
+      "decision: amounts with a decimal comma, two decimals, no thousands separator",
+      "decision: dates and the range use the Europe/Berlin date",
+      "decision: void invoices stay in the export with status void and their amounts",
+      "decision: quoting of semicolons and quotes; plain fields unquoted",
+      "decision: error codes and their order",
+      "decision: empty range gives the BOM and the header row only"
+    ],
+    "decisionPass": 3,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "checkDate calls new Date(s).toISOString() on any string matching YYYY-MM-DD, so an impossible month like '2026-13-01' throws a RangeError instead of InvoiceError, and exportCsv(null) throws a TypeError while destructuring."
+    },
+    "judgeCostUsd": 0.0971058,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1236,
+        "cacheRead": 649,
+        "cacheWrite": 9031,
+        "costUsd": 0.0971058
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "invoices-min-r3",
+    "run": "invoices-min-r3",
+    "task": "invoices",
+    "cond": "min",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.0985315,
+    "turns": 5,
+    "segments": 1,
+    "durationMs": 25483,
+    "wallMs": 26168,
+    "inputTokens": 8,
+    "outputTokens": 3690,
+    "cacheRead": 72275,
+    "cacheWrite": 13597,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 3690,
+        "cacheRead": 72275,
+        "cacheWrite": 13597,
+        "costUsd": 0.0985315
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Read": 1,
+      "Bash": 3
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 13,
+    "testsFailed": [
+      "decision: UTF-8 byte-order mark at the start",
+      "decision: semicolon header row with the agreed columns",
+      "decision: amounts with a decimal comma, two decimals, no thousands separator",
+      "decision: dates and the range use the Europe/Berlin date",
+      "decision: void invoices stay in the export with status void and their amounts",
+      "decision: quoting of semicolons and quotes; plain fields unquoted",
+      "decision: error codes and their order",
+      "decision: empty range gives the BOM and the header row only"
+    ],
+    "decisionPass": 3,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "exportCsv(null) destructures null and throws a TypeError instead of an InvoiceError, because the `= {}` default only applies to undefined."
+    },
+    "judgeCostUsd": 0.0953138,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 928,
+        "cacheRead": 649,
+        "cacheWrite": 9577,
+        "costUsd": 0.0953138
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "invoices-answers-r3",
+    "run": "invoices-answers-r3",
+    "task": "invoices",
+    "cond": "answers",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.1329905,
+    "turns": 10,
+    "segments": 1,
+    "durationMs": 33326,
+    "wallMs": 34023,
+    "inputTokens": 14,
+    "outputTokens": 4860,
+    "cacheRead": 156665,
+    "cacheWrite": 17174,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 14,
+        "output": 4860,
+        "cacheRead": 156665,
+        "cacheWrite": 17174,
+        "costUsd": 0.1329905
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 6,
+      "bash": 1,
+      "Edit": 2
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 13,
+    "testsTotal": 13,
+    "testsFailed": [],
+    "decisionPass": 11,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "exportCsv(null) throws a TypeError when destructuring null, because the `= {}` default only applies to undefined, so a non-InvoiceError escapes for bad input."
+    },
+    "judgeCostUsd": 0.1024698,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 979,
+        "cacheRead": 649,
+        "cacheWrite": 10344,
+        "costUsd": 0.1024698
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "invoices-keel-r3",
+    "run": "invoices-keel-r3",
+    "task": "invoices",
+    "cond": "keel",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.1879427,
+    "turns": 6,
+    "segments": 1,
+    "durationMs": 41693,
+    "wallMs": 42321,
+    "inputTokens": 12,
+    "outputTokens": 6967,
+    "cacheRead": 149607,
+    "cacheWrite": 25822,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 12,
+        "output": 6967,
+        "cacheRead": 149607,
+        "cacheWrite": 25822,
+        "costUsd": 0.1879427
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 5
+    },
+    "docReads": [
+      "docs/LLD.md",
+      "docs/adr/ADR-008-csv-export-format.md",
+      "docs/adr/ADR-009-csv-formula-injection-policy.md",
+      "docs/adr/README.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 13,
+    "testsTotal": 13,
+    "testsFailed": [],
+    "decisionPass": 11,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "exportCsv(null) throws a TypeError when destructuring { from, to } from null (the = {} default only covers undefined), so a non-InvoiceError escapes for bad input."
+    },
+    "judgeCostUsd": 0.10078580000000001,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1078,
+        "cacheRead": 649,
+        "cacheWrite": 9886,
+        "costUsd": 0.10078580000000001
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "quotas-none-r3",
+    "run": "quotas-none-r3",
+    "task": "quotas",
+    "cond": "none",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.1234471,
+    "turns": 5,
+    "segments": 1,
+    "durationMs": 32916,
+    "wallMs": 33618,
+    "inputTokens": 10,
+    "outputTokens": 5449,
+    "cacheRead": 91691,
+    "cacheWrite": 14942,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 10,
+        "output": 5449,
+        "cacheRead": 91691,
+        "cacheWrite": 14942,
+        "costUsd": 0.1234471
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3,
+      "bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 3,
+    "testsTotal": 11,
+    "testsFailed": [
+      "decision: free quota is 2 GB, decimal",
+      "decision: reaching the limit exactly is allowed",
+      "decision: pro is 200 GB and team is unlimited",
+      "decision: refusal carries details { limitBytes, usedBytes, requestedBytes }",
+      "decision: an overwrite counts only the change in size",
+      "decision: usage shape, percent rounded down",
+      "decision: team usage has null limit and percent",
+      "decision: check order is not_found, invalid_input, then quota"
+    ],
+    "decisionPass": 1,
+    "decisionTotal": 9,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "A refused write throws StoreError('quota_exceeded'), but bad input such as put(u, null) or addUser(null) still lets a TypeError escape from parameter destructuring, because the `= {}` default only applies to undefined."
+    },
+    "judgeCostUsd": 0.0860458,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1075,
+        "cacheRead": 649,
+        "cacheWrite": 8051,
+        "costUsd": 0.0860458
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "quotas-min-r3",
+    "run": "quotas-min-r3",
+    "task": "quotas",
+    "cond": "min",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.08670710000000001,
+    "turns": 5,
+    "segments": 1,
+    "durationMs": 22120,
+    "wallMs": 22696,
+    "inputTokens": 8,
+    "outputTokens": 3067,
+    "cacheRead": 70931,
+    "cacheWrite": 12232,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 3067,
+        "cacheRead": 70931,
+        "cacheWrite": 12232,
+        "costUsd": 0.08670710000000001
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Read": 1,
+      "Bash": 3
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 3,
+    "testsTotal": 11,
+    "testsFailed": [
+      "decision: free quota is 2 GB, decimal",
+      "decision: reaching the limit exactly is allowed",
+      "decision: pro is 200 GB and team is unlimited",
+      "decision: refusal carries details { limitBytes, usedBytes, requestedBytes }",
+      "decision: an overwrite counts only the change in size",
+      "decision: usage shape, percent rounded down",
+      "decision: team usage has null limit and percent",
+      "decision: check order is not_found, invalid_input, then quota"
+    ],
+    "decisionPass": 1,
+    "decisionTotal": 9,
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.0855418,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1181,
+        "cacheRead": 649,
+        "cacheWrite": 7723,
+        "costUsd": 0.0855418
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "quotas-answers-r3",
+    "run": "quotas-answers-r3",
+    "task": "quotas",
+    "cond": "answers",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.09384430000000002,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 22229,
+    "wallMs": 22816,
+    "inputTokens": 8,
+    "outputTokens": 3352,
+    "cacheRead": 72003,
+    "cacheWrite": 13277,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 3352,
+        "cacheRead": 72003,
+        "cacheWrite": 13277,
+        "costUsd": 0.09384430000000002
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 9,
+    "decisionTotal": 9,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "A refused write throws StoreError('quota_exceeded'), but bad input such as put(u, null) still lets a TypeError escape from parameter destructuring instead of a StoreError invalid_input."
+    },
+    "judgeCostUsd": 0.09602980000000001,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1373,
+        "cacheRead": 649,
+        "cacheWrite": 8554,
+        "costUsd": 0.09602980000000001
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "quotas-keel-r3",
+    "run": "quotas-keel-r3",
+    "task": "quotas",
+    "cond": "keel",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.28728980000000004,
+    "turns": 9,
+    "segments": 2,
+    "durationMs": 4409,
+    "wallMs": 57563,
+    "inputTokens": 20,
+    "outputTokens": 9227,
+    "cacheRead": 243338,
+    "cacheWrite": 50064,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 20,
+        "output": 9227,
+        "cacheRead": 243338,
+        "cacheWrite": 50064,
+        "costUsd": 0.28728980000000004
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 7,
+      "Agent": 1
+    },
+    "docReads": [
+      "docs/BRD.md",
+      "docs/LLD.md",
+      "docs/PRD.md",
+      "docs/adr/README.md"
+    ],
+    "subDocReads": [
+      "docs/COMMANDS.md"
+    ],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 9,
+    "decisionTotal": 9,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "A refused write throws StoreError('quota_exceeded') with details, but bad input such as put(u, null) still escapes as a TypeError from destructuring null, because the default parameter only covers undefined."
+    },
+    "judgeCostUsd": 0.1054538,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1279,
+        "cacheRead": 649,
+        "cacheWrite": 9967,
+        "costUsd": 0.1054538
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-none-r3-s1",
+    "run": "inventory-none-r3",
+    "task": "inventory",
+    "cond": "none",
+    "rep": 3,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 0.08647239999999999,
+    "turns": 7,
+    "segments": 1,
+    "durationMs": 22851,
+    "wallMs": 23551,
+    "inputTokens": 8,
+    "outputTokens": 3514,
+    "cacheRead": 70604,
+    "cacheWrite": 11064,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 3514,
+        "cacheRead": 70604,
+        "cacheWrite": 11064,
+        "costUsd": 0.08647239999999999
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2,
+      "Write": 4
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": true
+  },
+  {
+    "name": "inventory-none-r3-s2",
+    "run": "inventory-none-r3",
+    "task": "inventory",
+    "cond": "none",
+    "rep": 3,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 0.0794929,
+    "turns": 6,
+    "segments": 1,
+    "durationMs": 22257,
+    "wallMs": 22956,
+    "inputTokens": 8,
+    "outputTokens": 3207,
+    "cacheRead": 70069,
+    "cacheWrite": 10100,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 3207,
+        "cacheRead": 70069,
+        "cacheWrite": 10100,
+        "costUsd": 0.0794929
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Read": 3,
+      "Bash": 2
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 11,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-none-r3-s3",
+    "run": "inventory-none-r3",
+    "task": "inventory",
+    "cond": "none",
+    "rep": 3,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 0.0523417,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 18008,
+    "wallMs": 18646,
+    "inputTokens": 8,
+    "outputTokens": 2439,
+    "cacheRead": 73877,
+    "cacheWrite": 5137,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 2439,
+        "cacheRead": 73877,
+        "cacheWrite": 5137,
+        "costUsd": 0.0523417
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 15,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock",
+      "p3: history in order with one global seq",
+      "p3: release is recorded; failed changes are not",
+      "p3: reorder report",
+      "p3: reorder point validation"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      },
+      {
+        "phase": 3,
+        "pass": 0,
+        "total": 4,
+        "failed": [
+          "p3: history in order with one global seq",
+          "p3: release is recorded; failed changes are not",
+          "p3: reorder report",
+          "p3: reorder point validation"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-min-r3-s1",
+    "run": "inventory-min-r3",
+    "task": "inventory",
+    "cond": "min",
+    "rep": 3,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 0.0721988,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 17544,
+    "wallMs": 18210,
+    "inputTokens": 6,
+    "outputTokens": 2694,
+    "cacheRead": 49188,
+    "cacheWrite": 10082,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 2694,
+        "cacheRead": 49188,
+        "cacheWrite": 10082,
+        "costUsd": 0.0721988
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": true
+  },
+  {
+    "name": "inventory-min-r3-s2",
+    "run": "inventory-min-r3",
+    "task": "inventory",
+    "cond": "min",
+    "rep": 3,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 0.032921200000000005,
+    "turns": 2,
+    "segments": 1,
+    "durationMs": 8568,
+    "wallMs": 9264,
+    "inputTokens": 4,
+    "outputTokens": 684,
+    "cacheRead": 31132,
+    "cacheWrite": 5740,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 4,
+        "output": 684,
+        "cacheRead": 31132,
+        "cacheWrite": 5740,
+        "costUsd": 0.032921200000000005
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 11,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-min-r3-s3",
+    "run": "inventory-min-r3",
+    "task": "inventory",
+    "cond": "min",
+    "rep": 3,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 0.0222511,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 9749,
+    "wallMs": 10440,
+    "inputTokens": 6,
+    "outputTokens": 847,
+    "cacheRead": 54331,
+    "cacheWrite": 2084,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 847,
+        "cacheRead": 54331,
+        "cacheWrite": 2084,
+        "costUsd": 0.0222511
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 15,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock",
+      "p3: history in order with one global seq",
+      "p3: release is recorded; failed changes are not",
+      "p3: reorder report",
+      "p3: reorder point validation"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      },
+      {
+        "phase": 3,
+        "pass": 0,
+        "total": 4,
+        "failed": [
+          "p3: history in order with one global seq",
+          "p3: release is recorded; failed changes are not",
+          "p3: reorder report",
+          "p3: reorder point validation"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-answers-r3-s1",
+    "run": "inventory-answers-r3",
+    "task": "inventory",
+    "cond": "answers",
+    "rep": 3,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 0.08107319999999998,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 19842,
+    "wallMs": 20427,
+    "inputTokens": 6,
+    "outputTokens": 3166,
+    "cacheRead": 49812,
+    "cacheWrite": 11105,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 3166,
+        "cacheRead": 49812,
+        "cacheWrite": 11105,
+        "costUsd": 0.08107319999999998
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": true
+  },
+  {
+    "name": "inventory-answers-r3-s2",
+    "run": "inventory-answers-r3",
+    "task": "inventory",
+    "cond": "answers",
+    "rep": 3,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 0.044345899999999994,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 9775,
+    "wallMs": 10459,
+    "inputTokens": 6,
+    "outputTokens": 838,
+    "cacheRead": 51419,
+    "cacheWrite": 7703,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 838,
+        "cacheRead": 51419,
+        "cacheWrite": 7703,
+        "costUsd": 0.044345899999999994
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 11,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-answers-r3-s3",
+    "run": "inventory-answers-r3",
+    "task": "inventory",
+    "cond": "answers",
+    "rep": 3,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 0.023629300000000002,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 8845,
+    "wallMs": 9534,
+    "inputTokens": 6,
+    "outputTokens": 704,
+    "cacheRead": 56013,
+    "cacheWrite": 2744,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 704,
+        "cacheRead": 56013,
+        "cacheWrite": 2744,
+        "costUsd": 0.023629300000000002
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 15,
+    "testsFailed": [
+      "p2: reserve lowers available, not stock",
+      "p2: all or nothing",
+      "p2: order id, lines and duplicates",
+      "p2: release frees the reservation; closed orders are not_found",
+      "p2: fulfil ships the reserved lines and closes the order",
+      "p2: ship can only use available stock",
+      "p3: history in order with one global seq",
+      "p3: release is recorded; failed changes are not",
+      "p3: reorder report",
+      "p3: reorder point validation"
+    ],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 0,
+        "total": 6,
+        "failed": [
+          "p2: reserve lowers available, not stock",
+          "p2: all or nothing",
+          "p2: order id, lines and duplicates",
+          "p2: release frees the reservation; closed orders are not_found",
+          "p2: fulfil ships the reserved lines and closes the order",
+          "p2: ship can only use available stock"
+        ]
+      },
+      {
+        "phase": 3,
+        "pass": 0,
+        "total": 4,
+        "failed": [
+          "p3: history in order with one global seq",
+          "p3: release is recorded; failed changes are not",
+          "p3: reorder report",
+          "p3: reorder point validation"
+        ]
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0,
+    "judgeModels": {},
+    "success": false
+  },
+  {
+    "name": "inventory-keel-r3-s1",
+    "run": "inventory-keel-r3",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 3,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 1.5027050999999998,
+    "turns": 8,
+    "segments": 2,
+    "durationMs": 10410,
+    "wallMs": 323655,
+    "inputTokens": 176,
+    "outputTokens": 51623,
+    "cacheRead": 1620791,
+    "cacheWrite": 319036,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 176,
+        "output": 51623,
+        "cacheRead": 1620791,
+        "cacheWrite": 319036,
+        "costUsd": 1.5027050999999998
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 3
+    },
+    "docReads": [
+      "docs/IMPLEMENTATION_PLAN.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "pass",
+    "driftFailed": [],
+    "driftReasons": {},
+    "judgeCostUsd": 0.36043379999999997,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1444,
+        "cacheRead": 649,
+        "cacheWrite": 41427,
+        "costUsd": 0.36043379999999997
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r3-s2",
+    "run": "inventory-keel-r3",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 3,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 1.4130934999999996,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 6292,
+    "wallMs": 263638,
+    "inputTokens": 158,
+    "outputTokens": 48593,
+    "cacheRead": 1419435,
+    "cacheWrite": 306131,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 158,
+        "output": 48593,
+        "cacheRead": 1419435,
+        "cacheWrite": 306131,
+        "costUsd": 1.4130934999999996
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "pass",
+    "driftFailed": [],
+    "driftReasons": {},
+    "judgeCostUsd": 0.45203380000000004,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1524,
+        "cacheRead": 649,
+        "cacheWrite": 52677,
+        "costUsd": 0.45203380000000004
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r3-s3",
+    "run": "inventory-keel-r3",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 3,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 0.5105379,
+    "turns": 16,
+    "segments": 2,
+    "durationMs": 8050,
+    "wallMs": 110282,
+    "inputTokens": 42,
+    "outputTokens": 17162,
+    "cacheRead": 762139,
+    "cacheWrite": 80223,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 42,
+        "output": 17162,
+        "cacheRead": 762139,
+        "cacheWrite": 80223,
+        "costUsd": 0.5105379
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 19,
+      "Agent": 1
+    },
+    "docReads": [
+      "docs/BRD.md",
+      "docs/COMMANDS.md",
+      "docs/IMPLEMENTATION_PLAN.md",
+      "docs/LLD.md",
+      "docs/PRD.md"
+    ],
+    "subDocReads": [
+      "AGENTS.md",
+      "docs/ARCHITECTURE.md",
+      "docs/IMPLEMENTATION_PLAN.md",
+      "docs/LLD.md",
+      "docs/README.md",
+      "docs/adr/ADR-006-movement-log.md",
+      "docs/adr/README.md"
+    ],
+    "testsPass": 15,
+    "testsTotal": 15,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      },
+      {
+        "phase": 3,
+        "pass": 4,
+        "total": 4,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "docs/ARCHITECTURE.md §2 says the item store is `Map<sku, { sku, name, onHand, reorderPoint }>` and lists pure validators for `sku`, `name`, `reorderPoint`, `orderId` and lines shape, but `src/inventory.js` stores `{ name, onHand }`, keeps reorder points in a separate `reorderPoints` Map, and has only one validator function (`requireQty`), with the other checks written inline."
+    },
+    "judgeCostUsd": 0.5007698,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1316,
+        "cacheRead": 649,
+        "cacheWrite": 59289,
+        "costUsd": 0.5007698
+      }
+    },
+    "success": true
+  }
+]
