@@ -1,76 +1,74 @@
 # shortlinks — AGENTS.md
 
-shortlinks is a small URL-shortener HTTP service (Node.js 20+, `node:http` only, in-memory storage, JSON API). Exact conformance to the specified API — including the rate limit — ranks above features and polish.
+shortlinks is a small URL-shortener HTTP service (Node.js 20+, `node:http` only, in-memory storage). Every endpoint must behave exactly as specified in `docs/PRD.md`, rate limit included.
 
-This file is deliberately light. The documents below are the source of truth — read the relevant one *before* touching code.
+This file is deliberately light. The documents below are the source of truth. Area rules load by path: `.claude/rules/service.md` names the ADR to read before touching `src/` or `test/` (agents without path loading open the file whose `paths:` match).
 
 ## Document map
 
 | Read this | When you are |
 |---|---|
-| `docs/PRD.md` | Writing or testing any endpoint — the full HTTP contract, validation order, rate-limit semantics, edge-case defaults |
+| `docs/PRD.md` | Building anything — the endpoint contract, every status and error code, each `[ASSUMPTION]` |
 | `docs/IMPLEMENTATION_PLAN.md` | Picking up work — current phase, scope, exit gates |
-| `docs/ARCHITECTURE.md` | Making structural choices — components, data flow, controls, accepted risks |
-| `docs/adr/` | Wondering "why is it like this?" — `README.md` is the index + open founder questions |
-| `docs/BRD.md` | Questioning scope — requirements (`LNK/RDR/ABU/VAL/DLV`), constraints, risks |
-| `docs/COMMANDS.md` | Running anything — run, test, curl, env vars |
-| `CHANGELOG.md` | Asking "what shipped, in what state?" |
-| `docs/README.md` | Orientation — docs index and reading order |
-| `docs/keel-transcript.md` | Checking where an `[ASSUMPTION]` came from |
+| `docs/ARCHITECTURE.md` | Making structural choices — components, module contracts, data model, controls, accepted risks |
+| `docs/adr/` | Wondering "why is it like this?" — one file per decision; `docs/adr/README.md` is the index + open questions |
+| `docs/BRD.md` | Questioning scope — objectives, requirement IDs, constraints, risks |
+| `docs/COMMANDS.md` | Running anything — run/test commands, env vars |
+| `CHANGELOG.md` | Asking "what shipped, and is it live?" |
+| `docs/keel-transcript.md` | Disputing intent — the interview and the source of every `[ASSUMPTION]` |
+| `docs/README.md` | Finding a doc — index and reading order |
 
-## Hard invariants
+## Hard invariants (rationale: `docs/ARCHITECTURE.md` §1, §6)
 
 | # | Rule | Enforced by | Gap | Source |
 |---|---|---|---|---|
-| 1 | No npm dependencies; `src/` imports only `node:` modules or relative files | Phase 0 guardrail test (reads `package.json` and `src/`) | not built — Phase 0 | ADR-001 |
-| 2 | Every error body is exactly `{"error":"<code>"}`, written only by `src/errors.js` | Phase 0 error-shape test + routing matrix | not built — Phase 0 | PRD §3, P-04 |
-| 3 | `createServer(options)` returns a non-listening server; time is read only via `options.now` (default `Date.now`) | Phase 0 factory test; fake-clock tests (rate limit, `createdAt`) | not built — Phase 0/2 | CON-004, P-02, P-03 |
-| 4 | Only absolute `http`/`https` URLs, ≤ 2048 chars, printable ASCII, are stored — one validator module | Phase 1 validator boundary tests | not built — Phase 1 | PRD §5, ADR-004 |
-| 5 | A creation is rate-checked after validation and recorded in the same synchronous step as the store write (no `await` between) | Phase 2 rate-limit suite | not built — Phase 2 | ADR-002, ADR-004 |
-| 6 | Client IP is the socket peer address; forwarded headers are never read; IPs are never logged | Phase 2 limiter tests; no-logging review | not built — Phase 2 | ADR-003 |
+| 1 | Standard library only: no npm dependency, no framework | review of `package.json` (none expected) | no automated check yet | ADR-001 |
+| 2 | `createServer(options)` returns a server that is not listening; `options.now` defaults to `Date.now` and is the only clock | tests construct servers without listening | — | ADR-001, ARCH P-02/P-03 |
+| 3 | Only `http`/`https` URLs of ≤2048 chars are stored; every input is validated before state changes | validation tests | — | PRD §3.1 |
+| 4 | Every error body is exactly `{"error":"<code>"}` via `src/errors.js` | envelope tests | — | PRD §3.8 |
+| 5 | At most 5 creates per client IP per rolling 60 s; `X-Forwarded-For` ignored | limiter tests with a fake clock | not built until Phase 1 | ADR-003 |
+| 6 | State is per-server `Map`s, never plain objects keyed by user input | store tests (`__proto__` code) | — | ADR-002 |
 
 ## Git & working workflow (mandatory — the build loop)
 
-0. **Version control from commit one.** The folder is a git repo with no commits yet: commit the generated docs on `main` before any phase runs (phase scripts branch off `main`).
-1. **Two units of work.** A **Phase** runs its workflow script on `phase-N-<slug>` off `main`. A **Change** (`CHG-xxx`: hotfix, small fix) is `/keel change <slug>` → `chg/<slug>`. Never commit directly to `main`. New phases: `/keel phase new <slug>`.
-2. **Run the phase workflow script:** `claude --workflow .claude/workflows/phase-N-<slug>.js` (or the Workflow tool). It checks out the phase branch, fans out divisible tasks to parallel agents in separate `git worktree`s (one per task, never shared), each opening with `/goal`; task branches merge into the phase branch; **Verify** writes `.keel/evidence/phase-N.json`; only the phase branch (tasks + evidence + doc-sync commit) merges to `main`. Exit strategy when stuck: bounded retries (3), then escalate — see IMPLEMENTATION_PLAN "Standing rules".
-3. **Write tests with the code, never after** (`node:test`). Spec behaviour is *proven by a test*.
-4. **Definition of done:** `node --test` green · invariants 1–6 hold · doc-sync commit · `node .keel/doc-size.mjs` passes.
-5. **Doc sync before the commit that completes any piece of work.** Delegate to the **doc-sync** subagent (`.claude/agents/doc-sync.md`): it updates this file's status · IMPLEMENTATION_PLAN tables · `docs/adr/` · CHANGELOG `[Unreleased]` · touched docs, citing the evidence file, and returns a Report. Check the Report against `git log` / `git diff main --name-only` / the evidence file; send gaps back as specific feedback. **Hard cap: 3 rounds**, then record leftovers as Deferred items rows and proceed. `.claude/workflows/doc-sync.js` runs this loop and the byte-budget check. State-neutral wording only.
-6. **Merge to `main`** only after gates pass and the doc-sync commit exists. Deploy state (running on the team machine, post-run check) is written in `CHANGELOG.md` only.
-7. **Decisions captured without fail:** any decision → `docs/adr/ADR-xxx-<slug>.md` before merge (number reserved at scope or taken at Integrate, never in a worktree). No addenda: one `Build deviation` row, else a superseding ADR. Open founder questions stay one row each in `docs/adr/README.md`.
-8. **Claims carry evidence.** No `✅` without a level (`code-read` < `unit` < `integration` < `local-browser` < `staging` < `prod-live`) and an artefact. Here `integration` is the ceiling (no staging/prod). Overclaiming is a defect.
+0. **Git from commit one:** the repo is initialised; commit the generated docs before any feature work.
+1. **Two units of work:** a Phase runs on `phase-N-<slug>`; a Change on `chg/<slug>` (`/keel change <slug>`). Never commit to `main`.
+2. **Run the phase script:** `claude --workflow .claude/workflows/phase-N-<slug>.js` (mechanics: `.claude/workflows/README.md`).
+3. **Tests ship with the code** (`node --test`); each PRD §3 behaviour is proven by a test.
+4. **Done per change:** `node --test` green, no dependency added, doc-sync commit present.
+5. **Doc sync before the completing commit:** inline when only status lines change, else delegate to doc-sync (`.claude/agents/doc-sync.md`; `doc-sync.js`, ≤3 rounds, then deferred items).
+6. **Merge** only with gates green and the doc-sync commit present. No deploy pipeline exists (`node src/main.js` on a dev box or VM); deploy state stays `merged`.
+7. **Decisions → `docs/adr/` before merge** (no addenda; open questions in `docs/adr/README.md`).
+8. **Claims carry evidence:** no `✅` without a level (`code-read` < … < `prod-live`) and an artefact.
+9. **Review before done:** no security or design reviewer is installed; do a `code-read` pass against `.claude/rules/service.md`.
 
-(No security/design reviewer roles: both skills declined; no UI.)
+Rules and rationale: IMPLEMENTATION_PLAN "Standing rules". Delegation: `.claude/workflows/README.md`.
 
-## Delegation (callers supervise their subagents)
+## Stops and end-of-run report
 
-The agent doing the work is the **caller**; the `doc-sync` subagent works for it. It returns a fixed **Report** (role · caller · scope · status · changed · checked · findings · evidence · not verified · needs from caller) and never commits, pushes, merges or messages anyone but its caller. The caller reads the Report, decides (accept / specific follow-up, max 3 rounds / escalate) and commits; upward reporting is unchanged.
+**Stop and ask** before: adding any dependency · adding persistence · changing a status/error code or a default marked `[ASSUMPTION]` · or when two docs disagree on something the task depends on.
+
+**End every run with four lines:** Blocked on me · Changed · Found · Could not confirm.
 
 ## Current status
 
 | | What | Deploy state | Evidence |
 |---|---|---|---|
-| **Last completed** | Documentation suite generated (no code) | on-branch | — |
-| **Now** | Phase 0 — Skeleton & Guardrails (not started) | — | — |
+| **Last completed** | Docs generated (no code) | on-branch | `CHANGELOG.md` [Unreleased] |
+| **Now** | Phase 0 — Core API (not started) | — | — |
 
 ## Working agreements
 
-- Definition of done per change: see workflow step 4 (details: `docs/IMPLEMENTATION_PLAN.md`).
-- Where the spec is silent, follow PRD §7 / the ADRs; do not invent. Anything new is an ADR or an Open decision.
+- Definition of done per change: see Git workflow step 4 (details: `docs/IMPLEMENTATION_PLAN.md`).
+- New decisions become `docs/adr/` entries; new accepted risks go to `docs/ARCHITECTURE.md` §7.
 - Negative results are recorded ("confirmed not a bug" is a row, not silence).
-- When this file and a referenced doc disagree, **the referenced doc wins** — fix the pointer.
+- When this file and a referenced doc disagree, **the referenced doc wins** — fix the pointer, not the doc.
 
 ## Pre-PR checklist
 
-- [ ] (1) no dependency added; no non-`node:` import in `src/`
-- [ ] (2) no error body written outside `src/errors.js`
-- [ ] (3) no `Date.now()`/`new Date()` in `src/` except the `options.now` default
-- [ ] (4) URL/code validation only via `src/validate.js`
-- [ ] (5) limiter check + record + store write in one synchronous step, after validation
-- [ ] (6) no `X-Forwarded-For` use; no IP logging
-- [ ] tests ship with the code; `node --test` green
-- [ ] new decision → `docs/adr/`; new punt → deferred items (owner + revisit trigger)
-- [ ] `docs/COMMANDS.md` / `README.md` updated if a command or env var changed
-- [ ] doc-sync Report reviewed; gaps fixed or logged after 3 rounds
-- [ ] doc-sync commit present; `node .keel/doc-size.mjs` passes (this file under 12 KB)
+- [ ] (1) no dependency added
+- [ ] (2) `createServer` still does not listen; no direct `Date.now()` outside the default
+- [ ] (3) new input is validated before it touches state
+- [ ] (4) errors go through `src/errors.js`
+- [ ] (5) rate-limit tests still pass
+- [ ] `docs/COMMANDS.md` updated if a command or env var changed

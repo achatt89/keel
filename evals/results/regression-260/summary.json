@@ -1,0 +1,1453 @@
+[
+  {
+    "name": "ledger-none-r1",
+    "task": "ledger",
+    "cond": "none",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.1204857,
+    "turns": 7,
+    "segments": 1,
+    "durationMs": 41709,
+    "wallMs": 42312,
+    "inputTokens": 12,
+    "outputTokens": 5626,
+    "cacheRead": 123577,
+    "cacheWrite": 12961,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 12,
+        "output": 5626,
+        "cacheRead": 123577,
+        "cacheWrite": 12961,
+        "costUsd": 0.1204857
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 5,
+      "Edit": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 17,
+    "testsTotal": 17,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [
+      "clarity"
+    ],
+    "judgeReasons": {
+      "clarity": "The top-level catch has an `if (err instanceof UsageError)` branch whose body is identical to its else branch, which is redundant dead code left in place."
+    },
+    "judgeCostUsd": 0.0879658,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1315,
+        "cacheRead": 649,
+        "cacheWrite": 7691,
+        "costUsd": 0.0879658
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "ledger-min-r1",
+    "task": "ledger",
+    "cond": "min",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.11582700000000001,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 39200,
+    "wallMs": 39826,
+    "inputTokens": 8,
+    "outputTokens": 5634,
+    "cacheRead": 77390,
+    "cacheWrite": 12933,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 5634,
+        "cacheRead": 77390,
+        "cacheWrite": 12933,
+        "costUsd": 0.11582700000000001
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 17,
+    "testsTotal": 17,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.0882418,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1288,
+        "cacheRead": 649,
+        "cacheWrite": 7793,
+        "costUsd": 0.0882418
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "ledger-keel-r1",
+    "task": "ledger",
+    "cond": "keel",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.3862957,
+    "turns": 13,
+    "segments": 1,
+    "durationMs": 129189,
+    "wallMs": 129808,
+    "inputTokens": 22,
+    "outputTokens": 18607,
+    "cacheRead": 404137,
+    "cacheWrite": 39942,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 22,
+        "output": 18607,
+        "cacheRead": 404137,
+        "cacheWrite": 39942,
+        "costUsd": 0.3862957
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 10,
+      "Read": 2
+    },
+    "docReads": [
+      "AGENTS.md",
+      "docs/ARCHITECTURE.md",
+      "docs/BRD.md",
+      "docs/IMPLEMENTATION_PLAN.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 17,
+    "testsTotal": 17,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.1546658,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1360,
+        "cacheRead": 649,
+        "cacheWrite": 15916,
+        "costUsd": 0.1546658
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "shortlinks-none-r1",
+    "task": "shortlinks",
+    "cond": "none",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.1096414,
+    "turns": 2,
+    "segments": 1,
+    "durationMs": 35642,
+    "wallMs": 36310,
+    "inputTokens": 4,
+    "outputTokens": 5725,
+    "cacheRead": 29474,
+    "cacheWrite": 12359,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 4,
+        "output": 5725,
+        "cacheRead": 29474,
+        "cacheWrite": 12359,
+        "costUsd": 0.1096414
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 6,
+    "testsTotal": 6,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.0952858,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1587,
+        "cacheRead": 649,
+        "cacheWrite": 7926,
+        "costUsd": 0.0952858
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "shortlinks-min-r1",
+    "task": "shortlinks",
+    "cond": "min",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.1150003,
+    "turns": 2,
+    "segments": 1,
+    "durationMs": 37739,
+    "wallMs": 38385,
+    "inputTokens": 4,
+    "outputTokens": 6012,
+    "cacheRead": 29963,
+    "cacheWrite": 12969,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 4,
+        "output": 6012,
+        "cacheRead": 29963,
+        "cacheWrite": 12969,
+        "costUsd": 0.1150003
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 6,
+    "testsTotal": 6,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.0925858,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1478,
+        "cacheRead": 649,
+        "cacheWrite": 7861,
+        "costUsd": 0.0925858
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "shortlinks-keel-r1",
+    "task": "shortlinks",
+    "cond": "keel",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.18240890000000004,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 46362,
+    "wallMs": 47001,
+    "inputTokens": 8,
+    "outputTokens": 7848,
+    "cacheRead": 94129,
+    "cacheWrite": 23625,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 7848,
+        "cacheRead": 94129,
+        "cacheWrite": 23625,
+        "costUsd": 0.18240890000000004
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [
+      "docs/COMMANDS.md",
+      "docs/IMPLEMENTATION_PLAN.md",
+      "docs/PRD.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 6,
+    "testsTotal": 6,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.10789380000000001,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1423,
+        "cacheRead": 649,
+        "cacheWrite": 9912,
+        "costUsd": 0.10789380000000001
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "booking-none-r1",
+    "task": "booking",
+    "cond": "none",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.10058589999999999,
+    "turns": 2,
+    "segments": 1,
+    "durationMs": 29693,
+    "wallMs": 30386,
+    "inputTokens": 4,
+    "outputTokens": 5044,
+    "cacheRead": 29499,
+    "cacheWrite": 11797,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 4,
+        "output": 5044,
+        "cacheRead": 29499,
+        "cacheWrite": 11797,
+        "costUsd": 0.10058589999999999
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 7,
+    "testsTotal": 7,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [
+      "clarity"
+    ],
+    "judgeReasons": {
+      "clarity": "free() contains dead and redundant code: `if (bs.length === 0 && !nonEmpty(room)) return [];` can never run because dayBookings already throws for an empty room, and it repeats the parseDay and weekend check that dayBookings already did."
+    },
+    "judgeCostUsd": 0.0976058,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1735,
+        "cacheRead": 649,
+        "cacheWrite": 7846,
+        "costUsd": 0.0976058
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "booking-min-r1",
+    "task": "booking",
+    "cond": "min",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.0931591,
+    "turns": 2,
+    "segments": 1,
+    "durationMs": 25092,
+    "wallMs": 25742,
+    "inputTokens": 4,
+    "outputTokens": 4409,
+    "cacheRead": 29971,
+    "cacheWrite": 11516,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 4,
+        "output": 4409,
+        "cacheRead": 29971,
+        "cacheWrite": 11516,
+        "costUsd": 0.0931591
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 7,
+    "testsTotal": 7,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.0964778,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1815,
+        "cacheRead": 649,
+        "cacheWrite": 7505,
+        "costUsd": 0.0964778
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "booking-keel-r1",
+    "task": "booking",
+    "cond": "keel",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.2075597,
+    "turns": 7,
+    "segments": 1,
+    "durationMs": 51656,
+    "wallMs": 52290,
+    "inputTokens": 14,
+    "outputTokens": 8366,
+    "cacheRead": 195357,
+    "cacheWrite": 26084,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 14,
+        "output": 8366,
+        "cacheRead": 195357,
+        "cacheWrite": 26084,
+        "costUsd": 0.2075597
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 6
+    },
+    "docReads": [
+      "docs/BRD.md",
+      "docs/IMPLEMENTATION_PLAN.md",
+      "docs/PRD.md",
+      "docs/adr/ADR-003-check-order.md",
+      "docs/adr/ADR-004-ids-and-cancel.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 7,
+    "testsTotal": 7,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [
+      "clarity"
+    ],
+    "judgeReasons": {
+      "clarity": "The code is small and coherent but leaves dead code: the exported CODES array is never used, free() re-parses the day and has an unreachable `!d` check after query() already throws, and time.js cites a nonexistent 'ADR-002'."
+    },
+    "judgeCostUsd": 0.10923780000000001,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1373,
+        "cacheRead": 649,
+        "cacheWrite": 10205,
+        "costUsd": 0.10923780000000001
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "ledger-none-r2",
+    "task": "ledger",
+    "cond": "none",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.1033505,
+    "turns": 2,
+    "segments": 1,
+    "durationMs": 33389,
+    "wallMs": 34045,
+    "inputTokens": 4,
+    "outputTokens": 5259,
+    "cacheRead": 29485,
+    "cacheWrite": 11951,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 4,
+        "output": 5259,
+        "cacheRead": 29485,
+        "cacheWrite": 11951,
+        "costUsd": 0.1033505
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 17,
+    "testsTotal": 17,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.0884538,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1265,
+        "cacheRead": 649,
+        "cacheWrite": 7877,
+        "costUsd": 0.0884538
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "ledger-min-r2",
+    "task": "ledger",
+    "cond": "min",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.1176617,
+    "turns": 5,
+    "segments": 1,
+    "durationMs": 39964,
+    "wallMs": 40663,
+    "inputTokens": 10,
+    "outputTokens": 5533,
+    "cacheRead": 96957,
+    "cacheWrite": 13154,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 10,
+        "output": 5533,
+        "cacheRead": 96957,
+        "cacheWrite": 13154,
+        "costUsd": 0.1176617
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 4
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 17,
+    "testsTotal": 17,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.08782580000000001,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1336,
+        "cacheRead": 649,
+        "cacheWrite": 7621,
+        "costUsd": 0.08782580000000001
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "ledger-keel-r2",
+    "task": "ledger",
+    "cond": "keel",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.3655186,
+    "turns": 11,
+    "segments": 1,
+    "durationMs": 118606,
+    "wallMs": 119293,
+    "inputTokens": 22,
+    "outputTokens": 17502,
+    "cacheRead": 386226,
+    "cacheWrite": 37958,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 22,
+        "output": 17502,
+        "cacheRead": 386226,
+        "cacheWrite": 37958,
+        "costUsd": 0.3655186
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 10
+    },
+    "docReads": [
+      "AGENTS.md",
+      "docs/ARCHITECTURE.md",
+      "docs/BRD.md",
+      "docs/IMPLEMENTATION_PLAN.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 17,
+    "testsTotal": 17,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.1560978,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1586,
+        "cacheRead": 649,
+        "cacheWrite": 15530,
+        "costUsd": 0.1560978
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "shortlinks-none-r2",
+    "task": "shortlinks",
+    "cond": "none",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.113283,
+    "turns": 2,
+    "segments": 1,
+    "durationMs": 37621,
+    "wallMs": 38270,
+    "inputTokens": 4,
+    "outputTokens": 5998,
+    "cacheRead": 29470,
+    "cacheWrite": 12587,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 4,
+        "output": 5998,
+        "cacheRead": 29470,
+        "cacheWrite": 12587,
+        "costUsd": 0.113283
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 6,
+    "testsTotal": 6,
+    "testsFailed": [],
+    "judge": "fail",
+    "judgeFailed": [
+      "rate-limit"
+    ],
+    "judgeReasons": {
+      "rate-limit": "The window is rolling, uses the injected clock and computes Retry-After correctly, but createLink checks the per-IP list before awaiting the body and only pushes afterwards into a separately filtered array copy, so concurrent POSTs from one IP all pass the check and overwrite each other's entries, exceeding the 5-per-window limit."
+    },
+    "judgeCostUsd": 0.1059938,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 2148,
+        "cacheRead": 649,
+        "cacheWrite": 7862,
+        "costUsd": 0.1059938
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "shortlinks-min-r2",
+    "task": "shortlinks",
+    "cond": "min",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.1180219,
+    "turns": 2,
+    "segments": 1,
+    "durationMs": 37860,
+    "wallMs": 38504,
+    "inputTokens": 4,
+    "outputTokens": 6205,
+    "cacheRead": 29959,
+    "cacheWrite": 13242,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 4,
+        "output": 6205,
+        "cacheRead": 29959,
+        "cacheWrite": 13242,
+        "costUsd": 0.1180219
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 6,
+    "testsTotal": 6,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.0990578,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1650,
+        "cacheRead": 649,
+        "cacheWrite": 8240,
+        "costUsd": 0.0990578
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "shortlinks-keel-r2",
+    "task": "shortlinks",
+    "cond": "keel",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.19390380000000002,
+    "turns": 5,
+    "segments": 1,
+    "durationMs": 45153,
+    "wallMs": 45675,
+    "inputTokens": 10,
+    "outputTokens": 7625,
+    "cacheRead": 125898,
+    "cacheWrite": 26261,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 10,
+        "output": 7625,
+        "cacheRead": 125898,
+        "cacheWrite": 26261,
+        "costUsd": 0.19390380000000002
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 4
+    },
+    "docReads": [
+      "docs/COMMANDS.md",
+      "docs/IMPLEMENTATION_PLAN.md",
+      "docs/PRD.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 6,
+    "testsTotal": 6,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.1064698,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1485,
+        "cacheRead": 649,
+        "cacheWrite": 9579,
+        "costUsd": 0.1064698
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "booking-none-r2",
+    "task": "booking",
+    "cond": "none",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.0991059,
+    "turns": 2,
+    "segments": 1,
+    "durationMs": 29983,
+    "wallMs": 30667,
+    "inputTokens": 4,
+    "outputTokens": 4960,
+    "cacheRead": 29499,
+    "cacheWrite": 11637,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 4,
+        "output": 4960,
+        "cacheRead": 29499,
+        "cacheWrite": 11637,
+        "costUsd": 0.0991059
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 7,
+    "testsTotal": 7,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.08871380000000001,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1362,
+        "cacheRead": 649,
+        "cacheWrite": 7667,
+        "costUsd": 0.08871380000000001
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "booking-min-r2",
+    "task": "booking",
+    "cond": "min",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.1050363,
+    "turns": 2,
+    "segments": 1,
+    "durationMs": 30215,
+    "wallMs": 30844,
+    "inputTokens": 4,
+    "outputTokens": 5233,
+    "cacheRead": 29983,
+    "cacheWrite": 12425,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 4,
+        "output": 5233,
+        "cacheRead": 29983,
+        "cacheWrite": 12425,
+        "costUsd": 0.1050363
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 7,
+    "testsTotal": 7,
+    "testsFailed": [],
+    "judge": "fail",
+    "judgeFailed": [
+      "strict-time",
+      "errors",
+      "clarity"
+    ],
+    "judgeReasons": {
+      "strict-time": "parseTime checks `h > 23` and `mi % 15 !== 0` but never checks `mi <= 59`, so the regex accepts minutes 60, 75 and 90 (e.g. `2026-03-02T09:60Z`), which pass validation and roll over into the next hour instead of being rejected.",
+      "errors": "A timestamp with minute 60, 75 or 90 breaks the quarter-hour/real-time rule but does not throw invalid_time; it is silently accepted as a booking.",
+      "clarity": "The code is small and coherent, but parseDay contains dead conditions (`day === undefined || day === false`) that can never be true given `m && dateMinutes(...)`, and the rubric requires no dead code."
+    },
+    "judgeCostUsd": 0.0951058,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1488,
+        "cacheRead": 649,
+        "cacheWrite": 8151,
+        "costUsd": 0.0951058
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "booking-keel-r2",
+    "task": "booking",
+    "cond": "keel",
+    "rep": 2,
+    "model": "sonnet",
+    "costUsd": 0.2147366,
+    "turns": 7,
+    "segments": 1,
+    "durationMs": 63767,
+    "wallMs": 64422,
+    "inputTokens": 14,
+    "outputTokens": 10070,
+    "cacheRead": 185406,
+    "cacheWrite": 23867,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 14,
+        "output": 10070,
+        "cacheRead": 185406,
+        "cacheWrite": 23867,
+        "costUsd": 0.2147366
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 6
+    },
+    "docReads": [
+      "docs/PRD.md",
+      "docs/adr/ADR-003-check-order.md",
+      "docs/adr/README.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 7,
+    "testsTotal": 7,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [
+      "clarity"
+    ],
+    "judgeReasons": {
+      "clarity": "errors.js exports a CODES array that nothing uses, which is dead code, and comments cite ADR-002 and ADR-003, which are not in the submission; test 13 also has a misleading comment about person_busy applying via room B."
+    },
+    "judgeCostUsd": 0.1202898,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1544,
+        "cacheRead": 649,
+        "cacheWrite": 11159,
+        "costUsd": 0.1202898
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "ledger-none-r3",
+    "task": "ledger",
+    "cond": "none",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.11364999999999999,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 38908,
+    "wallMs": 39589,
+    "inputTokens": 6,
+    "outputTokens": 5783,
+    "cacheRead": 53040,
+    "cacheWrite": 12626,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 5783,
+        "cacheRead": 53040,
+        "cacheWrite": 12626,
+        "costUsd": 0.11364999999999999
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 17,
+    "testsTotal": 17,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.08813380000000001,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1217,
+        "cacheRead": 649,
+        "cacheWrite": 7957,
+        "costUsd": 0.08813380000000001
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "ledger-min-r3",
+    "task": "ledger",
+    "cond": "min",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.10437619999999999,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 33605,
+    "wallMs": 34281,
+    "inputTokens": 8,
+    "outputTokens": 4802,
+    "cacheRead": 76402,
+    "cacheWrite": 12175,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 4802,
+        "cacheRead": 76402,
+        "cacheWrite": 12175,
+        "costUsd": 0.10437619999999999
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 17,
+    "testsTotal": 17,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.07994180000000001,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1041,
+        "cacheRead": 649,
+        "cacheWrite": 7373,
+        "costUsd": 0.07994180000000001
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "ledger-keel-r3",
+    "task": "ledger",
+    "cond": "keel",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.3084001,
+    "turns": 7,
+    "segments": 1,
+    "durationMs": 91691,
+    "wallMs": 92402,
+    "inputTokens": 14,
+    "outputTokens": 14397,
+    "cacheRead": 221741,
+    "cacheWrite": 35557,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 14,
+        "output": 14397,
+        "cacheRead": 221741,
+        "cacheWrite": 35557,
+        "costUsd": 0.3084001
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 6
+    },
+    "docReads": [
+      "docs/ARCHITECTURE.md",
+      "docs/BRD.md",
+      "docs/IMPLEMENTATION_PLAN.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 17,
+    "testsTotal": 17,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.14444980000000002,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1440,
+        "cacheRead": 649,
+        "cacheWrite": 14439,
+        "costUsd": 0.14444980000000002
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "shortlinks-none-r3",
+    "task": "shortlinks",
+    "cond": "none",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.1145874,
+    "turns": 2,
+    "segments": 1,
+    "durationMs": 38552,
+    "wallMs": 39144,
+    "inputTokens": 4,
+    "outputTokens": 6134,
+    "cacheRead": 29474,
+    "cacheWrite": 12573,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 4,
+        "output": 6134,
+        "cacheRead": 29474,
+        "cacheWrite": 12573,
+        "costUsd": 0.1145874
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 6,
+    "testsTotal": 6,
+    "testsFailed": [],
+    "judge": "fail",
+    "judgeFailed": [
+      "rate-limit"
+    ],
+    "judgeReasons": {
+      "rate-limit": "The window is rolling, uses the injected clock and computes Retry-After correctly, but the limit is checked before the async body read and recorded afterward via creations.set(ip, list) on a stale array, so concurrent POSTs from one IP all pass the check and overwrite each other's timestamps, letting a client create well over 5 links per 60 seconds."
+    },
+    "judgeCostUsd": 0.0975258,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1693,
+        "cacheRead": 649,
+        "cacheWrite": 7941,
+        "costUsd": 0.0975258
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "shortlinks-min-r3",
+    "task": "shortlinks",
+    "cond": "min",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.11569189999999999,
+    "turns": 2,
+    "segments": 1,
+    "durationMs": 37317,
+    "wallMs": 37915,
+    "inputTokens": 4,
+    "outputTokens": 6042,
+    "cacheRead": 29959,
+    "cacheWrite": 13067,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 4,
+        "output": 6042,
+        "cacheRead": 29959,
+        "cacheWrite": 13067,
+        "costUsd": 0.11569189999999999
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 6,
+    "testsTotal": 6,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.1107698,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 2338,
+        "cacheRead": 649,
+        "cacheWrite": 7984,
+        "costUsd": 0.1107698
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "shortlinks-keel-r3",
+    "task": "shortlinks",
+    "cond": "keel",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.1714925,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 48689,
+    "wallMs": 49382,
+    "inputTokens": 6,
+    "outputTokens": 8048,
+    "cacheRead": 57525,
+    "cacheWrite": 21312,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 8048,
+        "cacheRead": 57525,
+        "cacheWrite": 21312,
+        "costUsd": 0.1714925
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [
+      "docs/COMMANDS.md",
+      "docs/PRD.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 6,
+    "testsTotal": 6,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.1050938,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1355,
+        "cacheRead": 649,
+        "cacheWrite": 9732,
+        "costUsd": 0.1050938
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "booking-none-r3",
+    "task": "booking",
+    "cond": "none",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.1228382,
+    "turns": 3,
+    "segments": 1,
+    "durationMs": 39079,
+    "wallMs": 39751,
+    "inputTokens": 6,
+    "outputTokens": 6438,
+    "cacheRead": 53022,
+    "cacheWrite": 13286,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 6,
+        "output": 6438,
+        "cacheRead": 53022,
+        "cacheWrite": 13286,
+        "costUsd": 0.1228382
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 2
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 7,
+    "testsTotal": 7,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.1098218,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 2063,
+        "cacheRead": 649,
+        "cacheWrite": 8553,
+        "costUsd": 0.1098218
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "booking-min-r3",
+    "task": "booking",
+    "cond": "min",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.11641,
+    "turns": 5,
+    "segments": 1,
+    "durationMs": 33655,
+    "wallMs": 34346,
+    "inputTokens": 10,
+    "outputTokens": 5401,
+    "cacheRead": 101920,
+    "cacheWrite": 13047,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 10,
+        "output": 5401,
+        "cacheRead": 101920,
+        "cacheWrite": 13047,
+        "costUsd": 0.11641
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 4
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 7,
+    "testsTotal": 7,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.0992698,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1771,
+        "cacheRead": 649,
+        "cacheWrite": 7964,
+        "costUsd": 0.0992698
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "booking-keel-r3",
+    "task": "booking",
+    "cond": "keel",
+    "rep": 3,
+    "model": "sonnet",
+    "costUsd": 0.198881,
+    "turns": 5,
+    "segments": 1,
+    "durationMs": 57497,
+    "wallMs": 58073,
+    "inputTokens": 10,
+    "outputTokens": 9406,
+    "cacheRead": 115370,
+    "cacheWrite": 23316,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 10,
+        "output": 9406,
+        "cacheRead": 115370,
+        "cacheWrite": 23316,
+        "costUsd": 0.198881
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 4
+    },
+    "docReads": [
+      "docs/PRD.md",
+      "docs/adr/ADR-001-module-format.md",
+      "docs/adr/ADR-003-check-order.md",
+      "docs/adr/ADR-004-ids-and-cancel.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 7,
+    "testsTotal": 7,
+    "testsFailed": [],
+    "judge": "pass",
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "judgeCostUsd": 0.11707780000000001,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1459,
+        "cacheRead": 649,
+        "cacheWrite": 10970,
+        "costUsd": 0.11707780000000001
+      }
+    },
+    "success": true
+  }
+]

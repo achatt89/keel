@@ -1,124 +1,104 @@
 # ledger — Implementation Plan
 
-**Version:** 0.1 · **Status:** docs only; no code yet · **References:** `BRD.md`, `ARCHITECTURE.md`, `adr/README.md`
+**Version:** 0.1 · **Status:** Phase 0 not started
+**References:** [BRD](./BRD.md) · [ARCHITECTURE](./ARCHITECTURE.md) · [ADR index](./adr/README.md)
 
 ## How to read this plan
 
-Three phases ordered by one rule: **exact-money and validation primitives are built and tested before any command uses them.** Each phase lists scope (with spec refs), deliverables and an exit-gate table; a phase is open until its gates are green. Phases 0–2 deliver the whole of v1 (launch = Phase 2 closed; there is no deploy).
-
-Two units of work (conventions): a **Phase** is a gated milestone with a block, a script and an evidence file; a **Change** (`CHG-xxx`) is hotfix-weight work with a row in the Changes table and a CHANGELOG line, no phase block.
+Ordering rule: **guardrails (error contract, test harness, no-dependency check) exist before the logic that flows through them; the pure core exists before the commands that use it.** Each phase lists scope, deliverables and an exit-gate table; a phase is open until its gates pass. Phases 0–2 deliver the whole prototype (no post-launch line: it is run from a clone, no deploy). Two work units exist: a **Phase** (gated, own script and evidence file) and a **Change** (`CHG-xxx`, hotfix-weight, row in Changes).
 
 ### Phase status
 
-> Updated by doc-sync (state-neutral). Markers: ⬜ not started · 🔄 in progress · ✅ complete (every gate ✅ with evidence). Deploy state ladder `on-branch` → `merged` → `deployed vNN` → `live-verified`; this project has no deploy, so the ceiling is `merged`.
+> Markers: ⬜ not started · 🔄 in progress · ✅ complete (every gate ✅ with evidence). Deploy state is `on-branch` → `merged` only (no deploy exists; see Standing rules).
 
 | Phase | Status | Deploy state | Exit gate (one line) | Evidence | Last update |
 |---|---|---|---|---|---|
-| 0 — Foundations | ⬜ | — | money/names/store/dispatch unit-tested; exit codes only 0 or 2 | — | — |
-| 1 — Expense commands | ⬜ | — | add/list/remove round-trip green; ids never reused | — | — |
-| 2 — Balances, settle & README | ⬜ | — | balances sum to 0; settle zeroes all balances; README verified | — | — |
+| 0 — Guardrails | ⬜ | — | CLI spawns, bad input exits 2 with `error:`, `node --test` runs, no non-`node:` imports | — | — |
+| 1 — Pure core | ⬜ | — | Split, balances, settle exact to the cent and match BAL-004 | — | — |
+| 2 — Store, commands, README | ⬜ | — | All five commands pass end-to-end; README accurate | — | — |
 
 ### Standing rules (every phase, every commit)
 
-- **Workflow-first, branch-per-phase.** Run each phase via its script: `claude --workflow .claude/workflows/phase-N-<slug>.js`. The script creates `phase-N-<slug>` off `main`, fans tasks out as parallel agents in separate `git worktree`s, merges task branches back into the phase branch, runs Verify, then doc-sync, then merges to `main`. No direct commits to `main`; no task branch merges to `main`. A Change (`CHG-xxx`) uses `chg/<slug>` off `main`.
-- **Goal-directed, self-contained tasks.** Every worktree agent opens with `/goal` (code done, tests pass, `node --test` green, `verify` exercised the real CLI). Exit strategy `[ASSUMPTION]` (BRD A-04): **bounded retries (N=3), then `/goal clear` + commit + a deferred-items row for human review.**
-- **Tests ship with the code** (`node --test`, `node:test` + `node:assert/strict`, no dependencies). Pure logic → unit tests; command behaviour → spawn-based tests of `node src/cli.js` against a temp `LEDGER_FILE`. Never touch the real `./ledger.json` in tests.
-- **Doc sync is mandatory before merge** — `.claude/workflows/doc-sync.js` (AGENTS.md status, this file's tables, `docs/adr/`, CHANGELOG `[Unreleased]`, byte budgets). A merge without the doc-sync commit is incomplete.
-- **Decisions captured without fail** — any decision becomes `docs/adr/ADR-xxx-<slug>.md` before merge (ID reserved at scope or taken at Integrate). Deferred items state why and when to revisit. Negative results are recorded.
-- **Definition of done per PR:** `node --test` green, no new dependency in `package.json` (none exists), every new `error:` path has a test asserting stderr prefix + exit 2 + empty stdout, doc-sync commit present.
-- **Claims carry evidence.** `✅` needs a level (`code-read` < `unit` < `integration` < `local-browser` < `staging` < `prod-live`) and an artefact. Verify writes `.keel/evidence/phase-N.json`. For this project the realistic ceiling is `integration` (spawned CLI against a temp file).
+- **Branch-per-phase.** Run the phase script (`claude --workflow .claude/workflows/phase-N-<slug>.js`); it creates `phase-N-<slug>` off `main`, fans tasks into worktrees, integrates, verifies, doc-syncs, merges. Hotfix-weight work: `chg/<slug>` via `/keel change`. Never commit to `main` directly.
+- **Goal-directed tasks.** Each worktree agent opens with `/goal`. Exit strategy `[ASSUMPTION]`: bounded retries (3 fix-and-retest cycles), then `/goal clear`, commit what works, add a deferred-items row.
+- **Tests ship with the code** (`node:test`, `node --test`). A gate counts only if its test was seen failing on broken code (`failSeen`).
+- **Doc sync before the completing commit:** inline when only status lines change, else `doc-sync.js` (≤3 rounds).
+- **No deploy.** The tool runs from a clone, so there is no DEPLOYMENT.md; `[merged]` is the last deploy state. `prod-live` evidence never applies.
+- **Spec is the BRD.** Behaviour questions resolve to a BRD row; new ambiguity becomes an `[ASSUMPTION]` row there plus a test.
+- **Dependencies:** none, ever (CON-001). Imports must start with `node:` or be relative.
 
 ---
 
-## Phase 0 — Foundations
+## Phase 0 — Guardrails
 
-**Goal:** the pure core exists and cannot produce a non-integer-cent amount or an exit code other than 0 or 2.
-
-**Scope** (`ARCHITECTURE.md` §4.1–4.5; BRD MNY-001..003, VAL-001..004, DAT-001..004; ADR-001, ADR-002):
-- `src/money.js` — parse/format/split in integer cents.
-- `src/names.js`, `src/errors.js` — validation and `UsageError`.
-- `src/store.js` — `LEDGER_FILE`, load/save, persisted `nextId`, atomic write.
-- `src/cli.js` — dispatch skeleton + single error handler (unknown/missing command → exit 2).
-
-**Deliverables:**
-- [ ] the four modules above
-- [ ] tests: `tests/money.test.js`, `tests/names.test.js`, `tests/store.test.js`, `tests/cli-smoke.test.js`
-
+**Goal:** the error contract, entry point skeleton and test harness exist before any logic.
+**Scope** ([ARCHITECTURE](./ARCHITECTURE.md) §1–3, [ADR-003](./adr/ADR-003-single-error-path-and-exit-codes.md)):
+- `src/errors.js` (`CliError` → 2, `DataError` → 1) and `src/cli.js` skeleton: dispatch table, unknown/missing command → `error:` + exit 2, catch-all handler.
+- `tests/helpers.js` to spawn `node src/cli.js` with a temp `LEDGER_FILE` and capture code/stdout/stderr.
+- `tests/no-deps.test.js`: every `import`/`require` in `src/` is `node:`-prefixed or relative; no `package.json` dependencies.
+**Deliverables:** the files above; `node --test` green.
 **Exit gates:**
 
 | Gate | Evidence level | Artefact | Verified by | Status |
 |---|---|---|---|---|
-| `splitCents` shares always sum to the total for a range of totals × participant counts; leftover cents go to alphabetical-first names | `unit` | — | — | ⬜ |
-| `parseAmount` accepts `12.5`/`12.50`/`0.01`; rejects `0`, `-1`, `.5`, `1.`, `1.234`, `1e3`, `1,000`, `abc`, over-bound | `unit` | — | — | ⬜ |
-| Name rule: accepts `a`, 20 letters; rejects empty, 21 letters, uppercase, digits | `unit` | — | — | ⬜ |
-| Store: missing file = empty ledger, file created only on save, atomic write leaves no temp file, malformed file → `UsageError` and file untouched | `unit` | — | — | ⬜ |
-| Spawned CLI: no command, unknown command → stderr starts `error:`, stdout empty, exit 2 | `integration` | — | — | ⬜ |
+| No command and an unknown command print `error:` to stderr, empty stdout, exit 2 | `integration` | — | — | ⬜ |
+| `node --test` discovers and runs the suite on Node 20+ | `integration` | — | — | ⬜ |
+| No-deps test fails when a non-`node:` import is added (failSeen) | `unit` | — | — | ⬜ |
 | Doc-sync commit present on the phase branch | `code-read` | — | doc-sync | ⬜ |
 
-**Traceability:** MNY-001..003, VAL-001..004, DAT-001..004, QA-002 (part).
-**Workflow:** `.claude/workflows/phase-0-foundations.js` · **Evidence:** `.keel/evidence/phase-0.json`
-**ADRs reserved at scope:** ADR-004 (argument parsing), ADR-005 (atomic file write)
+**Traceability:** VAL-002, QUA-001, QUA-002. **Workflow:** `.claude/workflows/phase-0-guardrails.js` · **Evidence:** `.keel/evidence/phase-0.json`
+**ADRs reserved at scope:** none new (ADR-003 is built here).
 
 ---
 
-## Phase 1 — Expense commands
+## Phase 1 — Pure core
 
-**Goal:** `add`, `list` and `remove` work end to end against the JSON file with exact cents and never-reused ids.
-
-**Scope** (BRD ADD-001..004, LST-001..002, REM-001..002; `ARCHITECTURE.md` §4.6):
-- `src/commands/add.js` — validate payer/amount/participants/`--note`, split, assign id, persist.
-- `src/commands/list.js` — oldest first, exact line format.
-- `src/commands/remove.js` — by id; unknown/invalid id is an error.
-
-**Deliverables:**
-- [ ] three command modules wired into `cli.js`
-- [ ] tests: unit per command + `tests/cli-expenses.test.js` (spawned CLI, temp `LEDGER_FILE`)
-
+**Goal:** exact money, split, balances and settle as pure functions with tests.
+**Scope** ([ARCHITECTURE](./ARCHITECTURE.md) §4, §6, [ADR-001](./adr/ADR-001-integer-cents-and-split-rule.md)):
+- `src/validate.js`: name, amount (regex, cap), participants (non-empty, distinct, valid), id, note.
+- `src/money.js`: `parseAmount`, `formatCents`, `formatSigned`, `splitEqually`.
+- `src/balances.js`: `computeBalances`, `settle`.
+**Deliverables:** modules plus `tests/validate.test.js`, `tests/money.test.js`, `tests/balances.test.js`.
 **Exit gates:**
 
 | Gate | Evidence level | Artefact | Verified by | Status |
 |---|---|---|---|---|
-| `add alice 12.5 alice,bob --note pizza` prints `1`; `list` prints `1 alice 12.50 alice,bob # pizza` | `integration` | — | — | ⬜ |
-| Id never reused: add (1), add (2), remove 2, add → prints 3 | `integration` | — | — | ⬜ |
-| Every invalid-input case (bad name/amount, missing arg, unknown id, unknown flag, `--note` without value, duplicate participant) → `error:` on stderr, stdout empty, exit 2, file unchanged | `integration` | — | — | ⬜ |
-| `list` on a missing ledger prints nothing, exits 0, creates no file | `integration` | — | — | ⬜ |
+| Amount parsing accepts `12.5`/`12.50`, rejects `0`, `-1`, `1.234`, `1e3`, `.5`, `12.`, `1,000`, over-cap | `unit` | — | — | ⬜ |
+| Splits always sum to the amount (e.g. 10.00 ÷ 3, 0.01 ÷ 3, sweep of amounts × group sizes); leftover cents go alphabetically | `unit` | — | — | ⬜ |
+| Sum of balances is 0 over generated expense sets; payer-not-listed and payer-listed cases | `unit` | — | — | ⬜ |
+| Settle matches BAL-004 incl. name tie-breaks; empty output when settled; ≤ n−1 transfers | `unit` | — | — | ⬜ |
+| Name validation: 1–20 `a-z` only, rejects `Alice`, `a1`, empty, 21 chars | `unit` | — | — | ⬜ |
 | Doc-sync commit present on the phase branch | `code-read` | — | doc-sync | ⬜ |
 
-**Traceability:** ADD-001..004, LST-001..002, REM-001..002, VAL-002/003, DAT-002/003.
-**Workflow:** `.claude/workflows/phase-1-expense-commands.js` · **Evidence:** `.keel/evidence/phase-1.json`
-**ADRs reserved at scope:** none expected
+**Traceability:** MON-001..004, VAL-001, VAL-003, BAL-002..004, BO-01, BO-02. **Workflow:** `.claude/workflows/phase-1-pure-core.js` · **Evidence:** `.keel/evidence/phase-1.json`
+**ADRs reserved at scope:** none new (ADR-001 is built here).
 
 ---
 
-## Phase 2 — Balances, settle & README
+## Phase 2 — Store, commands, README
 
-**Goal:** balances reconcile to the cent, `settle` prints the stated greedy transfers, and the README tells a newcomer how to run the tool and the tests. **This is the launch line.**
-
-**Scope** (BRD BAL-001..003, SET-001..003, QA-001; ADR-003; `ARCHITECTURE.md` §4.7–4.8):
-- `src/balances.js` + `balances` command.
-- `src/settle.js` + `settle` command.
-- `README.md` final pass; every documented command executed once.
-
-**Deliverables:**
-- [ ] balances and settle modules and commands
-- [ ] tests: unit (worked examples, uneven splits, ties) + property test (random ledgers) + spawned-CLI test
-
+**Goal:** the five commands work end-to-end against a real file; the README says how to run tool and tests.
+**Scope** ([ARCHITECTURE](./ARCHITECTURE.md) §3, §5, [ADR-002](./adr/ADR-002-single-json-file-store.md)):
+- `src/store.js`: `LEDGER_FILE` (default `./ledger.json`), missing → empty, shape validation, atomic save.
+- `src/commands.js`: `add` (with `--note`), `list`, `remove`, `balances`, `settle`; wired into `cli.js`.
+- `README.md`: how to run the tool (examples of every command), `LEDGER_FILE`, exit codes, how to run tests (`node --test`).
+**Deliverables:** modules, `tests/store.test.js`, `tests/cli.test.js` (end-to-end), `README.md`.
 **Exit gates:**
 
 | Gate | Evidence level | Artefact | Verified by | Status |
 |---|---|---|---|---|
-| Founder example: balances print `alice: +10.00`, `bob: -10.00`, `carol: 0.00` (sorted, signed, zero unsigned) | `integration` | — | — | ⬜ |
-| Property: over random ledgers incl. uneven splits, balances sum to exactly 0 cents (BO-01) | `unit` | — | — | ⬜ |
-| Property: applying `settle` transfers zeroes every balance; ≤ n−1 transfers; every amount > 0 (BO-02) | `unit` | — | — | ⬜ |
-| Tie-break: equal debts/credits resolve by alphabetical name; settled ledger prints nothing | `unit` | — | — | ⬜ |
-| `settle` does not modify the data file (SET-003) | `integration` | — | — | ⬜ |
-| README: every command in it was executed and matches; `node --test` instruction works from a fresh clone | `integration` | — | — | ⬜ |
-| Whole suite `node --test` green; no `package.json` dependencies | `integration` | — | — | ⬜ |
+| End-to-end: add→list→balances→settle reproduces the spec examples (`alice: +10.00`, `bob: -10.00`, `carol: 0.00`) | `integration` | — | — | ⬜ |
+| Ids start at 1 and are never reused after `remove` (incl. removing the highest id) | `integration` | — | — | ⬜ |
+| Every invalid-input class in VAL-002/VAL-003 exits 2 with `error:` on stderr and writes nothing to the file | `integration` | — | — | ⬜ |
+| File created on first write only; read-only commands on a missing file do not create it; `settle` leaves the file byte-identical | `integration` | — | — | ⬜ |
+| Corrupt or invalid-shape data file exits 1 with `error:` and the file is untouched | `integration` | — | — | ⬜ |
+| Atomic save: no `.tmp-*` file left behind after success | `integration` | — | — | ⬜ |
+| README commands copy-paste correctly (each documented command run once) | `integration` | — | — | ⬜ |
 | Doc-sync commit present on the phase branch | `code-read` | — | doc-sync | ⬜ |
 
-**Traceability:** BAL-001..003, SET-001..003, QA-001..002, BO-01, BO-02, BO-03.
-**Workflow:** `.claude/workflows/phase-2-balances-settle.js` · **Evidence:** `.keel/evidence/phase-2.json`
-**ADRs reserved at scope:** none expected (ADR-003 already accepted)
+**Traceability:** EXP-001..006, BAL-001, BAL-003, BAL-005, DAT-001..004, QUA-003, BO-03. **Workflow:** `.claude/workflows/phase-2-commands.js` · **Evidence:** `.keel/evidence/phase-2.json`
+**ADRs reserved at scope:** none new (ADR-002 is built here).
+**This is the prototype's launch gate** (the tool is ready to run from a clone; no deploy).
 
 ---
 
@@ -126,17 +106,24 @@ Two units of work (conventions): a **Phase** is a gated milestone with a block, 
 
 | Requirement group | Phase(s) |
 |---|---|
-| MNY, VAL, DAT, CON | 0 |
-| ADD, LST, REM | 1 |
-| BAL, SET, QA-001 | 2 |
-| QA-002 | 0–2 (each phase ships its tests) |
-| BO-01, BO-02, BO-03 | 2 (gates) |
+| VAL-002 (error contract) | 0, 2 |
+| QUA-001, QUA-002 | 0 |
+| MON-001..004, VAL-001, VAL-003 | 1 |
+| BAL-002..004 | 1 |
+| EXP-001..006, BAL-001, BAL-003, BAL-005 | 2 |
+| DAT-001..004 | 2 |
+| QUA-003 | 2 |
+| BO-01, BO-02, BO-03 | 1, 1, 2 (gates) |
+
+---
 
 ## Deferred items
 
 | Item | Deferred from | Reason | Owner | Revisit trigger | Target | Status |
 |---|---|---|---|---|---|---|
-| *(none yet — items added by doc-sync workflow as work progresses)* | — | — | — | — | — | — |
+| *(none yet)* | — | — | — | — | — | — |
+
+---
 
 ## Changes
 
@@ -144,16 +131,17 @@ Two units of work (conventions): a **Phase** is a gated milestone with a block, 
 |---|---|---|---|---|---|---|
 | *(none yet)* | — | — | — | — | — | — |
 
+---
+
 ## Workflow scripts
 
 | Script | Purpose |
 |---|---|
-| `.claude/workflows/doc-sync.js` | Mandatory pre-merge doc sync; cites `.keel/evidence/`; auto-archive/split on budget breach. |
-| `.claude/workflows/change-template.js` | Hotfix-weight unit run by `/keel change <slug>`. |
-| `.claude/workflows/phase-0-foundations.js` | Phase 0: Setup (reserve ADR-004/005) → parallel worktree agents → Integrate → Verify → doc-sync → merge. |
-| `.claude/workflows/phase-1-expense-commands.js` | Phase 1: same stages. |
-| `.claude/workflows/phase-2-balances-settle.js` | Phase 2: same stages. |
+| `.claude/workflows/doc-sync.js` | Mandatory pre-merge doc sync; budget check and auto-archive |
+| `.claude/workflows/phase-0-guardrails.js` | Phase 0 — error contract, CLI skeleton, test harness |
+| `.claude/workflows/phase-1-pure-core.js` | Phase 1 — validate, money, balances, settle |
+| `.claude/workflows/phase-2-commands.js` | Phase 2 — store, commands, README |
+| `.claude/workflows/change-template.js` | Template `/keel change` copies for hotfix-weight work |
 
 ---
-
 *End of IMPLEMENTATION_PLAN.md — ledger*

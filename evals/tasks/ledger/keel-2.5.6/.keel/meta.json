@@ -1,0 +1,29 @@
+{
+  "keelVersion": "2.5.6",
+  "docFormat": 2,
+  "adrLayout": "per-file",
+  "generatedAt": "2026-11-16",
+  "lastUpgraded": null,
+  "lastArchived": null,
+  "archivedEntries": 0,
+  "goalExitStrategy": "bounded-retries-then-escalate",
+  "budgets": {
+    "AGENTS.md": 12288,
+    "CLAUDE.md": 12288,
+    "docs/IMPLEMENTATION_PLAN.md": 65536,
+    "docs/adr/README.md": 16384
+  },
+  "defaultBudget": 32768,
+  "waivers": {},
+  "waiverReviewDays": 90,
+  "evidenceDir": ".keel/evidence",
+  "closeout": { "maxOpenDeferred": 8, "everyNPhases": 5 },
+  "deployLogKeep": 10,
+  "lastArchiveTrigger": null,
+  "documentsGenerated": ["AGENTS.md","CLAUDE.md","README.md","CHANGELOG.md","docs/BRD.md","docs/ARCHITECTURE.md","docs/IMPLEMENTATION_PLAN.md","docs/adr/README.md","docs/adr/ADR-001-integer-cents.md","docs/adr/ADR-002-json-file-storage.md","docs/adr/ADR-003-greedy-settle.md","docs/adr/ADR-004-cli-argument-parsing.md","docs/adr/ADR-005-atomic-file-write.md","docs/keel-transcript.md"],
+  "skillsInstalled": [],
+  "securitySkill": "declined",
+  "agents": { "doc-sync": { "type": "subagent", "path": ".claude/agents/doc-sync.md" } },
+  "updateCheck": true,
+  "evidenceRetention": { "keepRunsPerBranch": 3, "pruneMergedAfterDays": 30 }
+}

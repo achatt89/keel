@@ -1,11 +1,11 @@
 {
   "keelVersion": "2.5.6",
   "docFormat": 2,
-  "adrLayout": "per-file",
   "generatedAt": "2026-11-16",
   "lastUpgraded": null,
   "lastArchived": null,
   "archivedEntries": 0,
+  "adrLayout": "per-file",
   "goalExitStrategy": "bounded-retries-then-escalate",
   "budgets": {
     "AGENTS.md": 12288,
@@ -20,10 +20,18 @@
   "closeout": { "maxOpenDeferred": 8, "everyNPhases": 5 },
   "deployLogKeep": 10,
   "lastArchiveTrigger": null,
-  "documentsGenerated": ["AGENTS.md","CLAUDE.md","README.md","CHANGELOG.md","docs/BRD.md","docs/ARCHITECTURE.md","docs/IMPLEMENTATION_PLAN.md","docs/adr/README.md","docs/adr/ADR-001-integer-cents.md","docs/adr/ADR-002-json-file-storage.md","docs/adr/ADR-003-greedy-settle.md","docs/adr/ADR-004-cli-argument-parsing.md","docs/adr/ADR-005-atomic-file-write.md","docs/keel-transcript.md"],
+  "documentsGenerated": [
+    "AGENTS.md", "CLAUDE.md", "CHANGELOG.md", "docs/BRD.md", "docs/ARCHITECTURE.md",
+    "docs/IMPLEMENTATION_PLAN.md", "docs/adr/README.md",
+    "docs/adr/ADR-001-integer-cents-and-split-rule.md",
+    "docs/adr/ADR-002-single-json-file-store.md",
+    "docs/adr/ADR-003-single-error-path-and-exit-codes.md",
+    "docs/keel-transcript.md"
+  ],
   "skillsInstalled": [],
-  "securitySkill": "declined",
+  "securitySkill": "never",
   "agents": { "doc-sync": { "type": "subagent", "path": ".claude/agents/doc-sync.md" } },
+  "rounds": null,
   "updateCheck": true,
   "evidenceRetention": { "keepRunsPerBranch": 3, "pruneMergedAfterDays": 30 }
 }

@@ -1,125 +1,97 @@
 # shortlinks — Implementation Plan
 
-**Version:** 0.1 · **Status:** Draft — nothing built
-**References:** `BRD.md`, `PRD.md`, `ARCHITECTURE.md`, `adr/README.md`, `COMMANDS.md`
+**Version:** 0.1 · **Status:** 🔄 Docs laid, no code yet
+**References:** [BRD.md](./BRD.md), [PRD.md](./PRD.md), [ARCHITECTURE.md](./ARCHITECTURE.md), [adr/README.md](./adr/README.md)
 
 ---
 
 ## How to read this plan
 
-Phases are ordered by one rule: **guardrails exist before the behaviour that could violate them.** Phase 0 builds a runnable skeleton in which the stdlib-only rule, the uniform error format and the 404/405 matrix are already tested; Phase 1 adds the link API; Phase 2 adds the rate limit and ships. Gates are runnable suites. Phases 0–2 deliver the whole of v1 (the launch line is Phase 2).
+Two phases, ordered by one rule: **the whole contract except the rate limit first, then the limit on top of it** (the limiter plugs into an already-tested `POST /links`). Each phase lists scope, deliverables and **exit gates** that must be met before the next phase starts. Phases 0–1 deliver v1; there is no Phase 2 (BRD §7).
 
-Two units of work exist: a **Phase** (gated milestone, workflow script, evidence file) and a **Change** (`CHG-xxx`, hotfix-weight: a row in Changes + a CHANGELOG line, no phase block).
+Two units of work exist (conventions "Two work units"): a **Phase** is a gated milestone with its own block, script and evidence file; a **Change** (`CHG-xxx`) is hotfix-weight work with a row in "Changes" and a CHANGELOG line. Phases are inserted as `N.1`, split as `N.1/N.2`; never renumbered.
 
 ### Phase status
 
-> Updated by doc-sync (state-neutral) and the Merge step. ⬜ not started · 🔄 in progress · ✅ complete (every gate ✅ with evidence). Deploy state: `on-branch` → `merged` → `deployed vNN` → `live-verified`. For this project "deployed" means running via `node src/main.js` on the team machine (no DEPLOYMENT doc, CON-005).
+> Updated by doc-sync (state-neutral) and the deploy step. ⬜ not started · 🔄 in progress · ✅ complete (every gate ✅ with evidence). Deploy state: `on-branch` → `merged` → `deployed vNN` → `live-verified`.
 
 | Phase | Status | Deploy state | Exit gate (one line) | Evidence | Last update |
 |---|---|---|---|---|---|
-| 0 — Skeleton & Guardrails | ⬜ | — | guardrail tests green: no deps, `node:`-only imports, uniform errors, 404/405 matrix | — | — |
-| 1 — Link API | ⬜ | — | every PRD §4–§5 status/error code has a passing test over real HTTP | — | — |
-| 2 — Rate Limit & Launch | ⬜ | — | rate-limit suite exact at every tested offset; README done; live curl pass | — | — |
+| 0 — Core API | ⬜ | — | Every endpoint and error code except the rate limit passes its `node --test` suite | — | — |
+| 1 — Rate limit | ⬜ | — | 6th create in 60 s is 429 with a correct `Retry-After`; all suites green | — | — |
 
-### Standing rules (apply to every phase, every commit)
+### Standing rules (every phase, every commit)
 
-- **Workflow-first, branch-per-phase.** Run `claude --workflow .claude/workflows/phase-N-<slug>.js` (or the Workflow tool). The script creates `phase-N-<slug>` off `main`, fans out divisible tasks into separate `git worktree`s, merges task branches into the phase branch, runs Verify, doc-sync and Merge. No direct commits to `main`. Changes: `chg/<slug>` off `main` via `/keel change <slug>`. `main` needs at least one commit before the first phase runs (commit the docs).
-- **Goal-directed, self-contained tasks.** Every worktree agent opens with `/goal` (code, tests, `node --test` green, verify end-to-end). Exit strategy: **bounded retries (N=3), then `/goal clear` + commit + a deferred-items row for human review** `[ASSUMPTION]` (default; founder did not choose).
-- **Tests ship with the code.** `node:test` only. Behaviour in PRD §4–§6 is proven by a test, never asserted in prose.
-- **Doc sync is mandatory before merge** (`.claude/workflows/doc-sync.js`): AGENTS.md status · this file's tables · `docs/adr/` · CHANGELOG `[Unreleased]` · byte budgets. A branch without the doc-sync commit is not done.
-- **Decisions captured without fail.** Any decision made while building → `docs/adr/ADR-xxx-<slug>.md` (next free number at Integrate, never in a worktree). ADR-002..005 are `Proposed` and flip to `Built` in their phase; open founder questions stay in `adr/README.md`. Negative results are recorded.
-- **Definition of done per PR:** `node --test` green · guardrail tests green (no deps) · doc-sync commit present · `node .keel/doc-size.mjs` passes.
-- **Claims carry evidence.** `✅` needs an evidence level (`code-read` < `unit` < `integration` < `local-browser` < `staging` < `prod-live`) and an artefact. Verify writes `.keel/evidence/phase-N.json`. There is no staging/prod environment: the highest level reachable is `integration` (real HTTP against a locally started server).
+- **Workflow-first, branch-per-phase.** Run `claude --workflow .claude/workflows/phase-N-<slug>.js`; the script branches `phase-N-<slug>` off `main` and fans tasks out to separate `git worktree`s. Never commit to `main`.
+- **Goal-directed tasks.** Each worktree agent opens with `/goal` (its completion condition). Exit strategy: **bounded retries (3), then escalate** — `/goal clear`, commit what works, add a Deferred row. [ASSUMPTION: the recommended default; not asked.]
+- **Tests ship with the code.** `node --test` suites in `test/`; the behaviours in PRD §3 are proven by a test each, not asserted in prose. A test counts only once seen to fail on broken code.
+- **Doc sync before merge.** Run `.claude/workflows/doc-sync.js`: AGENTS.md status, the phase table (state-neutral), `docs/adr/`, Deferred/Changes, CHANGELOG `[Unreleased]`, byte budgets.
+- **Decisions captured.** A decision made mid-build becomes an ADR before the merge commit; unresolved spec gaps stay one row in `docs/adr/README.md` Open decisions.
+- **Definition of done per PR:** `node --test` green · no `package.json` dependency added · doc-sync commit present.
+- **Review before done.** No security or design reviewer is installed (founder declined the security skill; no UI). The caller does a `code-read` pass against `.claude/rules/service.md` instead.
+- **Claims carry evidence.** `✅` needs a level (`code-read` < `unit` < `integration` < `local-browser` < `staging` < `prod-live`) and an artefact; Verify writes `.keel/evidence/phase-N.json`; only a deploy writes `prod-live`.
 
 ---
 
-## Phase 0 — Skeleton & Guardrails
+## Phase 0 — Core API
 
-**Goal:** a runnable, stdlib-only server skeleton where the dependency rule, the error format and the 404/405 matrix are already enforced by tests.
+**Goal:** a running service whose create, redirect, details and delete endpoints, 404/405 matrix and error envelope match the spec exactly, with no rate limit yet.
 
-**Scope** (`ARCHITECTURE.md` §1–§2; ADR-001, ADR-005; `PRD.md` §3–§4; `COMMANDS.md`):
-- `package.json` (no dependencies, `engines.node >=20`, `test`/`start` scripts, CommonJS) and `src/main.js` (`PORT`, default 3000; invalid `PORT` exits non-zero).
-- `src/server.js` `createServer(options)` → non-listening `http.Server`, `options.now` default `Date.now`; routing by path shape; `src/errors.js` `sendError`.
-- `test/helpers/`: ephemeral-port server starter, JSON request helper, fake clock.
+**Scope** (PRD §3.1–3.5, 3.7–3.8; ARCHITECTURE §2–5; ADR-001, ADR-002, ADR-004):
+- `src/errors.js`, `src/validate.js`, `src/store.js`: envelope, url/code validation, random 7-char codes, `Map` store with hits and `createdAt`.
+- `src/server.js`: `createServer(options)` (non-listening, `options.now` default `Date.now`), path-shape router, JSON body reading with the 64 KiB cap.
+- `src/main.js`: `PORT` (default 3000).
+- `test/*.test.js` and `README.md` (how to run the service and the tests).
 
 **Deliverables:**
-- [ ] `package.json`, `src/main.js`, `src/server.js`, `src/errors.js`
-- [ ] test helpers
-- [ ] tests: guardrails (no deps; `src/` imports only `node:`/relative; factory not listening; error shape) and the routing 404/405 matrix
+- [ ] `POST /links`, `GET /<code>`, `GET /links/<code>`, `DELETE /links/<code>`
+- [ ] 404 / 405 matrix incl. reserved `links` (OD-01..OD-04 defaults pinned by tests)
+- [ ] tests: store, validation, routing, each endpoint's success and error cases
+- [ ] README
 
 **Exit gates:**
 
 | Gate | Evidence level | Artefact | Verified by | Status |
 |---|---|---|---|---|
-| Guardrail test fails if a dependency or non-`node:` import is introduced (shown by temporarily adding one) | `integration` | `.keel/evidence/phase-0/` | agent | ⬜ |
-| Routing matrix test: every row of PRD §4 returns the stated 404/405 with `{"error":…}` | `integration` | test file + run output | — | ⬜ |
-| `createServer()` returns a server that is not listening; two instances share no state | `unit` | test file + run output | — | ⬜ |
-| `PORT` handling: default 3000, bad value exits non-zero | `integration` | test file + run output | — | ⬜ |
+| `node --test` green: every PRD §3 row for F-01..F-06, F-08 has a passing test | `integration` | — | — | ⬜ |
+| Each error code in PRD §3.8 is produced by at least one test | `integration` | — | — | ⬜ |
+| `node src/main.js` serves `curl` create → redirect → details → delete on `PORT` | `integration` | — | — | ⬜ |
+| No dependency in `package.json`; `createServer()` does not listen | `code-read` | — | — | ⬜ |
 | Doc-sync commit present on the phase branch | `code-read` | — | doc-sync | ⬜ |
 
-**Traceability:** F-05, F-07, F-08 · VAL-004, VAL-005, DLV-001, DLV-003, CON-001..004.
-**Workflow:** `.claude/workflows/phase-0-skeleton-guardrails.js` · **Evidence:** `.keel/evidence/phase-0.json`
-**ADRs reserved at scope:** none — ADR-001 accepted, ADR-005 written (flips to `Built` here for the routing half).
+**Traceability:** LNK-001..006, RTE-001..002, RUN-001..004, SEC-001 (validation).
+**Workflow:** `.claude/workflows/phase-0-core-api.js` · **Evidence:** `.keel/evidence/phase-0.json`
+**ADRs reserved at scope:** none (ADR-001, 002, 004 already Accepted)
 
 ---
 
-## Phase 1 — Link API
+## Phase 1 — Rate limit
 
-**Goal:** create, inspect, redirect and delete links with every validation rule and exact status/error codes.
+**Goal:** each client IP can create at most 5 links in any rolling 60 s; the 6th is `429 rate_limited` with a correct `Retry-After`; proven with an injected clock.
 
-**Scope** (`PRD.md` §4–§5, §7; ADR-001, ADR-004, ADR-005):
-- `src/validate.js` (url, code), `src/store.js` (Map; hits; `createdAt` from `options.now`; CSPRNG code generation).
-- Handlers: `POST /links` (201/400/409/413), `GET /<code>` (302 + one hit), `GET /links/<code>`, `DELETE /links/<code>` (204). Reserved code `links`. No rate limiting yet.
+**Scope** (PRD §3.6; ARCHITECTURE §3–5; ADR-003):
+- `src/rate-limit.js`: rolling log per IP, pruning, IPv4-mapped IPv6 normalisation.
+- Wire into `POST /links` in the order validate → limit → taken-check → create → record.
+- Tests with `options.now`; README touch-up.
 
 **Deliverables:**
-- [ ] validators, store, handlers
-- [ ] tests: validator boundaries (url 2048/2049; code 3/4/16/17; schemes; relative URLs; control chars; non-object JSON; `null`/`""` code), conformance over HTTP, hit counting, delete-then-recreate, reserved code, body cap, ISO `createdAt` under the fake clock
+- [ ] limiter module and wiring
+- [ ] tests: 5 allowed / 6th 429; `Retry-After` ≥1 and exact at boundaries; slot frees at 60 000 ms; per-IP isolation; 400/409 do not consume slots
+- [ ] full suite re-run (Phase 0 behaviour unchanged)
 
 **Exit gates:**
 
 | Gate | Evidence level | Artefact | Verified by | Status |
 |---|---|---|---|---|
-| Conformance suite: every status/error code in PRD §4–§5 asserted over real HTTP | `integration` | test file + run output | — | ⬜ |
-| Validator boundary tests green (all rows of PRD §5 "Boundaries to test") | `unit` | test file + run output | — | ⬜ |
-| Hits: only 302s count; 404/inspect/failed create do not | `integration` | test file + run output | — | ⬜ |
-| Generated codes match `^[A-Za-z0-9]{7}$` over many draws; collision retry covered | `unit` | test file + run output | — | ⬜ |
+| Limiter suite green with a fake clock, including the rolling-window case a fixed window would fail | `integration` | — | — | ⬜ |
+| Whole `node --test` suite green | `integration` | — | — | ⬜ |
+| Live check: 6 rapid `curl` creates against `node src/main.js` → 6th is 429 with `Retry-After` header | `integration` | — | — | ⬜ |
 | Doc-sync commit present on the phase branch | `code-read` | — | doc-sync | ⬜ |
 
-**Traceability:** F-01..F-04 · LNK-001..005, RDR-001, RDR-002, VAL-001..003.
-**Workflow:** `.claude/workflows/phase-1-link-api.js` · **Evidence:** `.keel/evidence/phase-1.json`
-**ADRs reserved at scope:** none — ADR-004 (validation half), ADR-005 (reserved code) flip to `Built` here.
-
----
-
-## Phase 2 — Rate Limit & Launch
-
-**Goal:** prove, don't assert — the limit is exact, the docs match, and a real server answers every case.
-
-**Scope** (`PRD.md` §6; ADR-002, ADR-003, ADR-004; `COMMANDS.md`):
-- `src/rate-limiter.js` (sliding log, injected clock, pruning) wired into `POST /links` after validation, before `code_taken`, synchronous with the write.
-- `README.md` at repo root (run, test, curl walkthrough, restart caveat).
-- Launch checks: full `node --test`; live curl pass against `node src/main.js`.
-
-**Deliverables:**
-- [ ] limiter + wiring; tests; `README.md`
-- [ ] live-pass transcript in `.keel/evidence/phase-2/`
-
-**Exit gates:**
-
-| Gate | Evidence level | Artefact | Verified by | Status |
-|---|---|---|---|---|
-| Fake-clock suite: 5 succeed, 6th → 429; `Retry-After` exact at t=0, 10 000, 59 999 (→ 1); slot frees at exactly +60 000; window is rolling | `integration` | test file + run output | — | ⬜ |
-| 400/409/413 and `DELETE` do not consume or free slots | `integration` | test file + run output | — | ⬜ |
-| Limiter unit: IPs independent; `::ffff:` normalised; empty entries pruned | `unit` | test file + run output | — | ⬜ |
-| Full `node --test` green with zero npm dependencies | `integration` | run output | — | ⬜ |
-| Live pass: `node src/main.js`, curl covers every status in PRD §4–§6 incl. a real 429 with `Retry-After` header | `integration` | `.keel/evidence/phase-2/live-pass.md` | human or agent | ⬜ |
-| README states how to run the service and the tests; a fresh reader can follow it | `code-read` | commit | human | ⬜ |
-| Doc-sync commit present on the phase branch | `code-read` | — | doc-sync | ⬜ |
-
-**This is the launch gate** (highest reachable level is `integration`; no staging/prod exists — CON-005).
-**Traceability:** F-06, F-08 · ABU-001, ABU-002, DLV-002, BO-02, BO-04.
-**Workflow:** `.claude/workflows/phase-2-rate-limit-launch.js` · **Evidence:** `.keel/evidence/phase-2.json`
-**ADRs reserved at scope:** none — ADR-002, ADR-003 and the limiter-position half of ADR-004 flip to `Built` here.
+**Traceability:** RAT-001, RAT-002, SEC-001.
+**Workflow:** `.claude/workflows/phase-1-rate-limit.js` · **Evidence:** `.keel/evidence/phase-1.json`
+**ADRs reserved at scope:** none (ADR-003 already Accepted)
+**This is the launch gate** (v1 is "run `node src/main.js` for the team"; no staging or prod environment exists, so the highest level reachable is `integration`).
 
 ---
 
@@ -127,13 +99,9 @@ Two units of work exist: a **Phase** (gated milestone, workflow script, evidence
 
 | Requirement group | Phase(s) |
 |---|---|
-| LNK-xxx, RDR-xxx | 1 |
-| VAL-001..003 | 1 |
-| VAL-004, VAL-005 | 0 |
-| ABU-xxx | 2 |
-| DLV-001, DLV-003 | 0 (grows through 2) |
-| DLV-002 | 2 |
-| CON-xxx, BO-xx | 0–2 (gates) |
+| LNK-001..006, RTE-001..002, RUN-001..004 | 0 |
+| RAT-001..002 | 1 |
+| SEC-001 | 0 (validation) + 1 (limit) |
 
 ---
 
@@ -141,7 +109,7 @@ Two units of work exist: a **Phase** (gated milestone, workflow script, evidence
 
 | Item | Deferred from | Reason | Owner | Revisit trigger | Target | Status |
 |---|---|---|---|---|---|---|
-| *(none yet — items added by doc-sync as work progresses)* | — | — | — | — | — | — |
+| Founder confirmation of OD-01..OD-05 defaults | Docs generation | Non-interactive run; defaults taken | founder | Before Phase 0 merge, or any time a default surprises someone | — | Open |
 
 ---
 
@@ -157,12 +125,10 @@ Two units of work exist: a **Phase** (gated milestone, workflow script, evidence
 
 | Script | Purpose |
 |---|---|
-| `.claude/workflows/doc-sync.js` | Mandatory pre-merge doc sync (delegate → review Report → ≤3 rounds → commit); budget check, auto-archive/split, evidence prune |
-| `.claude/workflows/change-template.js` | Hotfix-weight Change unit (`/keel change <slug>`) |
-| `.claude/workflows/phase-0-skeleton-guardrails.js` | Phase 0 — Setup → Build → Integrate → Verify → Doc Sync → Merge |
-| `.claude/workflows/phase-1-link-api.js` | Phase 1 — same stages |
-| `.claude/workflows/phase-2-rate-limit-launch.js` | Phase 2 — same stages |
+| `.claude/workflows/doc-sync.js` | Mandatory pre-merge doc sync; cites `.keel/evidence/`; auto-archive on budget breach |
+| `.claude/workflows/phase-0-core-api.js` | Phase 0: Setup → parallel worktree agents → Integrate → Verify → doc-sync → merge |
+| `.claude/workflows/phase-1-rate-limit.js` | Phase 1: same stages for the rate limiter |
+| `.claude/workflows/change-template.js` | Hotfix-weight unit; run via `/keel change <slug>` |
 
 ---
-
 *End of IMPLEMENTATION_PLAN.md — shortlinks*

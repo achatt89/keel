@@ -1,31 +1,34 @@
-# shortlinks — Docs Index
+# shortlinks — Documentation index
 
-> Documentation for shortlinks, a small in-memory URL-shortener HTTP service. Nothing is built yet: every doc is a spec for the build.
+Prototype-tier suite. Status: 🔄 docs laid; no application code yet. Tier and every default below trace to [keel-transcript.md](./keel-transcript.md).
 
-## Documents
+## Document map
 
-| File | Status | Description |
-|------|--------|-------------|
-| [BRD.md](BRD.md) | 🔄 draft | Business requirements — problem, objectives, requirement IDs, constraints, assumptions, risks |
-| [PRD.md](PRD.md) | 🔄 draft | Product requirements — the full HTTP contract, validation order, rate-limit semantics, edge-case defaults |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | 🔄 draft | Principles, components, data flow, security controls, accepted risks (lite) |
-| [adr/](adr/README.md) | 🔄 draft | Five decisions (one accepted, four proposed) + open founder questions |
-| [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | ⬜ not started | Three phases with evidence-ladder exit gates; Changes; deferred items |
-| [COMMANDS.md](COMMANDS.md) | 🔄 draft | Run, test, curl, env vars, doc tooling |
-| [keel-transcript.md](keel-transcript.md) | ✅ | The generation interview and where each `[ASSUMPTION]` came from |
-| [../CHANGELOG.md](../CHANGELOG.md) | 🔄 | What shipped, with deploy state |
+| Doc | Purpose | Status |
+|---|---|---|
+| [BRD.md](./BRD.md) | Objectives, requirement IDs, constraints, assumptions, risks | 🔄 |
+| [PRD.md](./PRD.md) | The API contract (`F-01`..`F-09`) | 🔄 |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | Components, module contracts, data model, controls | 🔄 |
+| [adr/README.md](./adr/README.md) | ADR-001..004 and the Open decisions (OD-01..OD-05) | ✅ accepted, `code-read` |
+| [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) | Phase 0 (core API), Phase 1 (rate limit), exit gates | 🔄 |
+| [COMMANDS.md](./COMMANDS.md) | Run and test commands, `PORT` | 🔄 |
+| [keel-transcript.md](./keel-transcript.md) | The interview record | ✅ |
+| `../CHANGELOG.md` | What shipped and its deploy state | 🔄 |
 
 ## Reading order
 
-1. **New to the project?** `BRD.md` §1–§2 → `PRD.md`.
-2. **Building?** `IMPLEMENTATION_PLAN.md` (current phase + gates) → `PRD.md` §4–§6 → `adr/README.md` → `ARCHITECTURE.md`.
-3. **Reviewing assumptions?** `adr/README.md` Open decisions → `keel-transcript.md`.
-4. **Running it?** `COMMANDS.md`.
+1. Builder: PRD → ARCHITECTURE → adr/README (Open decisions) → IMPLEMENTATION_PLAN.
+2. Founder: BRD → adr/README (confirm OD-01..OD-05) → PRD.
 
-## ID conventions
+## Deliberately omitted
 
-`BO-xx` objectives · `LNK/RDR/ABU/VAL/DLV-xxx` requirements · `CON-xxx` constraints · `A-xx` assumptions · `RSK-xxx` risks (BRD) · `F-xx` features (PRD) · `P-xx` principles (ARCHITECTURE) · `ADR-xxx` / `OD-xx` (`adr/`) · `Phase N`, `CHG-xxx` (IMPLEMENTATION_PLAN).
-
-## Deliberately omitted (trigger to add)
-
-ENGINEERING_DESIGN, HLD, LLD (one small service; ARCHITECTURE covers it) · NFR (no measurable targets beyond functional exactness; add if load or latency targets appear) · DESIGN/PRODUCT (no UI) · COMPLIANCE (no personal data beyond in-memory IPs; add if IPs are persisted or logged) · THREAT_MODEL (add if reachable by untrusted users) · DEPLOYMENT, RUNBOOK (no remote environments; add if deployed beyond one team machine) · FEEDBACK_ROUNDS · almanac · COST_ANALYSIS · SPIKE/AUDIT (on demand).
+| Doc | Why | Brings it back |
+|---|---|---|
+| ENGINEERING_DESIGN, HLD, LLD | One small service; ARCHITECTURE §3 carries the module contracts | More than one component or a team |
+| NFR | No measurable targets beyond the spec; the rate limit is a requirement (RAT-001) | A latency/availability target appears |
+| DESIGN, PRODUCT | No UI | A UI |
+| COMPLIANCE, THREAT_MODEL | No compliance regime; client IPs only, in memory; one VPN boundary (ARCHITECTURE §6) | Persisted IPs/logs, public exposure |
+| DEPLOYMENT, RUNBOOK | One process on a dev box or VM, no environments or pipeline | A remote environment or on-call |
+| FEEDBACK_ROUNDS | Solo internal tool | External reviewers |
+| almanac/ | No product/GTM dimension | — |
+| SPIKE, AUDIT, COST_ANALYSIS, PHASE_ARCHIVE | On demand only | An investigation, audit, metered cost, or byte-budget breach |

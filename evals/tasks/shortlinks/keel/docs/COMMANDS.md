@@ -1,46 +1,34 @@
-# shortlinks — COMMANDS.md
+# shortlinks — Commands & environment
 
-> Command reference. All commands run from the repo root. Requires Node.js ≥ 20. There is nothing to install (no dependencies).
+Planned commands; they work once Phase 0 lands. Contract: [PRD.md](./PRD.md). Environments: local only (one dev machine or one VM behind the team VPN); no deploy pipeline, so no `DEPLOYMENT.md`.
 
 ## Run
 
-```bash
-node src/main.js                 # listens on PORT (default 3000)
-PORT=8080 node src/main.js       # custom port
-```
+| Task | Command |
+|---|---|
+| Start the service | `node src/main.js` (listens on `PORT`, default 3000) |
+| Start on another port | `PORT=8080 node src/main.js` |
+| Run all tests | `node --test` |
+| Run one file | `node --test test/routing.test.js` |
+| Doc size + link check | `node .keel/doc-size.mjs` |
+| Drift check | `node .keel/check.mjs` |
 
-## Test
+Requires Node.js 20 or later. There is no `npm install`.
 
-```bash
-node --test                      # all tests (node:test, discovers test/**)
-node --test test/<name>.test.js  # one file
-node --test --test-name-pattern="rate" # by name
-```
+## Try it
 
-## Try it (curl)
-
-```bash
-curl -i -X POST localhost:3000/links -H 'content-type: application/json' \
-     -d '{"url":"https://example.com/some/long/path"}'            # 201 {"code","url"}
-curl -i -X POST localhost:3000/links -d '{"url":"https://example.com","code":"my-link"}'
-curl -i localhost:3000/my-link                                     # 302 + Location, +1 hit
-curl -i localhost:3000/links/my-link                               # 200 {code,url,hits,createdAt}
-curl -i -X DELETE localhost:3000/links/my-link                     # 204
-for i in 1 2 3 4 5 6; do curl -s -o /dev/null -w '%{http_code}\n' -X POST localhost:3000/links -d '{"url":"https://example.com"}'; done  # sixth: 429 + Retry-After
-```
-
-## Docs tooling
-
-```bash
-node .keel/doc-size.mjs          # byte budgets + split-link check (doc-sync runs it)
-node .keel/prune-evidence.mjs    # dry run of review-evidence pruning
-claude --workflow .claude/workflows/phase-0-skeleton-guardrails.js   # start Phase 0
+```sh
+curl -si -X POST localhost:3000/links -H 'content-type: application/json' \
+  -d '{"url":"https://example.com/a/very/long/path","code":"docs_1"}'   # 201 {"code","url"}
+curl -si localhost:3000/docs_1                                           # 302 Location
+curl -s  localhost:3000/links/docs_1                                     # {"code","url","hits","createdAt"}
+curl -si -X DELETE localhost:3000/links/docs_1                           # 204
 ```
 
 ## Environment variables
 
 | Var | Default | Meaning |
 |---|---|---|
-| `PORT` | `3000` | TCP port; must be an integer 0–65535, else `main.js` exits non-zero |
+| `PORT` | `3000` | TCP port for `src/main.js` |
 
-No other configuration. The service binds all interfaces (Node default; OD-04) — run it only behind the team VPN. Restarting discards all links (RSK-001).
+No secrets, no config files.

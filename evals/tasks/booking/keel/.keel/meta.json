@@ -17,36 +17,22 @@
   "waivers": {},
   "waiverReviewDays": 90,
   "evidenceDir": ".keel/evidence",
-  "closeout": {
-    "maxOpenDeferred": 8,
-    "everyNPhases": 5
-  },
+  "closeout": { "maxOpenDeferred": 8, "everyNPhases": 5 },
   "deployLogKeep": 10,
   "lastArchiveTrigger": null,
   "documentsGenerated": [
-    "AGENTS.md",
-    "CLAUDE.md",
-    "CHANGELOG.md",
-    "docs/README.md",
-    "docs/BRD.md",
-    "docs/ARCHITECTURE.md",
-    "docs/IMPLEMENTATION_PLAN.md",
-    "docs/COMMANDS.md",
-    "docs/keel-transcript.md",
-    "docs/adr/README.md",
-    "docs/adr/ADR-001-commonjs-single-module.md",
-    "docs/adr/ADR-002-strict-parse-integer-minutes.md",
-    "docs/adr/ADR-003-check-order-and-error-precedence.md",
-    "docs/adr/ADR-004-generated-opaque-ids-map-store.md"
+    "AGENTS.md", "CLAUDE.md", "CHANGELOG.md", "docs/README.md", "docs/BRD.md", "docs/PRD.md",
+    "docs/ARCHITECTURE.md", "docs/IMPLEMENTATION_PLAN.md", "docs/adr/README.md",
+    "docs/adr/ADR-001-module-format.md", "docs/adr/ADR-002-time-model.md",
+    "docs/adr/ADR-003-check-order.md", "docs/adr/ADR-004-ids-and-cancel.md",
+    "docs/adr/ADR-005-state-and-atomicity.md", "docs/keel-transcript.md",
+    ".claude/rules/src.md", ".claude/rules/tests.md", ".claude/agents/doc-sync.md",
+    ".claude/workflows/ (doc-sync, change-template, phase-0..2, README)"
   ],
   "skillsInstalled": [],
   "securitySkill": "declined",
-  "agents": {
-    "doc-sync": { "type": "subagent", "path": ".claude/agents/doc-sync.md" }
-  },
+  "agents": { "doc-sync": { "type": "subagent", "path": ".claude/agents/doc-sync.md" } },
+  "rounds": null,
   "updateCheck": true,
-  "evidenceRetention": {
-    "keepRunsPerBranch": 3,
-    "pruneMergedAfterDays": 30
-  }
+  "evidenceRetention": { "keepRunsPerBranch": 3, "pruneMergedAfterDays": 30 }
 }
