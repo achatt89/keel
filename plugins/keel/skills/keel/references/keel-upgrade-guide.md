@@ -3,6 +3,7 @@
 Reference for Phase U2 (Audit) in the keel upgrade command.
 For each doc type, the checklist below defines what a fully current keel-generated doc must contain.
 Use it to diff existing docs against current keel standards and classify each gap.
+Skill layout (2.6): SKILL.md is a router and each mode lives in `references/modes/`; nothing to migrate in a project.
 
 ---
 
@@ -42,7 +43,7 @@ Use it to diff existing docs against current keel standards and classify each ga
 
 `.keel/meta.json` `docFormat: 2` is authoritative. When it is absent or `< 2`, or when the
 indicators contradict it, classify by indicators — **any two** → format 1 → the Format Migration
-sequence (SKILL.md Upgrade Mode U0–U7) is offered in place of the surgical U4:
+sequence (`modes/upgrade.md`, Upgrade Mode U0–U7) is offered in place of the surgical U4:
 
 | Indicator | Format 1 | Format 2 |
 |---|---|---|
@@ -361,13 +362,13 @@ If UI project:
 Every project that will be built:
 - [ ] security-audit skill resolves (`~/.claude/skills/`, `~/.agents/skills/` or `.claude/skills/`
   `security-audit/SKILL.md`) → MISSING_SKILL (Important) unless `.keel/meta.json` `securitySkill`
-  is `"never"`. Fix only after an explicit yes (SKILL.md "Security skill": global, third-party).
+  is `"never"`. Fix only after an explicit yes (`modes/generation.md` "Security skill": global, third-party).
 - [ ] Skill installed → the security role has an owner (full-time security/QA agent, else
   `.claude/agents/security.md`) recorded in `agents.security` → MISSING_SKILL (Important). Never
   both: a full-time agent gets the skill and no subagent is written.
 - [ ] `agents` entry written by keel 2.1 as an orchestrator request (not a `.claude/agents/` path,
   not `type: full-time` for an agent that exists) → OUTDATED_CONVENTION (Important): replace per
-  SKILL.md "Migrating keel 2.1 agent requests".
+  `modes/upgrade.md` "Migrating keel 2.1 agent requests".
 - [ ] A role is set up → AGENTS.md workflow step 9 *Review before done* present (2.6: one line; older: + its Pre-PR line) →
   MISSING_FEATURE (Important)
 - [ ] A role is set up → `.keel/prune-evidence.mjs` + `evidenceRetention` in meta.json →
@@ -376,7 +377,7 @@ Every project that will be built:
   `.claude/agents/doc-sync.md`) in `agents."doc-sync"`; `doc-sync.js` has the delegate → review →
   ≤3-round loop; phase scripts' Doc Sync stage calls `doc-sync.js`; AGENTS.md has workflow step 5
   (doc sync before the completing commit) and the Delegation section or (2.6) its pointer to `.claude/workflows/README.md` →
-  OUTDATED_CONVENTION (Important). Fix: SKILL.md "Migrating to keel 2.3".
+  OUTDATED_CONVENTION (Important). Fix: `modes/upgrade.md` "Migrating to keel 2.3".
 - [ ] Every role subagent file ends with the `## Report` block and the caller-only rule →
   OUTDATED_CONVENTION (Important)
 - [ ] `.keel/doc-size.mjs` present (with `--split`) and `defaultBudget` in meta.json → MISSING_FEATURE (Important)
@@ -542,7 +543,7 @@ changes nothing the second time.
 4. **Placeholder fill.** After every edit, grep the modified doc for `{{[A-Z_]+}}` and fill
    each from project context established during this session. Report any that couldn't be filled.
 
-5. **Skill installation.** Follow the FE skill integration steps in the main keel SKILL.md Phase 3.
+5. **Skill installation.** Follow the FE skill integration steps in `modes/generation.md` Phase 3.
    Merge hook entries into existing `.claude/settings.json` rather than overwriting.
    Never delete existing hook entries — append to the PostToolUse array.
 
@@ -553,7 +554,7 @@ changes nothing the second time.
 
 ## Format migration (U0–U7) — per-doc mechanics
 
-The sequence itself is in SKILL.md Upgrade Mode. This section holds the mechanics the surgical
+The sequence itself is in `modes/upgrade.md` (Upgrade Mode). This section holds the mechanics the surgical
 rules above cannot express, because a format migration *does* rewrite whole files — under four
 rules that replace "surgical only" for these steps: **IDs never change · relocate, never delete
 (verbatim, with source recorded) · unclassifiable → `Unclassified (review)` · one commit per

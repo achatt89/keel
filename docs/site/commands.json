@@ -1,5 +1,5 @@
 {
-  "//": "User-facing list of /keel commands for the docs site. Edit with SKILL.md's mode headings; keep usage strings identical.",
+  "//": "User-facing list of /keel commands for the docs site. Edit with the mode headings in plugins/keel/skills/keel/references/modes/*.md; keep usage strings identical.",
   "commands": [
     { "name": "New project", "usage": ["/keel"],
       "summary": "Interviews you about a new idea, then writes a tailored, cross-referenced set of docs to build from: AGENTS.md and CLAUDE.md, requirements, architecture, decision records, plan, deployment, runbook and more." },
