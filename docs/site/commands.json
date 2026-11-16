@@ -16,6 +16,10 @@
     { "name": "Upgrade", "usage": ["/keel upgrade", "/keel refresh", "/keel sync"],
       "summary": "Audits existing keel docs against the current keel standard, reports the gaps, and applies the fixes you approve, including older doc-format migrations." },
     { "name": "Archive", "usage": ["/keel archive"],
-      "summary": "Moves finished or superseded detail out of the living docs into archives, and splits docs that are still over budget. Nothing is deleted; every move leaves a link." }
+      "summary": "Moves finished or superseded detail out of the living docs into archives, and splits docs that are still over budget. Nothing is deleted; every move leaves a link." },
+    { "name": "Answer", "usage": ["/keel answer <packet>"],
+      "summary": "Team answers, opt-in: interviews one person for one round only, from a packet file under .keel/rounds/. Every answer is marked as given by a person or by Claude, and a person can overrule a Claude answer while the original is kept." },
+    { "name": "Merge", "usage": ["/keel merge"],
+      "summary": "Team answers, opt-in: reads the returned packets, reveals blind questions once everyone named has answered, and lists gaps and disagreements with both sides quoted. The owner, or the person the owner named, settles each one; a Claude answer never does." }
   ]
 }

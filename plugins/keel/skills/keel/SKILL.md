@@ -25,6 +25,8 @@ description: >
   "what version of keel is this", "check keel version", "is my keel up to date", "which keel
   version generated these docs", "check for keel updates"), and "keel check" (read-only drift
   check of docs against the repo — triggers: "check my docs for drift", "are my docs stale").
+  Team answers (opt-in): "keel answer <packet>" (answer one interview round) and "keel merge"
+  (merge the returned round packets).
 metadata:
   version: 2.5.6
   userVersion: 2.5.6
@@ -137,6 +139,8 @@ user knows where they are.
    - **Platform / regulated** — multi-tenant, personal/financial/health data, compliance, scale,
      a team building it.
    Present your recommended tier as the first option so the user can confirm in one tap or correct.
+4. **Team answers (opt-in).** Ask once: answer the interview yourself (default) or hand rounds to
+   the team. Team → read `references/team-answers.md` and follow it. Solo → nothing changes.
 
 ### Phase 1 — The multi-persona interview
 
@@ -626,6 +630,7 @@ Load these as needed; you do not need all of them in context at once.
 | `references/templates/keel-meta.json` | Writing or migrating `.keel/meta.json` (budgets, docFormat, adrLayout) |
 | `references/keel-upgrade-guide.md` | Running Phase U2 — the upgrade audit checklist, format-1 detection, the addenda classifier |
 | `references/keel-archive-guide.md` | Running Phase X2/X4 (and doc-sync's auto-archive) — what's archivable and how to move it |
+| `references/team-answers.md` | Team mode only: Phase 0 hand-out, `/keel answer`, `/keel merge`, packet checker |
 
 ## What Keel is NOT
 
@@ -637,6 +642,11 @@ Load these as needed; you do not need all of them in context at once.
   the project, you are doing it wrong — re-read principle 2.
 
 ---
+
+## Team Answers Mode — `/keel answer <packet>` · `/keel merge`
+
+**Trigger:** "keel answer", "answer my round", "keel merge", "merge the round packets". Read
+`references/team-answers.md` (§2 answer, §3 merge) and follow it. Opt-in; the solo flow never loads it.
 
 ## Version Mode — `/keel version`
 

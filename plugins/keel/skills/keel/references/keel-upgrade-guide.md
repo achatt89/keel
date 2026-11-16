@@ -408,6 +408,11 @@ Every project that will be built:
 - [ ] `.claude/hooks/keel-update-check.mjs` + SessionStart entry → MISSING_FEATURE (Optional, opt-in)
 - [ ] Slim keystone and hooks (2.6) → see the section below; every item is OUTDATED_CONVENTION
   (Minor) and an offer, never applied without approval
+- [ ] Team answers (opt-in, `references/team-answers.md`): no `rounds` in `.keel/meta.json` → nothing
+  to migrate and no gap; it is offered at Phase 0 of the next interview round, never forced. If
+  `.keel/rounds/` exists: `.keel/packet-check.mjs` present and passing → else MISSING_FEATURE
+  (Important): install it verbatim from `templates/keel-packet-check.mjs`; repo public and
+  `.keel/rounds/` not git-ignored → ask the owner (Minor).
 
 ---
 
