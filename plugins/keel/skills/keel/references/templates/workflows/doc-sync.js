@@ -78,6 +78,9 @@ const SYNC_RULES = `
     per QUESTION with Locations and a Decider tag (founder | engineering | legal). Never invent
     a decision to close a row.
   - [NEEDS DECISION] markers resolved → remove marker AND add the ADR. Never just delete.
+  - New ADR → the template's frontmatter header (id, status, paths, check); its header status
+    changes with its Status cell. ADRs without a header never get one. New or changed paths →
+    add or fix the pointer line in .claude/rules/<area>.md (one line + the ID, never record text).
   - No addenda. Post-decision events are: build deviation (one ADR row) · incident (RUNBOOK.md
     Postmortems table) · deploy state (CHANGELOG / DEPLOYMENT deploy log) · superseded (new ADR).
 

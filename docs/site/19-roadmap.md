@@ -48,7 +48,7 @@ Nothing leaves a working document without going somewhere: to a record document 
 - A slimmer Keel skill: a short core, with each mode loaded only when you use it.
 - A shorter main instructions file (AGENTS.md) that holds facts, pointers and one "when to stop and ask" rule, plus a fixed end-of-run report: blocked on me, changed, found, could not confirm.
 - Rules for one area of the code, written to `.claude/rules/` with the paths they cover, so they load only when those files are touched. Each rule points to its decision record and never copies it.
-- A short header on new decision records: id, status, the paths it governs, who approved it, and how it is checked.
+- A short header on new decision records: id, status, the paths it governs, and how it is checked. Who approved it stays in the record's own table, so it is not written twice.
 - Plain wording in the Verify step: run a real check before calling work done, and a new evidence level, "check seen to fail when it should".
 
 **Team answers** (opt-in, same release, its own pull request). Today one person answers the whole interview. With team answers, each interview round can go to the person who knows it best. The "Team answers" section below has the details. It ships in its own pull request and stays off unless you turn it on, so the measurement above can still tell what the output changes did on their own.
@@ -134,7 +134,7 @@ Run `/keel upgrade` after updating Keel. It works the way it always has (see [Up
 | Bug fixes and Keel's own scripts (size checker, workflow scripts, update check) | Replaced, as on every upgrade, and listed in the report |
 | Shorter working documents (AGENTS.md first) | Offered. The report shows each section and where it would move (a rule, a skill, a hook, or a record document). Text moves word for word; nothing is deleted. Record documents are not touched |
 | Area rules in `.claude/rules/` | Offered, generated from your existing decision records |
-| Header on decision records | New records only. Existing record files are never rewritten; their paths go in Keel's index instead |
+| Header on decision records | New records only. Existing record files are never rewritten; their paths go in the area rules files instead |
 | Verify wording and the new evidence level | Offered as a change to the Verify step |
 | Team answers | Nothing to migrate. Offered when you next run an interview round, for example in a new phase |
 | Permissions, guard hook, audit trail | Offered one entry at a time, shown as a change to your settings. Never switched on silently |
