@@ -1,0 +1,26 @@
+{
+  "keelVersion": "2.5.6",
+  "pluginSkillVersion": "2.5.6",
+  "pluginSource": "git archive keel--v2.5.6 (tag)",
+  "costUsd": 1.1206420999999998,
+  "turns": 23,
+  "segments": 1,
+  "durationMs": 290692,
+  "wallMs": 291345,
+  "inputTokens": 44,
+  "outputTokens": 40926,
+  "cacheRead": 2063141,
+  "cacheWrite": 126245,
+  "isError": false,
+  "subtype": "success",
+  "models": {
+    "claude-sonnet-5-5": {
+      "input": 44,
+      "output": 40926,
+      "cacheRead": 2063141,
+      "cacheWrite": 126245,
+      "costUsd": 1.1206420999999998
+    }
+  },
+  "modelId": "claude-sonnet-5-5"
+}

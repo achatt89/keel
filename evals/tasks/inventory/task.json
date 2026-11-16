@@ -1,0 +1,6 @@
+{ "id": "inventory", "title": "Warehouse stock library in three phases (multi-session)", "timeoutMin": 25, "drift": "drift.md",
+  "sessions": [
+    { "prompt": "prompt.md", "tests": "tests/phase1.test.mjs" },
+    { "prompt": "next.md", "tests": "tests/phase2.test.mjs" },
+    { "prompt": "next.md", "tests": "tests/phase3.test.mjs" }
+  ] }

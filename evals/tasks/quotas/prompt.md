@@ -1,0 +1,1 @@
+Add per-user storage quotas to this project. `put` must refuse a write that would take the user over their plan's quota, and add `usage(user)` to the store, which reports where the user stands against their quota. Keep the existing tests passing, add tests for the new behaviour, and update the README.

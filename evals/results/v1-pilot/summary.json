@@ -1,0 +1,492 @@
+[
+  {
+    "name": "invoices-none-r1",
+    "run": "invoices-none-r1",
+    "task": "invoices",
+    "cond": "none",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.0870988,
+    "turns": 4,
+    "segments": 1,
+    "durationMs": 22005,
+    "wallMs": 22597,
+    "inputTokens": 8,
+    "outputTokens": 3035,
+    "cacheRead": 70088,
+    "cacheWrite": 12431,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 8,
+        "output": 3035,
+        "cacheRead": 70088,
+        "cacheWrite": 12431,
+        "costUsd": 0.0870988
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 13,
+    "testsFailed": [
+      "decision: UTF-8 byte-order mark at the start",
+      "decision: semicolon header row with the agreed columns",
+      "decision: amounts with a decimal comma, two decimals, no thousands separator",
+      "decision: dates and the range use the Europe/Berlin date",
+      "decision: void invoices stay in the export with status void and their amounts",
+      "decision: quoting of semicolons and quotes; plain fields unquoted",
+      "decision: error codes and their order",
+      "decision: empty range gives the BOM and the header row only"
+    ],
+    "decisionPass": 3,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "checkDay calls new Date(s).toISOString() without an Invalid Date check, so a pattern-valid but impossible date such as '2026-13-01' throws a RangeError, and exportCsv(null) throws a TypeError from destructuring, so non-InvoiceError errors escape for bad input."
+    },
+    "judgeCostUsd": 0.0993018,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1253,
+        "cacheRead": 649,
+        "cacheWrite": 9263,
+        "costUsd": 0.0993018
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "invoices-min-r1",
+    "run": "invoices-min-r1",
+    "task": "invoices",
+    "cond": "min",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.12272839999999999,
+    "turns": 9,
+    "segments": 1,
+    "durationMs": 33956,
+    "wallMs": 34645,
+    "inputTokens": 16,
+    "outputTokens": 4585,
+    "cacheRead": 172904,
+    "cacheWrite": 14889,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 16,
+        "output": 4585,
+        "cacheRead": 172904,
+        "cacheWrite": 14889,
+        "costUsd": 0.12272839999999999
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Read": 1,
+      "Bash": 7
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 13,
+    "testsFailed": [
+      "decision: UTF-8 byte-order mark at the start",
+      "decision: semicolon header row with the agreed columns",
+      "decision: amounts with a decimal comma, two decimals, no thousands separator",
+      "decision: dates and the range use the Europe/Berlin date",
+      "decision: void invoices stay in the export with status void and their amounts",
+      "decision: quoting of semicolons and quotes; plain fields unquoted",
+      "decision: error codes and their order",
+      "decision: empty range gives the BOM and the header row only"
+    ],
+    "decisionPass": 3,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "exportCsv(null) throws a TypeError from destructuring null (the `= {}` default only covers undefined), so a non-InvoiceError escapes for bad input."
+    },
+    "judgeCostUsd": 0.09668979999999999,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1002,
+        "cacheRead": 649,
+        "cacheWrite": 9564,
+        "costUsd": 0.09668979999999999
+      }
+    },
+    "success": false
+  },
+  {
+    "name": "invoices-answers-r1",
+    "run": "invoices-answers-r1",
+    "task": "invoices",
+    "cond": "answers",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.1314445,
+    "turns": 5,
+    "segments": 1,
+    "durationMs": 33093,
+    "wallMs": 33771,
+    "inputTokens": 10,
+    "outputTokens": 5512,
+    "cacheRead": 99005,
+    "cacheWrite": 16601,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 10,
+        "output": 5512,
+        "cacheRead": 99005,
+        "cacheWrite": 16601,
+        "costUsd": 0.1314445
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 3,
+      "bash": 1
+    },
+    "docReads": [
+      "founder-answers.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 13,
+    "testsTotal": 13,
+    "testsFailed": [],
+    "decisionPass": 11,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "Some bad input throws other error types: a well-shaped but impossible date like `2026-13-45` makes `checkDay` call `toISOString()` on an Invalid Date (RangeError), and `exportCsv(null)` throws a TypeError during destructuring."
+    },
+    "judgeCostUsd": 0.0996298,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1173,
+        "cacheRead": 649,
+        "cacheWrite": 9504,
+        "costUsd": 0.0996298
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "invoices-keel-r1",
+    "run": "invoices-keel-r1",
+    "task": "invoices",
+    "cond": "keel",
+    "rep": 1,
+    "model": "sonnet",
+    "costUsd": 0.1869072,
+    "turns": 5,
+    "segments": 1,
+    "durationMs": 41646,
+    "wallMs": 42205,
+    "inputTokens": 10,
+    "outputTokens": 7170,
+    "cacheRead": 119792,
+    "cacheWrite": 25802,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 10,
+        "output": 7170,
+        "cacheRead": 119792,
+        "cacheWrite": 25802,
+        "costUsd": 0.1869072
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Bash": 4
+    },
+    "docReads": [
+      "docs/LLD.md",
+      "docs/adr/ADR-008-csv-export-format.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 13,
+    "testsTotal": 13,
+    "testsFailed": [],
+    "decisionPass": 11,
+    "decisionTotal": 11,
+    "judge": "pass",
+    "judgeFailed": [
+      "errors"
+    ],
+    "judgeReasons": {
+      "errors": "exportCsv(null) throws a native TypeError while destructuring, because the `= {}` default only covers undefined, so a non-InvoiceError escapes for bad input."
+    },
+    "judgeCostUsd": 0.0995818,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 959,
+        "cacheRead": 649,
+        "cacheWrite": 10033,
+        "costUsd": 0.0995818
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r1-s1",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 1.003898,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 5145,
+    "wallMs": 185743,
+    "inputTokens": 128,
+    "outputTokens": 32590,
+    "cacheRead": 1108955,
+    "cacheWrite": 217459,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 128,
+        "output": 32590,
+        "cacheRead": 1108955,
+        "cacheWrite": 217459,
+        "costUsd": 1.003898
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "LLD §8 says src/inventory.js ends with 'Named exports at the end', but the code exports inline (`export class InventoryError`, `export function createInventory`), and ARCHITECTURE §2's item store `Map<sku, { sku, name, onHand, reorderPoint }>` contradicts the code's `Map<string, {name, onHand}>`."
+    },
+    "judgeCostUsd": 0.33950579999999997,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1322,
+        "cacheRead": 649,
+        "cacheWrite": 39116,
+        "costUsd": 0.33950579999999997
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r1-s2",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 1.1961273999999993,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 6117,
+    "wallMs": 216964,
+    "inputTokens": 132,
+    "outputTokens": 43996,
+    "cacheRead": 1135899,
+    "cacheWrite": 249021,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 132,
+        "output": 43996,
+        "cacheRead": 1135899,
+        "cacheWrite": 249021,
+        "costUsd": 1.1961273999999993
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "pass",
+    "driftFailed": [],
+    "driftReasons": {},
+    "judgeCostUsd": 0.4385538,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1884,
+        "cacheRead": 649,
+        "cacheWrite": 50092,
+        "costUsd": 0.4385538
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r1-s3",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 1.2072189999999994,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 5876,
+    "wallMs": 225099,
+    "inputTokens": 148,
+    "outputTokens": 43303,
+    "cacheRead": 1348070,
+    "cacheWrite": 247709,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 148,
+        "output": 43303,
+        "cacheRead": 1348070,
+        "cacheWrite": 247709,
+        "costUsd": 1.2072189999999994
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 15,
+    "testsTotal": 15,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      },
+      {
+        "phase": 3,
+        "pass": 4,
+        "total": 4,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "The docs contradict the code twice: ARCHITECTURE §2 says the item store is `Map<sku, { sku, name, onHand, reorderPoint }>`, but src/inventory.js stores `{ name, onHand }` and keeps reorder points in a separate `reorderPoints` map; LLD §8 says named exports come at the end of the file, but the code declares them inline (`export class InventoryError`, `export function createInventory`)."
+    },
+    "judgeCostUsd": 0.4942538,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1317,
+        "cacheRead": 649,
+        "cacheWrite": 58472,
+        "costUsd": 0.4942538
+      }
+    },
+    "success": true
+  }
+]

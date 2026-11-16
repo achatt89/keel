@@ -1,0 +1,8 @@
+{
+  "name": "invoices",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "Invoicing core: customers, invoices, VAT. Node.js 20+, standard library only.",
+  "scripts": { "test": "node --test" }
+}

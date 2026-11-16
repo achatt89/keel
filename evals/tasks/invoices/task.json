@@ -1,0 +1,1 @@
+{ "id": "invoices", "title": "Invoicing core: add CSV export (follow-up feature)", "tests": "tests", "base": "base", "timeoutMin": 20 }
