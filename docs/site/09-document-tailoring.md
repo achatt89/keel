@@ -23,4 +23,6 @@ Every other type is a **stub**: a short file at the usual path that says why it 
 
 Every document is generated with stable requirement IDs (e.g., `REQ-001`, `ADR-003`). When a requirement from the BRD drives a design decision in the architecture, the architecture document references the requirement ID, not a paraphrase of its content. This means the doc set stays coherent as individual documents evolve.
 
+Business requirements say only what was decided. Each assumption in the BRD names its source: the founder's answer in the interview transcript, the decision record that settles it, or *unvalidated*. A detail about how the code behaves that nobody asked for (how a name is normalised, which helper two features share) is a design choice, so it goes in a decision record or the low-level design, not the BRD. Doc sync compares these statements with the code; when the build differs, the record says so next to the original text, which is never rewritten.
+
 > One fact, one home. If you update a requirement in the BRD, you know exactly which other documents reference it and need to be reviewed.

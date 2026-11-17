@@ -1,0 +1,705 @@
+[
+  {
+    "name": "inventory-keel-r1-s1",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 1.7428409999999999,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 6539,
+    "wallMs": 341052,
+    "inputTokens": 222,
+    "outputTokens": 60553,
+    "cacheRead": 2021615,
+    "cacheWrite": 365715,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 222,
+        "output": 60553,
+        "cacheRead": 2021615,
+        "cacheWrite": 365715,
+        "costUsd": 1.7428409999999999
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "The plan's open deferred item says README does not mention examples/exports.js, but README embeds it via a keel:example marker that test/examples.test.js runs; NFR-MNT-001/002 also say the test checks devDependencies and scans src/**, while test/maintainability.test.js checks only dependencies and reads only src/inventory.js."
+    },
+    "judgeCostUsd": 0.3564058,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1993,
+        "cacheRead": 649,
+        "cacheWrite": 39551,
+        "costUsd": 0.3564058
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r1-s2",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 1.5148314000000007,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 8999,
+    "wallMs": 322379,
+    "inputTokens": 170,
+    "outputTokens": 59775,
+    "cacheRead": 1667049,
+    "cacheWrite": 292781,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 170,
+        "output": 59775,
+        "cacheRead": 1667049,
+        "cacheWrite": 292781,
+        "costUsd": 1.5148314000000007
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "pass",
+    "driftFailed": [],
+    "driftReasons": {},
+    "judgeCostUsd": 0.4401298,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1950,
+        "cacheRead": 649,
+        "cacheWrite": 50124,
+        "costUsd": 0.4401298
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r1-s3",
+    "run": "inventory-keel-r1",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 1,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 1.6818666000000002,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 7203,
+    "wallMs": 325261,
+    "inputTokens": 216,
+    "outputTokens": 62655,
+    "cacheRead": 2128936,
+    "cacheWrite": 329693,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 216,
+        "output": 62655,
+        "cacheRead": 2128936,
+        "cacheWrite": 329693,
+        "costUsd": 1.6818666000000002
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [
+      "AGENTS.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 15,
+    "testsTotal": 15,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      },
+      {
+        "phase": 3,
+        "pass": 4,
+        "total": 4,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "pass",
+    "driftFailed": [],
+    "driftReasons": {},
+    "judgeCostUsd": 0.5374458,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1757,
+        "cacheRead": 649,
+        "cacheWrite": 62771,
+        "costUsd": 0.5374458
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r2-s1",
+    "run": "inventory-keel-r2",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 2,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 1.4089338999999996,
+    "turns": 11,
+    "segments": 2,
+    "durationMs": 20581,
+    "wallMs": 266406,
+    "inputTokens": 196,
+    "outputTokens": 52774,
+    "cacheRead": 1917374,
+    "cacheWrite": 264155,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 196,
+        "output": 52774,
+        "cacheRead": 1917374,
+        "cacheWrite": 264155,
+        "costUsd": 1.4089338999999996
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 6
+    },
+    "docReads": [
+      "docs/IMPLEMENTATION_PLAN.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "pass",
+    "driftFailed": [],
+    "driftReasons": {},
+    "judgeCostUsd": 0.3304898,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1556,
+        "cacheRead": 649,
+        "cacheWrite": 37404,
+        "costUsd": 0.3304898
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r2-s2",
+    "run": "inventory-keel-r2",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 2,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 1.905093700000001,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 7922,
+    "wallMs": 451555,
+    "inputTokens": 242,
+    "outputTokens": 69593,
+    "cacheRead": 2534642,
+    "cacheWrite": 374999,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 242,
+        "output": 69593,
+        "cacheRead": 2534642,
+        "cacheWrite": 374999,
+        "costUsd": 1.905093700000001
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [
+      "AGENTS.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "pass",
+    "driftFailed": [],
+    "driftReasons": {},
+    "judgeCostUsd": 0.43530579999999996,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1644,
+        "cacheRead": 649,
+        "cacheWrite": 50286,
+        "costUsd": 0.43530579999999996
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r2-s3",
+    "run": "inventory-keel-r2",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 2,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 1.940813700000001,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 7456,
+    "wallMs": 405990,
+    "inputTokens": 216,
+    "outputTokens": 70677,
+    "cacheRead": 2016237,
+    "cacheWrite": 405669,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 216,
+        "output": 70677,
+        "cacheRead": 2016237,
+        "cacheWrite": 405669,
+        "costUsd": 1.940813700000001
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [
+      "AGENTS.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 15,
+    "testsTotal": 15,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      },
+      {
+        "phase": 3,
+        "pass": 4,
+        "total": 4,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "AGENTS.md invariant 5 says inputs-not-retained is uncovered, but test/reservations.test.js ('inputs not retained (NN-5)') and test/reservations-all-or-nothing.test.js ('reserve stores a copy of lines') test it; docs/README.md also calls ADR-006 'reserved' though the movement log is built in code."
+    },
+    "judgeCostUsd": 0.5400978,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 1348,
+        "cacheRead": 649,
+        "cacheWrite": 64125,
+        "costUsd": 0.5400978
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r3-s1",
+    "run": "inventory-keel-r3",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 3,
+    "session": 1,
+    "model": "sonnet",
+    "costUsd": 1.1808766000000002,
+    "turns": 7,
+    "segments": 2,
+    "durationMs": 9556,
+    "wallMs": 210391,
+    "inputTokens": 164,
+    "outputTokens": 45778,
+    "cacheRead": 1510381,
+    "cacheWrite": 219190,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 164,
+        "output": 45778,
+        "cacheRead": 1510381,
+        "cacheWrite": 219190,
+        "costUsd": 1.1808766000000002
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 2
+    },
+    "docReads": [
+      "docs/IMPLEMENTATION_PLAN.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 5,
+    "testsTotal": 5,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "The AGENTS.md hard-invariants table says rule 1 (test/errors.test.js) and rule 3 (test/atomicity.test.js) are 'Not built yet: Phase 1', but both test files exist in the code and the plan marks the errors gate ✅ at unit level."
+    },
+    "judgeCostUsd": 0.3333618,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 968,
+        "cacheRead": 649,
+        "cacheWrite": 39233,
+        "costUsd": 0.3333618
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r3-s2",
+    "run": "inventory-keel-r3",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 3,
+    "session": 2,
+    "model": "sonnet",
+    "costUsd": 1.7616921999999993,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 7697,
+    "wallMs": 364652,
+    "inputTokens": 216,
+    "outputTokens": 66077,
+    "cacheRead": 2052087,
+    "cacheWrite": 351176,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 216,
+        "output": 66077,
+        "cacheRead": 2052087,
+        "cacheWrite": 351176,
+        "costUsd": 1.7616921999999993
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [
+      "AGENTS.md"
+    ],
+    "subDocReads": [],
+    "testsPass": 11,
+    "testsTotal": 11,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "pass",
+    "driftFailed": [],
+    "driftReasons": {},
+    "judgeCostUsd": 0.46180580000000004,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 2287,
+        "cacheRead": 649,
+        "cacheWrite": 51991,
+        "costUsd": 0.46180580000000004
+      }
+    },
+    "success": true
+  },
+  {
+    "name": "inventory-keel-r3-s3",
+    "run": "inventory-keel-r3",
+    "task": "inventory",
+    "cond": "keel",
+    "rep": 3,
+    "session": 3,
+    "model": "sonnet",
+    "costUsd": 1.7051626000000002,
+    "turns": 6,
+    "segments": 2,
+    "durationMs": 6976,
+    "wallMs": 329672,
+    "inputTokens": 228,
+    "outputTokens": 59693,
+    "cacheRead": 2185756,
+    "cacheWrite": 348763,
+    "isError": false,
+    "subtype": "success",
+    "models": {
+      "claude-sonnet-5-5": {
+        "input": 228,
+        "output": 59693,
+        "cacheRead": 2185756,
+        "cacheWrite": 348763,
+        "costUsd": 1.7051626000000002
+      }
+    },
+    "timedOut": false,
+    "modelId": "claude-sonnet-5-5",
+    "tools": {
+      "Skill": 1,
+      "Workflow": 1,
+      "Bash": 1
+    },
+    "docReads": [],
+    "subDocReads": [],
+    "testsPass": 15,
+    "testsTotal": 15,
+    "testsFailed": [],
+    "decisionPass": 0,
+    "decisionTotal": 0,
+    "phases": [
+      {
+        "phase": 1,
+        "pass": 5,
+        "total": 5,
+        "failed": []
+      },
+      {
+        "phase": 2,
+        "pass": 6,
+        "total": 6,
+        "failed": []
+      },
+      {
+        "phase": 3,
+        "pass": 4,
+        "total": 4,
+        "failed": []
+      }
+    ],
+    "regressions": 0,
+    "judge": null,
+    "judgeFailed": [],
+    "judgeReasons": {},
+    "drift": "fail",
+    "driftFailed": [
+      "no-contradiction"
+    ],
+    "driftReasons": {
+      "no-contradiction": "docs/README.md calls ADR-006 only 'reserved' and lists ADRs as 001..005 although the movement log (record(), seq, history) is built and ADR-006 is Built, and IMPLEMENTATION_PLAN Phase 1 lists `package.json` and `src/inventory.js` as unchecked deliverables although both exist."
+    },
+    "judgeCostUsd": 0.5520898,
+    "judgeModels": {
+      "claude-opus-5-5": {
+        "input": 2,
+        "output": 2890,
+        "cacheRead": 649,
+        "cacheWrite": 61769,
+        "costUsd": 0.5520898
+      }
+    },
+    "success": true
+  }
+]

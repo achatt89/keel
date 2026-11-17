@@ -342,6 +342,14 @@ Check:
   `keel:asserts` markers, and the plan's "Docs under test" standing rule. Applied on approval; the
   README text is not changed except to add the markers. The phase and change templates' Build brief
   gain the README section (replace `change-template.js` verbatim; propose the edit for non-✅ phase scripts).
+- [ ] BRD assumptions name their source (2.6.4; `.keel/check.mjs` reports `brd-unsourced` only where the
+  Assumptions table has a `Source` column) → OUTDATED_CONVENTION (Optional). Propose adding the `Source`
+  column: for each row, the transcript answer it rests on, the ADR that decides it, or `unvalidated` where
+  none does. Rows that state code behaviour with no founder answer behind them are listed for the user, who
+  may point them at an ADR or LLD item; the assumption text is never rewritten and no row is removed.
+  Applied on approval. `doc-sync.js` (Step 7 compares those rows with the code; Step 9 fixes `status-lag`)
+  and the Merge stage of `change-template.js` (all state substitutions in one commit, then
+  `.keel/check.mjs`) are replaced verbatim; propose the Merge edit for non-✅ phase scripts.
 - [ ] `change-template.js` present → MISSING_FEATURE (Important) if absent
 - [ ] `.keel/evidence/` exists → MISSING_FEATURE (Important) if absent
 - [ ] At least one `phase-N-*.js` for each non-✅ phase in IMPLEMENTATION_PLAN → MISSING_FEATURE (Important)

@@ -1,0 +1,26 @@
+{
+  "keelVersion": "2.6.4",
+  "pluginSkillVersion": "2.6.4",
+  "pluginSource": "/Users/abhijitchatterjee/code/keel/plugins/keel",
+  "costUsd": 1.0971699,
+  "turns": 27,
+  "segments": 1,
+  "durationMs": 300967,
+  "wallMs": 301862,
+  "inputTokens": 42,
+  "outputTokens": 43250,
+  "cacheRead": 1712819,
+  "cacheWrite": 123326,
+  "isError": false,
+  "subtype": "success",
+  "models": {
+    "claude-sonnet-5-5": {
+      "input": 42,
+      "output": 43250,
+      "cacheRead": 1712819,
+      "cacheWrite": 123326,
+      "costUsd": 1.0971699
+    }
+  },
+  "modelId": "claude-sonnet-5-5"
+}

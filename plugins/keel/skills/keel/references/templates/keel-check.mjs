@@ -174,10 +174,10 @@ export function check(root) {
 
   // Plan: phase status vs phase blocks and the paths they cite.
   const planFiles = docs.filter(f => f === 'docs/IMPLEMENTATION_PLAN.md' || f.startsWith('docs/implementation-plan/'))
-  const status = new Map(), built = new Set(), blocks = []
+  const status = new Map(), built = new Set(), merged = new Set(), deferred = new Set(), blocks = []
   for (const f of planFiles) {
     const text = texts.get(f), p = prose(text)
-    for (const r of p.matchAll(/^\|\s*([\d.]+)\s*(?:—|-|–)[^|]*\|\s*(✅|🔄|⬜)[^\n]*/gm)) { status.set(r[1], r[2]); if (r[2] === '✅' || /\b(merged|deployed|live)\b|\bon `[^`]+`/i.test(text.slice(r.index, r.index + r[0].length))) built.add(r[1]) }
+    for (const r of p.matchAll(/^\|\s*([\d.]+)\s*(?:—|-|–)[^|]*\|\s*(✅|🔄|⬜)[^\n]*/gm)) { status.set(r[1], r[2]); if (r[2] === '✅' || /\b(merged|deployed|live)\b|\bon `[^`]+`/i.test(text.slice(r.index, r.index + r[0].length))) built.add(r[1]); if (/\b(merged|deployed|live)\b/i.test(text.slice(r.index, r.index + r[0].length))) merged.add(r[1]); if (/\bdeferred\b/i.test(r[0])) deferred.add(r[1]) }
     const heads = [...p.matchAll(/^## Phase ([\d.]+)\b.*$/gm)]
     heads.forEach((h, i) => {
       const end = i + 1 < heads.length ? heads[i + 1].index : (p.slice(h.index + 1).search(/^## /m) + h.index + 1 || text.length)
@@ -198,7 +198,8 @@ export function check(root) {
     }
     const gateRows = [...b.text.matchAll(/^\|(?!\s*-)(?!\s*Gate\s*\|)[^\n]*\|\s*(✅|⬜|🔄|❌)[^|\n]*\|\s*$/gm)]
     const open = gateRows.filter(r => r[1] !== '✅')
-    if (open.length) add('phase-gates-open', b.file, at(open[0].index), `Phase ${b.n} is ✅ but ${open.length} exit gate(s) are not`)
+    // 2.6.4: a merged phase may carry its open gates as Deferred items rows.
+    if (open.length && !deferred.has(b.n)) add('phase-gates-open', b.file, at(open[0].index), `Phase ${b.n} is ✅ but ${open.length} exit gate(s) are not`)
     for (const r of gateRows.filter(r => r[1] === '✅')) for (const t of pathTokens(r[0])) missing(t.p, r.index + t.i, 'gate artefact')
     for (const d of b.text.matchAll(/^\s*- \[x\][^\n]*$/gim)) for (const t of pathTokens(d[0])) missing(t.p, d.index + t.i, 'deliverable')
     const e = b.text.match(/\*\*Evidence:\*\*\s*`([^`]+)`/)
@@ -225,6 +226,36 @@ export function check(root) {
         add('adr-status-stale', file, lineOf(text, text.indexOf(st)), `Status is Accepted but the plan shows Phase ${scope.join(', ')} built (✅, merged or on a branch): mark it Built (commit) and fill the Build deviation row`)
     }
     if (texts.has(index)) for (const r of prose(texts.get(index)).matchAll(/^\|[^\n]*ADR-\d+[^\n]*$/gm)) notBuilt(index, texts.get(index), r[0], 'Index row')
+  }
+
+  // Status lag (2.6.4): the plan says a phase merged, but the keystone status table still has it "on `<branch>`".
+  for (const f of ['AGENTS.md', 'CLAUDE.md'].filter(exists)) {
+    const text = read(f)
+    for (const r of prose(text).matchAll(/^\|[^\n]*$/gm)) {
+      const row = text.slice(r.index, r.index + r[0].length), on = row.match(/\bon `[^`]+`/) // prose() blanks inline code; read the raw row
+      const lag = on ? phasesIn(row).filter(n => merged.has(n)) : []
+      if (lag.length) add('status-lag', f, lineOf(text, r.index), `status row says Phase ${lag.join(', ')} is ${on[0]} but the plan shows it merged: make the same substitution here, in the merge commit`)
+    }
+  }
+
+  for (const f of ['README.md', 'docs/README.md'].filter(exists)) if (merged.size) {
+    const text = read(f)
+    for (const m of prose(text).matchAll(/^.*\b(no phases? (?:is |are )?built(?: yet)?|nothing (?:is )?built yet|Phases? (\d+(?:\.\d+)?) (?:is )?not (?:yet )?(?:built|started))\b.*$/gim))
+      if (!m[2] || merged.has(m[2])) add('status-lag', f, lineOf(text, m.index), `says "${m[1]}" but the plan shows Phase ${[...merged].join(', ')} merged: update it in the merge commit`)
+  }
+
+  // BRD assumptions name a source (2.6.4): only where the Assumptions table has a Source column.
+  for (const f of docs.filter(f => /(^|\/)BRD(\.md$|\/)/i.test(f))) {
+    const text = texts.get(f), lines = text.split('\n')
+    lines.forEach((l, i) => {
+      const head = l.split('|').map(c => c.trim().toLowerCase())
+      if (!/^\s*\|/.test(l) || !head.includes('assumption') || !head.includes('source')) return
+      const col = head.indexOf('source')
+      for (let k = i + 2; k < lines.length && /^\s*\|/.test(lines[k]); k++) {
+        const c = lines[k].split('|').map(x => x.trim()), id = c[1] || '?', src = c[col] ?? ''
+        if (!src || /^(—|-|–|tbd|\?|n\/a)$/i.test(src) || src.includes('{{')) add('brd-unsourced', f, k + 1, `${id} has no Source: name the founder answer (transcript Q-ref), the ADR, or write unvalidated`)
+      }
+    })
   }
 
   // Stack: runtime dependencies no record doc names.
@@ -411,7 +442,22 @@ if (process.argv.includes('--self-test')) {
   for (const re of dWant) assert(dBad.some(f => re.test(`${f.file}:${f.line} ${f.msg}`)), `expected [docs-untested] ${re}\n${dBad.map(f => `${f.file}:${f.line} ${f.msg}`).join('\n')}`)
   assert(dBad.length === dWant.length, `expected ${dWant.length} docs-untested, got ${dBad.length}\n${dBad.map(f => `${f.line} ${f.msg}`).join('\n')}`)
   assert(!check(mk({ ...clean, '.keel/meta.json': '{"keelVersion":"2.6.2"}', 'README.md': readme('', '', '') })).findings.some(f => f.kind === 'docs-untested'), 'a pre-2.6.3 project with no marker must not get docs-untested')
-  console.log(`keel check self-test: ok (clean fixtures clean; ${want.length + tWant.length + sWant.length + dWant.length} planted drifts each reported once)`)
+  // 2.6.4 status lag + BRD sources: Phase 0 merged, Phase 1 on its branch (not lag); a lagging row and unsourced rows are reported.
+  const status = (a, b) => `# App\n\n| | What |\n|---|---|\n| **Last completed** | ${a} |\n| **Now** | ${b} |\n`
+  const brd = rows => `# BRD\n\n## 8. Assumptions\n\n| ID | Assumption | Source |\n|----|-----------|--------|\n${rows}\n## 9. Next\n\n| ID | Assumption |\n|---|---|\n| A-99 | old-style table, no Source column |\n`
+  const lOk = { ...clean, 'docs/IMPLEMENTATION_PLAN.md': plan('✅ · merged abc1234', '✅').replace('| 1 — Core | ⬜ |', '| 1 — Core | 🔄 · on `phase-1-core` |'),
+    'AGENTS.md': status('Phase 0 — Guardrails · merged abc1234', 'Phase 1 — Core, on `phase-1-core`'),
+    'docs/BRD.md': brd('| A-01 | Names are unique | transcript Q3 |\n| A-02 | Stock never negative | [ADR-001](adr/ADR-001-store.md) |\n| A-03 | Ten users | unvalidated |\n') }
+  const lOkRes = check(mk(lOk)).findings.filter(f => f.kind === 'status-lag' || f.kind === 'brd-unsourced')
+  assert(lOkRes.length === 0, `status/BRD clean fixture has findings:\n${lOkRes.map(f => `${f.file}:${f.line} ${f.msg}`).join('\n')}`)
+  const lBad = check(mk({ ...lOk, 'docs/README.md': '# Docs\n\nStatus: ⬜ no phase built yet\n', 'AGENTS.md': status('Phase 0 — Guardrails · on `phase-0-guardrails`', 'Phase 1 — Core, on `phase-1-core`'),
+    'docs/BRD.md': brd('| A-01 | Names are unique | transcript Q3 |\n| A-02 | The stored name is trimmed |  |\n| A-03 | Ten users | — |\n') })).findings.filter(f => f.kind === 'status-lag' || f.kind === 'brd-unsourced')
+  assert(!check(mk({ ...lOk, 'docs/README.md': '# Docs\n\nStatus: Phase 1 not built yet.\n' })).findings.some(f => f.kind === 'status-lag'), 'an unmerged phase called not built is not lag')
+  const lWant = [/status-lag AGENTS\.md:5 .*Phase 0 is on `phase-0-guardrails`/, /status-lag docs\/README\.md:3 says "no phase built yet"/, /brd-unsourced docs\/BRD\.md:8 A-02 has no Source/, /brd-unsourced docs\/BRD\.md:9 A-03 has no Source/]
+  for (const re of lWant) assert(lBad.some(f => re.test(`${f.kind} ${f.file}:${f.line} ${f.msg}`)), `expected ${re}\n${lBad.map(f => `${f.kind} ${f.file}:${f.line} ${f.msg}`).join('\n')}`)
+  assert(lBad.length === lWant.length, `expected ${lWant.length} status/BRD findings, got ${lBad.length}\n${lBad.map(f => `${f.kind} ${f.file}:${f.line} ${f.msg}`).join('\n')}`)
+  assert(!check(mk({ ...clean, 'docs/IMPLEMENTATION_PLAN.md': plan('✅ merged, 1 gate(s) deferred (D-01)', '⬜') })).findings.some(f => f.kind === 'phase-gates-open'), 'a phase whose open gates are deferred is not phase-gates-open')
+  console.log(`keel check self-test: ok (clean fixtures clean; ${want.length + tWant.length + sWant.length + dWant.length + lWant.length} planted drifts each reported once)`)
   process.exit(0)
 }
 
