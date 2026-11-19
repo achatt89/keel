@@ -305,10 +305,13 @@ await agent(`
        becomes a Deferred items row (what, why open, when to revisit) and the Status reads
        "✅ merged, N gate(s) deferred (D-xx)". The AGENTS.md "Now" row names the next phase,
        never "close Phase {{N}}": a merged phase is finished; its leftovers are deferred rows.
+     - Phase {{N}} deliverables: tick each "- [ ]" whose files exist; one that is not done stays
+       unticked with what is missing, and becomes a Deferred items row.
      All these edits go in this ONE commit — none may be left for later:
      git add -u && git commit -m "docs: phase {{N}} merged"
      Then, if .keel/check.mjs exists: node .keel/check.mjs. A status-lag finding means a status
      cell still says "on \`phase-{{N}}-{{SLUG}}\`": fix it, git commit --amend --no-edit, re-run.
+     Fix a deliverable-unticked or adr-mention-stale finding the same way.
   5. Delete the phase branch: git branch -d phase-{{N}}-{{SLUG}}
   6. Confirm: git log --oneline -8
   7. Report: what merged, any conflicts and how resolved. Remind: "deployed vNN" and

@@ -138,6 +138,16 @@ const SYNC_RULES = `
   when the founder said it (Source is a transcript answer) and the code differs, an Open
   decisions row in docs/adr/README.md for the founder. A row with no Source (check.mjs reports
   brd-unsourced) gets one: the transcript answer, the ADR, or unvalidated.
+  Keystone and plan rows vs code — the same sync, line by line: the AGENTS.md / CLAUDE.md
+  hard-invariants table (each "Enforced by" and "Gap" cell: does the named test file exist, and
+  does it cover the rule? "Not built yet: Phase N", "missing", "uncovered" or "file not written"
+  after the code and tests exist is stale), every open Deferred items row in the plan (is it now
+  done, or does its text say something about the code or README that is no longer true?), the
+  deliverable checkboxes of every merged phase (tick each "- [ ]" whose files exist, or say what
+  is missing), and the docs/README.md / README.md lines that name ADRs or phases (an ADR called
+  reserved or proposed must match its file's Status). Update each cell or row to what the code
+  and tests show now, with the sha; never delete a rule, a row or a deferred item, and never
+  shorten a record document.
   README examples and error tables: one with no keel:example / keel:asserts marker (check.mjs
   reports docs-untested) is a gap. Add the example file or test and the marker, run it, and
   report it; never fix the README text alone.
@@ -149,8 +159,9 @@ const SYNC_RULES = `
   that don't. Never write "prod-live" from this step — only DEPLOYMENT.md's deploy procedure may.
 
   Step 9 — Drift check: if .keel/check.mjs exists, run node .keel/check.mjs. Fix every
-  adr-status-stale finding (Step 4), every status-lag finding (the AGENTS.md / CLAUDE.md status
-  line), every brd-unsourced finding (Step 7) and every dead-link or adr-status finding your edits caused;
+  adr-status-stale finding (Step 4 and Step 7: ADR files, the index, and AGENTS.md / CLAUDE.md
+  table rows), every status-lag finding (the AGENTS.md / CLAUDE.md status line), every
+  adr-mention-stale and deliverable-unticked finding (Step 7), every brd-unsourced finding (Step 7) and every dead-link or adr-status finding your edits caused;
   list the rest under findings in your Report.
 `
 
@@ -230,8 +241,9 @@ for (let round = 1; round <= MAX_ROUNDS && !inline.statusOnly; round++) {
      on the index), any LINK ERROR (a part not linked from its index, or not linking back), any
      "split" verdict on a doc the role touched, any doc newly over budget with no verdict reason
      the caller accepts. A new waiver needs the caller's (human's) approval — never self-granted.
-  5. Drift: run node .keel/check.mjs if it exists; every adr-status-stale, status-lag and
-     brd-unsourced finding is a gap. Then
+  5. Drift: run node .keel/check.mjs if it exists; every adr-status-stale, status-lag,
+     adr-mention-stale, deliverable-unticked and brd-unsourced finding is a gap; so is a
+     hard-invariants Gap cell or open Deferred items row the code has overtaken. Then
      read the code the work touched against ARCHITECTURE, LLD, README.md and docs/README.md, and the BRD
      assumptions, RSK mitigations and PRD acceptance notes that name code behaviour: each statement
      about a data shape, store field, export, module section, error code or check order, or "not built yet"

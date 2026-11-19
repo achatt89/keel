@@ -12,8 +12,8 @@ description: >
   phases"); "keel version" ("is my keel up to date"); "keel check" ("check my docs for drift");
   "keel answer" / "keel merge" (team answers).
 metadata:
-  version: 2.6.4
-  userVersion: 2.6.4
+  version: 2.6.5
+  userVersion: 2.6.5
 license: MIT
 ---
 

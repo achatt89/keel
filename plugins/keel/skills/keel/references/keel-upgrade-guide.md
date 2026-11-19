@@ -350,6 +350,14 @@ Check:
   Applied on approval. `doc-sync.js` (Step 7 compares those rows with the code; Step 9 fixes `status-lag`)
   and the Merge stage of `change-template.js` (all state substitutions in one commit, then
   `.keel/check.mjs`) are replaced verbatim; propose the Merge edit for non-✅ phase scripts.
+- [ ] Keystone, index and plan rows checked against the code (2.6.5; `.keel/check.mjs` reports
+  `adr-status-stale` on AGENTS.md / CLAUDE.md table rows that say "not built" for a built phase,
+  `adr-mention-stale` for a README / docs/README.md / keystone line calling an Accepted or Built ADR
+  reserved or proposed, and `deliverable-unticked` for a `- [ ]` deliverable whose files exist in a ✅ or
+  merged phase) → OUTDATED_CONVENTION (Optional). Reinstall `.keel/check.mjs`, run it at U2 and list the
+  findings as information; the next doc sync fixes them (cells and checkboxes updated, no row removed).
+  `doc-sync.js` (Step 7 re-reads the hard-invariants table, open Deferred items rows and merged-phase
+  deliverables) is replaced verbatim; propose the Merge-stage deliverable line for non-✅ phase scripts.
 - [ ] `change-template.js` present → MISSING_FEATURE (Important) if absent
 - [ ] `.keel/evidence/` exists → MISSING_FEATURE (Important) if absent
 - [ ] At least one `phase-N-*.js` for each non-✅ phase in IMPLEMENTATION_PLAN → MISSING_FEATURE (Important)

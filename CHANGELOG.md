@@ -3,6 +3,46 @@
 All notable changes to Keel are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [2.6.5] — 2026-11-19
+<!-- headline: The drift check reads the keystone, the docs index and the plan's checkboxes. -->
+
+`/keel check` and doc sync now cover the three places where documents still fell behind the code
+in our 2.6.4 test: the AGENTS.md rules table, the docs index, and the plan's deliverable
+checkboxes. A rules-table row that still says "Not built yet: Phase 1" after Phase 1 merged, a
+docs index line that calls a built decision record "reserved", and an unticked deliverable whose
+files exist are now reported, and doc sync re-reads those rows, plus every open deferred item,
+against the code. Only working documents and the check change; no record document is shortened
+and no document type is removed.
+
+**Not measured.** This release had no model test run. We replayed the new checks, with no model
+calls, on the saved folders from the 2.6.4 test: they report the drift the judge found in 3 of
+the 4 failing sessions (the rules table in one, the docs index in two, the unticked deliverables
+in one). The fourth (an outdated deferred-item note and a requirement that overstated a test)
+needs reading, which doc sync now does but the check cannot. The checks also reported real slips
+the judge passed: the docs index line in one passing session, and unticked Phase 1 deliverables
+in all 9 sessions. Whether this lowers the drift rate is not known until it is measured.
+
+### Added
+- **`/keel check` reports three more kinds of drift:**
+  - `adr-status-stale` now also reads table rows in `AGENTS.md` and `CLAUDE.md`, such as the
+    hard-invariants Gap cell, when a row says *not built* for a phase it names and the plan shows that phase built;
+  - `adr-mention-stale`: a line in `README.md`, `docs/README.md`, `AGENTS.md` or `CLAUDE.md` that calls a
+    decision record *reserved* or *proposed* while its file says Accepted or Built;
+  - `deliverable-unticked`: in a ✅ or merged phase, a `- [ ]` deliverable whose files all exist.
+
+### Changed
+- **Doc sync re-reads keystone and plan rows against the code**: each hard-invariants "Enforced by"
+  and "Gap" cell, every open Deferred items row, merged-phase deliverables, and the index lines that
+  name decision records or phases. Cells are updated to what the code and tests show; no rule,
+  row or deferred item is deleted.
+- **The phase merge step ticks deliverables whose files exist**; one not done stays unticked with
+  what is missing and becomes a deferred item.
+
+### Upgrading
+`/keel upgrade` reinstalls `.keel/check.mjs`, lists the new findings for information and replaces
+`doc-sync.js`; it proposes the merge-step line for unfinished phase scripts. The next doc sync
+fixes the findings. Nothing is applied without your approval.
+
 ## [2.6.4] — 2026-11-17
 <!-- headline: Business requirements say only what was decided. -->
 
