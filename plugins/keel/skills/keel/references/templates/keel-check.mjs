@@ -210,10 +210,10 @@ export function check(root) {
   const phasesIn = s => [...s.matchAll(/\bPhases?\s+(\d+(?:\.\d+)?)(?:\s*(?:[–—-]|\/|,|and|&)\s*(\d+(?:\.\d+)?))?/gi)].flatMap(([, a, b]) =>
     !b ? [a] : Number.isInteger(+a) && Number.isInteger(+b) && +b > +a && +b - +a < 10 ? Array.from({ length: +b - +a + 1 }, (_, i) => String(+a + i)) : [a, b])
   const allDone = ps => ps.length > 0 && ps.every(n => built.has(n)) // built = ✅, or its row says merged/deployed/live or "on `<branch>`" (code exists)
-  const notBuilt = (file, text, cell, label) => {
+  const notBuilt = (file, text, cell, label, at = text.indexOf(cell), named = false) => { // named: only a phase the segment names counts
     for (const seg of cell.split(/[;·|]|\.\s/)) if (/\bnot (?:yet )?built\b|\bunbuilt\b/i.test(seg)) {
-      const ps = phasesIn(seg), hit = ps.length ? ps.filter(n => built.has(n)) : allDone([...status.keys()]) ? [...status.keys()] : []
-      if (hit.length) add('adr-status-stale', file, lineOf(text, Math.max(0, text.indexOf(cell))), `${label} says "${seg.trim().slice(0, 80)}" but the plan shows Phase ${hit.join(', ')} built (✅, merged or on a branch): update it to what was built`)
+      const ps = phasesIn(seg), hit = ps.length ? ps.filter(n => built.has(n)) : !named && allDone([...status.keys()]) ? [...status.keys()] : []
+      if (hit.length) add('adr-status-stale', file, lineOf(text, Math.max(0, at)), `${label} says "${seg.trim().slice(0, 80)}" but the plan shows Phase ${hit.join(', ')} built (✅, merged or on a branch): update it to what was built`)
     }
   }
   if (status.size) {
@@ -226,6 +226,28 @@ export function check(root) {
         add('adr-status-stale', file, lineOf(text, text.indexOf(st)), `Status is Accepted but the plan shows Phase ${scope.join(', ')} built (✅, merged or on a branch): mark it Built (commit) and fill the Build deviation row`)
     }
     if (texts.has(index)) for (const r of prose(texts.get(index)).matchAll(/^\|[^\n]*ADR-\d+[^\n]*$/gm)) notBuilt(index, texts.get(index), r[0], 'Index row')
+    // 2.6.5: keystone tables (invariants "Gap" cells, status rows) say "not built" for a phase the plan shows built.
+    for (const f of ['AGENTS.md', 'CLAUDE.md'].filter(exists)) { const text = read(f); for (const r of prose(text).matchAll(/^\|[^\n]*$/gm)) notBuilt(f, text, r[0], `${f} row`, r.index, true) }
+  }
+
+  // ADR mentions (2.6.5): an index or keystone line calls an ADR reserved/proposed while its file says Accepted or Built.
+  for (const f of ['README.md', 'docs/README.md', 'AGENTS.md', 'CLAUDE.md'].filter(exists)) {
+    const text = read(f), p = prose(text)
+    for (const m of p.matchAll(/\bADR-0*(\d+)\s*(?:is\s+|:\s*|\(\s*)?(reserved|proposed)\b|\b(reserved|proposed)\s+(?:ADR-)?0*(\d+)\b/gi)) {
+      const key = `ADR-${m[1] ?? m[4]}`, file = adrFiles.get(key), said = (m[2] ?? m[3]).toLowerCase()
+      if (!file) continue
+      const at = stage(cellOf(read(file)))
+      if (at > STAGES.indexOf(said)) add('adr-mention-stale', f, lineOf(text, m.index), `calls ${basename(file).match(/ADR-\d+/i)[0]} ${said} but ${file} says ${STAGES[at]}: update this line`)
+    }
+  }
+
+  // Deliverables (2.6.5): in a ✅ or merged phase, an unticked "- [ ]" line whose every cited path exists.
+  for (const b of blocks) {
+    if (!(status.get(b.n) === '✅' || merged.has(b.n)) || /PHASE_ARCHIVE/i.test(b.text)) continue
+    for (const d of b.text.matchAll(/^\s*- \[ \][^\n]*$/gm)) {
+      const ps = [...new Set(pathTokens(d[0]).map(t => t.p.replace(/^\.\//, '').replace(/\/$/, '')))]
+      if (ps.length && ps.every(exists)) add('deliverable-unticked', b.file, lineOf(texts.get(b.file), b.start + d.index), `Phase ${b.n} is done and ${ps.map(x => `\`${x}\``).join(', ')} ${ps.length > 1 ? 'exist' : 'exists'}, but the deliverable is unticked: tick it (- [x]) or say what is missing`)
+    }
   }
 
   // Status lag (2.6.4): the plan says a phase merged, but the keystone status table still has it "on `<branch>`".
@@ -457,7 +479,22 @@ if (process.argv.includes('--self-test')) {
   for (const re of lWant) assert(lBad.some(f => re.test(`${f.kind} ${f.file}:${f.line} ${f.msg}`)), `expected ${re}\n${lBad.map(f => `${f.kind} ${f.file}:${f.line} ${f.msg}`).join('\n')}`)
   assert(lBad.length === lWant.length, `expected ${lWant.length} status/BRD findings, got ${lBad.length}\n${lBad.map(f => `${f.kind} ${f.file}:${f.line} ${f.msg}`).join('\n')}`)
   assert(!check(mk({ ...clean, 'docs/IMPLEMENTATION_PLAN.md': plan('✅ merged, 1 gate(s) deferred (D-01)', '⬜') })).findings.some(f => f.kind === 'phase-gates-open'), 'a phase whose open gates are deferred is not phase-gates-open')
-  console.log(`keel check self-test: ok (clean fixtures clean; ${want.length + tWant.length + sWant.length + dWant.length + lWant.length} planted drifts each reported once)`)
+  // 2.6.5, from the eval v2 drift: keystone invariants "Not built yet: Phase N", an index calling a built ADR reserved, an unticked deliverable that exists.
+  const inv = (a, b) => `# App\n\n## Hard invariants\n\n| # | Rule | Enforced by | Gap | Source |\n|---|---|---|---|---|\n| 1 | Rules hold | \`tests/rules.test.js\` | ${a} | NN-1 |\n| 2 | Core rule | \`src/core.js\` | Not built yet: Phase 1 | NN-2 |\n| 3 | Audit | — | ${b} | NN-3 |\n`
+  const kinds = ['adr-status-stale', 'adr-mention-stale', 'deliverable-unticked']
+  const vOk = { ...clean, 'docs/IMPLEMENTATION_PLAN.md': plan('✅ · merged abc1234', '✅', '\n- [ ] later: `src/later.js`\n- [ ] tests listed above\n') + '- [ ] `tests/rules.test.js` (Phase 1 not done: unticked is right)\n',
+    'AGENTS.md': inv('none (unit)', 'Not built yet: D-01 (deferred)'), 'docs/README.md': '# Docs\n\nADR-001 built, ADR-002 reserved (Phase 1); ADR-007 Accepted; ADR-008 proposed.\n', 'docs/adr/ADR-008-queue.md': adr('Proposed 2026-01-08') }
+  const vOkRes = check(mk(vOk)).findings.filter(f => kinds.includes(f.kind))
+  assert(vOkRes.length === 0, `2.6.5 clean fixture has findings:\n${vOkRes.map(f => `${f.kind} ${f.file}:${f.line} ${f.msg}`).join('\n')}`)
+  const allIn = { ...vOk, 'docs/IMPLEMENTATION_PLAN.md': plan('✅ · merged abc1234', '✅').replace('| 1 — Core | ⬜ |', '| 1 — Core | ✅ merged def5678 |'), 'AGENTS.md': inv('none', 'Not built yet: D-01 (deferred)').replace('Not built yet: Phase 1', 'Not built yet: Phase 2') }
+  assert(!check(mk(allIn)).findings.some(f => kinds.includes(f.kind)), 'a keystone row naming no phase (a deferred item) is not stale, even with every phase built')
+  const vBad = check(mk({ ...vOk, 'docs/IMPLEMENTATION_PLAN.md': plan('✅ · merged abc1234', '✅', '\n- [ ] tests: `tests/rules.test.js`, `.claude/workflows/`\n'),
+    'AGENTS.md': inv('Not built yet: Phase 0', 'Not built yet: D-01 (deferred)'), 'docs/README.md': '# Docs\n\nADR-001 proposed; ADR-002 reserved.\n\n| adr | ADR-006 built + reserved 007 |\n' })).findings.filter(f => kinds.includes(f.kind))
+  const vWant = [/adr-status-stale AGENTS\.md:7 AGENTS\.md row says "Not built yet: Phase 0"/, /adr-mention-stale docs\/README\.md:3 calls ADR-001 proposed but .* says built/,
+    /adr-mention-stale docs\/README\.md:5 calls ADR-007 reserved but .* says accepted/, /deliverable-unticked docs\/IMPLEMENTATION_PLAN\.md:\d+ Phase 0 is done and `tests\/rules\.test\.js`, `\.claude\/workflows` exist/]
+  for (const re of vWant) assert(vBad.some(f => re.test(`${f.kind} ${f.file}:${f.line} ${f.msg}`)), `expected ${re}\n${vBad.map(f => `${f.kind} ${f.file}:${f.line} ${f.msg}`).join('\n')}`)
+  assert(vBad.length === vWant.length, `expected ${vWant.length} 2.6.5 findings, got ${vBad.length}\n${vBad.map(f => `${f.kind} ${f.file}:${f.line} ${f.msg}`).join('\n')}`)
+  console.log(`keel check self-test: ok (clean fixtures clean; ${want.length + tWant.length + sWant.length + dWant.length + lWant.length + vWant.length} planted drifts each reported once)`)
   process.exit(0)
 }
 

@@ -30,6 +30,7 @@ It is read-only: no permission prompt, no edits, nothing written. Run it any tim
 - a decision record that still says *not built* for phases the plan shows done, or is still *Accepted* when its phase is done (2.6.2);
 - a README code example or error table with no marker naming the file that tests it (2.6.3);
 - a status line in `AGENTS.md` or `CLAUDE.md` that still says a phase is on its branch after the plan shows it merged, or a README that still says no phase is built, and a business-requirements assumption with no source, in projects whose Assumptions table has a Source column (2.6.4);
+- a row in the `AGENTS.md` or `CLAUDE.md` tables (such as the hard-invariants Gap cell) that says *not built* for a phase the plan shows built, a README or keystone line that calls an Accepted or Built decision record *reserved* or *proposed*, and an unticked deliverable in a finished phase whose files exist (2.6.5);
 - runtime dependencies in `package.json`, `requirements.txt`, `go.mod` or `Cargo.toml` that no design or decision doc names.
 
 When the script finds nothing, keel prints its summary line and stops. Only when there are findings does Claude read the cited lines, say which are real, and name the mode that fixes each one. Nothing is written, ever: fixes happen in doc-sync, `/keel upgrade` or `/keel archive`. An ADR's decision text is never edited (only its Status cell and Build deviation row change, in doc-sync), so a dead link inside one is fixed at its target. Run `node .keel/check.mjs` yourself, or in CI: it exits 1 when there are findings.
